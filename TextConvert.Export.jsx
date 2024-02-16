@@ -34,6 +34,15 @@
  *
  *****************************************************************/
 
+
+/**
+ * CONFIG
+ * -------------------------------------------------------------
+ */
+
+// text separator
+var separator = "*************************************";
+
 	/**
 	 *  TextConvert.Export Init function
 	 * -------------------------------------------------------------
@@ -96,7 +105,7 @@
 				app.activeDocument = docs[i];
 
 				// call to the core with the current document
-				extractText(app.activeDocument, fileOut, '/');
+				goTextExport3(app.activeDocument, fileOut, '/');
 
 				// close the file
 				fileOut.close();
@@ -118,11 +127,36 @@
 	 * -------------------------------------------------------------
 	*/
 
-	  function extractText(document, fileOut) {
-		for (var i = 0; i < document.textFrames.length; i++) {
+	//   function extractText(document, fileOut) {
+	// 	for (var i = 0; i < document.textFrames.length; i++) {
+	// 		fileOut.writeln('');
+	// 		fileOut.writeln(document.textFrames[i].contents);
+	// 	}
+	// }
+
+	function goTextExport3(el, fileOut, path) {
+					
+		// Get the layers
+		var frames = el.textFrames;
+				
+		// Loop 'm
+		for (var frameIndex = frames.length; frameIndex > 0; frameIndex--){
+			
+			// curentFrame ref
+			var currentFrame = frames[frameIndex-1];
+			fileOut.writeln(separator);
 			fileOut.writeln('');
-			fileOut.writeln(document.textFrames[i].contents);
+			fileOut.writeln('framePath: ' + path);
+			// Do we need to replace this with another index?
+			// fileOut.writeln('frameName: ' + currentFrame.name);
+			// fileOut.writeln('');
+			fileOut.writeln('frameContent:');
+			fileOut.writeln(currentFrame.contents);
+			fileOut.writeln('');
+				
 		}
+		
+	
 	}
 
 
