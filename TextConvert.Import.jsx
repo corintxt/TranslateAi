@@ -129,7 +129,7 @@
 					app.activeDocument = docs[i];
 
 					// Now apply the translations
-					goTextImport(app.activeDocument, '/');
+					goTextImport3(app.activeDocument, '/');
 
 					// update numReplaced
 					numReplaced++;
@@ -181,7 +181,7 @@
 				var line = fileIn.readln();
 
 				// Has "[BEGIN" tag
-				if (line.indexOf('[BEGIN ') !== -1)
+				if (line.indexOf('[BEGIN FRAME ') !== -1)
 				{
 
 					// fetch Key
@@ -196,7 +196,7 @@
 				}
 
 				// Has "[END" tag
-				else if (line.indexOf('[END ') !== -1)
+				else if (line.indexOf('[END FRAME ') !== -1)
 				{
 
 					// if it's the closing line of our open key

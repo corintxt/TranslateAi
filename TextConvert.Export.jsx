@@ -145,15 +145,14 @@ var separator = "*************************************";
 			// curentFrame ref
 			var frameIndex = frameCount-1;
 			var currentFrame = frames[frameIndex];
-			fileOut.writeln(separator);
+			// fileOut.writeln(separator);
 			fileOut.writeln('');
-			fileOut.writeln('framePath: ' + path);
-			// Do we need to replace this with another index?
-			fileOut.writeln('frameIndex: ' + frameIndex);
 			fileOut.writeln('');
-			fileOut.writeln('frameContent:');
+			fileOut.writeln('');
+			fileOut.writeln('');
+			fileOut.writeln('[BEGIN FRAME ' + path + frameIndex + ' ]');
 			fileOut.writeln(currentFrame.contents);
-			fileOut.writeln('');
+			fileOut.writeln('[END FRAME ' + path + frameIndex + ' ]');
 				
 		}
 		
