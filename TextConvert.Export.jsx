@@ -1,5 +1,8 @@
 /*****************************************************************
- *
+ * TextConvert.Export v 1.2 (2024) - Corin Faife
+ * 
+ * forked from: 
+ * ===============================
  * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
  *
  * v 1.1 - 2016.02.17 - UTF-8 support
