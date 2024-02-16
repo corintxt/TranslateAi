@@ -87,7 +87,7 @@ var separator = "*************************************";
 			{
 
 				// Auto set filePath and fileName
-				filePath = Folder.myDocuments + '/TextConvert-' + docs[i].name + '.txt';
+				filePath = Folder.myDocuments + '/TextConvert/TextConvert-' + docs[i].name + '.txt';
 
 				// create outfile
 				var fileOut	= new File(filePath);
@@ -146,13 +146,10 @@ var separator = "*************************************";
 			var frameIndex = frameCount-1;
 			var currentFrame = frames[frameIndex];
 			// fileOut.writeln(separator);
-			fileOut.writeln('');
-			fileOut.writeln('');
-			fileOut.writeln('');
-			fileOut.writeln('');
 			fileOut.writeln('[BEGIN ' + path + frameIndex + ' ]');
 			fileOut.writeln(currentFrame.contents);
 			fileOut.writeln('[END ' + path + frameIndex + ' ]');
+			fileOut.writeln('');
 				
 		}
 		

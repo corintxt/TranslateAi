@@ -120,7 +120,7 @@
 			{
 
 				// fetch translations
-				goFetchTranslations(Folder.myDocuments + '/TextConvert-' + docs[i].name + '.txt');
+				goFetchTranslations(Folder.myDocuments + '/TextConvert/TextConvert-' + docs[i].name + '.txt');
 
 				// Yay, we haz got translations
 				if (tKeys.length > 0)
@@ -182,7 +182,7 @@
 				var line = fileIn.readln();
 
 				// Has "[BEGIN" tag
-				if (line.indexOf('[BEGIN ') !== -1)
+				if (line.indexOf('[BEGIN ') !== -1 || line.indexOf('[DEBUT ') !== -1)
 				{
 
 					// fetch Key
@@ -197,7 +197,7 @@
 				}
 
 				// Has "[END" tag
-				else if (line.indexOf('[END ') !== -1)
+				else if (line.indexOf('[END ') !== -1 || line.indexOf('[FIN ') !== -1)
 				{
 
 					// if it's the closing line of our open key
