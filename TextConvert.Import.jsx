@@ -140,6 +140,7 @@
 
 			// Give notice of export
 			alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
+			// alert(tKeys.length + " keys and " + tValues.length + " values found");
 
 		}
 
@@ -181,7 +182,7 @@
 				var line = fileIn.readln();
 
 				// Has "[BEGIN" tag
-				if (line.indexOf('[BEGIN FRAME ') !== -1)
+				if (line.indexOf('[BEGIN ') !== -1)
 				{
 
 					// fetch Key
@@ -196,7 +197,7 @@
 				}
 
 				// Has "[END" tag
-				else if (line.indexOf('[END FRAME ') !== -1)
+				else if (line.indexOf('[END ') !== -1)
 				{
 
 					// if it's the closing line of our open key

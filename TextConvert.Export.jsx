@@ -150,9 +150,9 @@ var separator = "*************************************";
 			fileOut.writeln('');
 			fileOut.writeln('');
 			fileOut.writeln('');
-			fileOut.writeln('[BEGIN FRAME ' + path + frameIndex + ' ]');
+			fileOut.writeln('[BEGIN ' + path + frameIndex + ' ]');
 			fileOut.writeln(currentFrame.contents);
-			fileOut.writeln('[END FRAME ' + path + frameIndex + ' ]');
+			fileOut.writeln('[END ' + path + frameIndex + ' ]');
 				
 		}
 		
