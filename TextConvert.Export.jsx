@@ -136,20 +136,21 @@ var separator = "*************************************";
 
 	function goTextExport3(el, fileOut, path) {
 					
-		// Get the layers
+		// Get the frames
 		var frames = el.textFrames;
 				
-		// Loop 'm
-		for (var frameIndex = frames.length; frameIndex > 0; frameIndex--){
+		// Loop
+		for (var frameCount = frames.length; frameCount > 0; frameCount--){
 			
 			// curentFrame ref
-			var currentFrame = frames[frameIndex-1];
+			var frameIndex = frameCount-1;
+			var currentFrame = frames[frameIndex];
 			fileOut.writeln(separator);
 			fileOut.writeln('');
 			fileOut.writeln('framePath: ' + path);
 			// Do we need to replace this with another index?
-			// fileOut.writeln('frameName: ' + currentFrame.name);
-			// fileOut.writeln('');
+			fileOut.writeln('frameIndex: ' + frameIndex);
+			fileOut.writeln('');
 			fileOut.writeln('frameContent:');
 			fileOut.writeln(currentFrame.contents);
 			fileOut.writeln('');

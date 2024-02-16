@@ -240,53 +240,36 @@
   	 * -------------------------------------------------------------
 	 */
 
-		function goTextImport(el, path)
+		function goTextImport3(el, path)
 		{
 
 			// debug
 			// alert(tKeys);
 
-			// Get the layers
-			var layers = el.layers;
-
-			// Loop 'm
-			for (var layerIndex = layers.length; layerIndex > 0; layerIndex--)
-			{
-
-				// curentLayer ref
-				var currentLayer = layers[layerIndex-1];
-
-				// currentLayer is a LayerSet
-				if (currentLayer.typename == "LayerSet") {
-
-					goTextImport(currentLayer, path + currentLayer.name + '/');
-
-				// currentLayer is not a LayerSet
-				} else {
-
-					// Layer is visible and Text --> we can haz copy paste!
-					if ( (currentLayer.visible) && (currentLayer.kind == LayerKind.TEXT) )
-					{
+				// Get the frames
+				var frames = el.textFrames;
+						
+				// Loop
+				for (var frameCount = frames.length; frameCount > 0; frameCount--){
+					
+					// curentFrame ref
+					var frameIndex = frameCount-1;
+					var currentFrame = frames[frameIndex];
 
 						// get position in array of the string to translate
-						var pos = Array_IndexOf(tKeys, path + currentLayer.name);
+						var pos = Array_IndexOf(tKeys, path + frameIndex);
 
 						// string found
-						if (pos !== -1)
-						{
+						if (pos !== -1){
 
 							// update contents with translated string
-							currentLayer.textItem.contents = tValues[pos];
+							currentFrame.contents = tValues[pos];
 
 							// clean up tKeys & tValues array (speed improv!)
 							Array_RemoveAtIndex(tKeys, pos);
 							Array_RemoveAtIndex(tValues, pos);
 
 						}
-
-					}
-				}
-
 
 			}
 
