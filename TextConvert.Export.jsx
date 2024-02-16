@@ -96,7 +96,7 @@
 				app.activeDocument = docs[i];
 
 				// call to the core with the current document
-				goTextExport2(app.activeDocument, fileOut, '/');
+				extractText(app.activeDocument, fileOut, '/');
 
 				// close the file
 				fileOut.close();
@@ -114,49 +114,16 @@
 
 
   	/**
-  	 * TextExport Core Function (V2)
-  	 * -------------------------------------------------------------
-	 */
+	 * TextExtraction
+	 * -------------------------------------------------------------
+	*/
 
-		function goTextExport2(el, fileOut, path)
-		{
-
-			// Get the layers
-			var layers = el.layers;
-
-			// Loop 'm
-			for (var layerIndex = layers.length; layerIndex > 0; layerIndex--)
-			{
-
-				// curentLayer ref
-				var currentLayer = layers[layerIndex-1];
-
-				// currentLayer is a LayerSet
-				if (currentLayer.typename == "LayerSet") {
-
-					goTextExport2(currentLayer, fileOut, path + currentLayer.name + '/');
-
-				// currentLayer is not a LayerSet
-				} else {
-
-					// Layer is visible and Text --> we can haz copy paste!
-					if ( (currentLayer.visible) && (currentLayer.kind == LayerKind.TEXT) )
-					{
-						fileOut.writeln('');
-						fileOut.writeln('');
-						fileOut.writeln('');
-						fileOut.writeln('');
-						fileOut.writeln('[BEGIN ' + path + currentLayer.name + ' ]');
-						fileOut.writeln(currentLayer.textItem.contents);
-						fileOut.writeln('[END ' + path + currentLayer.name + ' ]');
-					}
-				}
-
-
-			}
-
-
+	  function extractText(document, fileOut) {
+		for (var i = 0; i < document.textFrames.length; i++) {
+			fileOut.writeln('');
+			fileOut.writeln(document.textFrames[i].contents);
 		}
+	}
 
 
 	/**
