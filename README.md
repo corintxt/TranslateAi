@@ -1,7 +1,7 @@
 # Illustrator Text Convert
 *Simple import-export functions for text in Adobe Illustrator files, to send to machine translation services and re-import.*
 
-*Forked from an [original project by @Bramus](https://github.com/bramus/PS_BRAMUS.TextConvert).*
+*Forked from an [original project by @Bramus](https://github.com/bramus/PS_BRAMUS.TextConvert) for Adobe Photoshop.*
 
 ## Installation
 
@@ -48,6 +48,6 @@ With `translate-shell` installed, a sample command to translate a file into Fren
 
 `trans :fr -b -i myfile.txt -o myfile.txt`
 
-* If you're using a command line workflow, in the CONFIG section of `TextConvert.Export.jsx` you may set `var openExport = false;` and the exported `.txt` file will not open automatically after you export.
+*If you're using a command line workflow, in the CONFIG section of `TextConvert.Export.jsx` you may set `var openExport = false;` and the exported `.txt` file will not open automatically after you export.*
 
 ---
