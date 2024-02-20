@@ -5,13 +5,13 @@
 
 ## Installation
 
-To access scripts from the **File > Scripts** menu within Illustrator, they must first be placed in the **Scripts** folder.
+To access scripts from the **File > Scripts** menu within Illustrator, the two scripts (`TextConvert.Export.jsx`/`TextConvert.Import.jsx`) must first be placed in the **Scripts** folder.
 
 File path may vary slightly but will resemble:
 
 **Windows:**
 
-> C:\Program Files\Adobe\Adobe Illustrator {version_number}\Presets\{language}\Scripts\
+> C:\Program Files\Adobe\Adobe Illustrator {version_number}\Presets\ {language} \Scripts\
 
 **Mac**:
 
@@ -24,13 +24,13 @@ File path may vary slightly but will resemble:
 * Click **File > Scripts > TextConvert.Export**
     * Text from the Illustrator doc will be exported to a file inside `TextConvert` called `{Illustrator file name}.txt`
 * Translate the contents of this text file and save it under the same file name (see below).    
-    * Important: the translated file must maintain the section delimiters ("[BEGIN /1 ]" and "[END /1 ]" etc.)
+    * Important: the translated file must maintain the section delimiters ("[----- /1 ]" and "[=== /1 ]" etc.)
 * Click **File > Scripts > TextConvert.Import**
 * The translated text will be reimported into the file in the correct places!
 
 
 ## Translation
-
+### Command line
 File translation can be done quickly from command line with the [`translate-shell` application](https://github.com/soimort/translate-shell).
 
 * For `TextConvert` to work, translation output should overwrite the original input file. 
@@ -41,7 +41,7 @@ So with `translate-shell` installed, a sample command to translate a file into F
 `trans :fr -b -i myfile.txt -o myfile.txt`
 
 ---
-
+### Web
 If you're not comfortable with command line you can just open the exported text file, copy the text into Google Translate, copy the translated text, paste it back into the text file and save.
 
 ![Google Translate](GoogleTranslate.png)

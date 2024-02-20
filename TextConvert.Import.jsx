@@ -182,7 +182,7 @@
 				var line = fileIn.readln();
 
 				// Has "[BEGIN" tag
-				if (line.indexOf('[BEGIN ') !== -1 || line.indexOf('[DEBUT ') !== -1)
+				if (line.indexOf('[----- ') !== -1)
 				{
 
 					// fetch Key
@@ -197,7 +197,7 @@
 				}
 
 				// Has "[END" tag
-				else if (line.indexOf('[END ') !== -1 || line.indexOf('[FIN ') !== -1)
+				else if (line.indexOf('[=== ') !== -1)
 				{
 
 					// if it's the closing line of our open key

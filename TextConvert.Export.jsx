@@ -147,9 +147,9 @@ var separator = "*************************************";
 			var frameIndex = frameCount-1;
 			var currentFrame = frames[frameIndex];
 			// fileOut.writeln(separator);
-			fileOut.writeln('[BEGIN ' + path + frameIndex + ' ]');
+			fileOut.writeln('[----- ' + path + frameIndex + ' ]');
 			fileOut.writeln(currentFrame.contents);
-			fileOut.writeln('[END ' + path + frameIndex + ' ]');
+			fileOut.writeln('[=== ' + path + frameIndex + ' ]');
 			fileOut.writeln('');
 				
 		}
