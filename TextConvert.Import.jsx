@@ -120,7 +120,7 @@
 			{
 
 				// fetch translations
-				goFetchTranslations(Folder.myDocuments + '/TextConvert/TextConvert-' + docs[i].name + '.txt');
+				goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
 
 				// Yay, we haz got translations
 				if (tKeys.length > 0)

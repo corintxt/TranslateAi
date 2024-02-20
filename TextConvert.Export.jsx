@@ -87,7 +87,7 @@ var separator = "*************************************";
 			{
 
 				// Auto set filePath and fileName
-				filePath = Folder.myDocuments + '/TextConvert/TextConvert-' + docs[i].name + '.txt';
+				filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
 
 				// create outfile
 				var fileOut	= new File(filePath);
@@ -118,7 +118,6 @@ var separator = "*************************************";
 			} else {
 				// uncomment to open file after export
 				// fileOut.execute();
-				pass;
 			}
 
 		}
