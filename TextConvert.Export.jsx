@@ -40,8 +40,8 @@
  * -------------------------------------------------------------
  */
 
-// text separator
-var separator = "*************************************";
+// open file after export?
+var openExport = true;
 
 	/**
 	 *  TextConvert.Export Init function
@@ -83,8 +83,7 @@ var separator = "*************************************";
 			}
 
 			// Loop all documents
-			for (var i = 0; i < docs.length; i++)
-			{
+			for (var i = 0; i < docs.length; i++){
 
 				// Auto set filePath and fileName
 				filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
@@ -116,8 +115,13 @@ var separator = "*************************************";
 			if (runMultiple === true) {
 				alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
 			} else {
-				// uncomment to open file after export
-				// fileOut.execute();
+				// Open the new text file if "openExport" is set to true in config
+				if (openExport){
+					fileOut.execute();
+				}
+				else {
+					//Otherwise we don't need to do anything
+				}
 			}
 
 		}
@@ -127,13 +131,6 @@ var separator = "*************************************";
 	 * TextExtraction
 	 * -------------------------------------------------------------
 	*/
-
-	//   function extractText(document, fileOut) {
-	// 	for (var i = 0; i < document.textFrames.length; i++) {
-	// 		fileOut.writeln('');
-	// 		fileOut.writeln(document.textFrames[i].contents);
-	// 	}
-	// }
 
 	function goTextExport3(el, fileOut, path) {
 					
@@ -153,13 +150,12 @@ var separator = "*************************************";
 			fileOut.writeln('');
 				
 		}
-		
-	
+			
 	}
 
 
 	/**
-	 *  TextConvert.Export Boot her up
+	 *  TextConvert.Export Boot up
 	 * -------------------------------------------------------------
 	 */
 

@@ -30,18 +30,24 @@ File path may vary slightly but will resemble:
 
 
 ## Translation
+### Translate from browser
+When you export text from the Illustrator document, the new `.txt` file will open automatically.
+
+The simplest thing to do is copy-paste everything from that file into Google Translate, copy-paste the translation back into the same text file and save it.
+
+![Google Translate](image/GoogleTranslate.png)
 ### Command line
-File translation can be done quickly from command line with the [`translate-shell` application](https://github.com/soimort/translate-shell).
+If you prefer command line, translation can be done quickly with the [`translate-shell` application](https://github.com/soimort/translate-shell).
+
+Note that:
 
 * For `TextConvert` to work, translation output should overwrite the original input file. 
 * `translate-shell` should also be run in "brief mode" (`-b` flag) to avoid introducing unwanted alternate translations.
 
-So with `translate-shell` installed, a sample command to translate a file into French would be:
+With `translate-shell` installed, a sample command to translate a file into French would be:
 
 `trans :fr -b -i myfile.txt -o myfile.txt`
 
----
-### Web
-If you're not comfortable with command line you can just open the exported text file, copy the text into Google Translate, copy the translated text, paste it back into the text file and save.
+* If you're using a command line workflow, in the CONFIG section of `TextConvert.Export.jsx` you may set `var openExport = false;` and the exported `.txt` file will not open automatically after you export.
 
-![Google Translate](GoogleTranslate.png)
+---
