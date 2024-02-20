@@ -116,7 +116,8 @@ var separator = "*************************************";
 			if (runMultiple === true) {
 				alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
 			} else {
-				fileOut.execute();
+				// uncomment to open file after export
+				// fileOut.execute();
 			}
 
 		}
