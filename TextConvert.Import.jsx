@@ -40,9 +40,9 @@
 	 */
 
 		function Array_IndexOf (arr, elem){
-			let len = arr.length;
+			var len = arr.length;
 
-			let from = Number(arguments[2]) || 0;
+			var from = Number(arguments[2]) || 0;
 			from = (from < 0) ? Math.ceil(from) : Math.floor(from);
 			if (from < 0) {
 				from += len;
@@ -69,9 +69,9 @@
 	 * -------------------------------------------------------------
 	 */
 
-	 	let tKeys 	= [];
-		let tValues	= [];
-		let numReplaced	= 0;
+	 	var tKeys 	= [];
+		var tValues	= [];
+		var numReplaced	= 0;
 
 
 	/**
@@ -82,7 +82,7 @@
 
 	 	function initTextConvertImport() {
 
-			// Linefeed shizzle
+			// Linefeed stuff
 			if ($.os.search(/windows/i) != -1)
 				fileLineFeed = "windows";
 			else
@@ -97,7 +97,7 @@
 			// Oh, we have more than one document open!
 			if (app.documents.length > 1) {
 
-				let runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
+				var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
 
 				if (runMultiple === true) {
 					docs	= app.documents;
@@ -114,7 +114,7 @@
 			}
 
 			// Loop all documents
-			for (let i = 0; i < docs.length; i++){
+			for (var i = 0; i < docs.length; i++){
 
 				// fetch translations
 				goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
@@ -152,7 +152,7 @@
 			tValues	= [];
 
 			// create fileref
-			let fileIn	= new File(filePath);
+			var fileIn	= new File(filePath);
 
 			// File with translations doesn't exist, no need to open the file
 			if (!fileIn.exists) {
@@ -166,15 +166,15 @@
 			fileIn.open("r", "TEXT", "????");
 
 			// vars used in loop
-			let tagOpen = false;		// Are we in tag?
-			let tKey = '';				// translation key
-			let tVal = '';				// translation value
+			var tagOpen = false;		// Are we in tag?
+			var tKey = '';				// translation key
+			var tVal = '';				// translation value
 
 			// loop all lines of the document
 			while (!fileIn.eof) {
 
 				// fetch lineContents
-				let line = fileIn.readln();
+				var line = fileIn.readln();
 
 				// Has "[BEGIN" tag
 				if (line.indexOf('[----- ') !== -1){
@@ -239,17 +239,17 @@
 			// alert(tKeys);
 
 				// Get the frames
-				let frames = el.textFrames;
+				var frames = el.textFrames;
 						
 				// Loop
-				for (let frameCount = frames.length; frameCount > 0; frameCount--){
+				for (var frameCount = frames.length; frameCount > 0; frameCount--){
 					
 					// curentFrame ref
-					let frameIndex = frameCount-1;
-					let currentFrame = frames[frameIndex];
+					var frameIndex = frameCount-1;
+					var currentFrame = frames[frameIndex];
 
 						// get position in array of the string to translate
-						let pos = Array_IndexOf(tKeys, path + frameIndex);
+						var pos = Array_IndexOf(tKeys, path + frameIndex);
 
 						// string found
 						if (pos !== -1){
