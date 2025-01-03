@@ -41,7 +41,7 @@
  */
 
 // open file after export?
-var openExport = true;
+const openExport = true;
 
 	/**
 	 *  TextConvert.Export Init function
@@ -66,7 +66,7 @@ var openExport = true;
 			// Oh, we have more than one document open!
 			if (app.documents.length > 1) {
 
-				var runMultiple = confirm("TextConvert.Export has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
+				let runMultiple = confirm("TextConvert.Export has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
 
 				if (runMultiple === true) {
 					docs	= app.documents;
@@ -83,13 +83,13 @@ var openExport = true;
 			}
 
 			// Loop all documents
-			for (var i = 0; i < docs.length; i++){
+			for (let i = 0; i < docs.length; i++){
 
 				// Auto set filePath and fileName
 				filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
 
 				// create outfile
-				var fileOut	= new File(filePath);
+				let fileOut	= new File(filePath);
 
 				// set linefeed
 				fileOut.linefeed = fileLineFeed;
@@ -135,14 +135,14 @@ var openExport = true;
 	function goTextExport3(el, fileOut, path) {
 					
 		// Get the frames
-		var frames = el.textFrames;
+		let frames = el.textFrames;
 				
 		// Loop
-		for (var frameCount = frames.length; frameCount > 0; frameCount--){
+		for (let frameCount = frames.length; frameCount > 0; frameCount--){
 			
 			// curentFrame ref
-			var frameIndex = frameCount-1;
-			var currentFrame = frames[frameIndex];
+			let frameIndex = frameCount-1;
+			let currentFrame = frames[frameIndex];
 			// fileOut.writeln(separator);
 			fileOut.writeln('[----- ' + path + frameIndex + ' ]');
 			fileOut.writeln(currentFrame.contents);

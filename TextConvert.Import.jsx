@@ -39,11 +39,10 @@
 	 * -------------------------------------------------------------
 	 */
 
-		function Array_IndexOf (arr, elem)
-		{
-			var len = arr.length;
+		function Array_IndexOf (arr, elem){
+			let len = arr.length;
 
-			var from = Number(arguments[2]) || 0;
+			let from = Number(arguments[2]) || 0;
 			from = (from < 0) ? Math.ceil(from) : Math.floor(from);
 			if (from < 0) {
 				from += len;
@@ -58,8 +57,7 @@
 			return -1;
 		}
 
-		function Array_RemoveAtIndex(arr, idx)
-		{
+		function Array_RemoveAtIndex(arr, idx){
 			if (idx !== -1) {
 				arr.splice(idx, 1);
 			}
@@ -71,9 +69,9 @@
 	 * -------------------------------------------------------------
 	 */
 
-	 	var tKeys 	= [];
-		var tValues	= [];
-		var numReplaced	= 0;
+	 	let tKeys 	= [];
+		let tValues	= [];
+		let numReplaced	= 0;
 
 
 	/**
@@ -99,7 +97,7 @@
 			// Oh, we have more than one document open!
 			if (app.documents.length > 1) {
 
-				var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
+				let runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
 
 				if (runMultiple === true) {
 					docs	= app.documents;
@@ -116,15 +114,13 @@
 			}
 
 			// Loop all documents
-			for (var i = 0; i < docs.length; i++)
-			{
+			for (let i = 0; i < docs.length; i++){
 
 				// fetch translations
 				goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
 
 				// Yay, we haz got translations
-				if (tKeys.length > 0)
-				{
+				if (tKeys.length > 0){
 					// Set active document
 					app.activeDocument = docs[i];
 
@@ -149,15 +145,14 @@
   	 * -------------------------------------------------------------
 	 */
 
-	 	function goFetchTranslations(filePath)
-		{
+	 	function goFetchTranslations(filePath){
 
 	 		// reset translation arrays
 	 		tKeys 	= [];
 			tValues	= [];
 
 			// create fileref
-			var fileIn	= new File(filePath);
+			let fileIn	= new File(filePath);
 
 			// File with translations doesn't exist, no need to open the file
 			if (!fileIn.exists) {
@@ -171,19 +166,18 @@
 			fileIn.open("r", "TEXT", "????");
 
 			// vars used in loop
-			var tagOpen = false;		// Are we in tag?
-			var tKey = '';				// translation key
-			var tVal = '';				// translation value
+			let tagOpen = false;		// Are we in tag?
+			let tKey = '';				// translation key
+			let tVal = '';				// translation value
 
 			// loop all lines of the document
 			while (!fileIn.eof) {
 
 				// fetch lineContents
-				var line = fileIn.readln();
+				let line = fileIn.readln();
 
 				// Has "[BEGIN" tag
-				if (line.indexOf('[----- ') !== -1)
-				{
+				if (line.indexOf('[----- ') !== -1){
 
 					// fetch Key
 					tKey = line.substr(7, line.length - 9);
@@ -197,12 +191,10 @@
 				}
 
 				// Has "[END" tag
-				else if (line.indexOf('[=== ') !== -1)
-				{
+				else if (line.indexOf('[=== ') !== -1){
 
 					// if it's the closing line of our open key
-					if (tKey == line.substr(5, line.length - 7))
-					{
+					if (tKey == line.substr(5, line.length - 7)){
 
 						// store Key & Value
 						tKeys.push(tKey);
@@ -241,24 +233,23 @@
   	 * -------------------------------------------------------------
 	 */
 
-		function goTextImport3(el, path)
-		{
+		function goTextImport3(el, path){
 
 			// debug
 			// alert(tKeys);
 
 				// Get the frames
-				var frames = el.textFrames;
+				let frames = el.textFrames;
 						
 				// Loop
-				for (var frameCount = frames.length; frameCount > 0; frameCount--){
+				for (let frameCount = frames.length; frameCount > 0; frameCount--){
 					
 					// curentFrame ref
-					var frameIndex = frameCount-1;
-					var currentFrame = frames[frameIndex];
+					let frameIndex = frameCount-1;
+					let currentFrame = frames[frameIndex];
 
 						// get position in array of the string to translate
-						var pos = Array_IndexOf(tKeys, path + frameIndex);
+						let pos = Array_IndexOf(tKeys, path + frameIndex);
 
 						// string found
 						if (pos !== -1){
@@ -271,10 +262,7 @@
 							Array_RemoveAtIndex(tValues, pos);
 
 						}
-
 			}
-
-
 		}
 
 
