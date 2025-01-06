@@ -1,4 +1,4 @@
- /*****************************************************************
+/*****************************************************************
  * TextConvert.Import v 1.2 (2024) - Corin Faife
  * 
  * forked from: 
@@ -39,226 +39,237 @@
 	 * -------------------------------------------------------------
 	 */
 
-		function Array_IndexOf (arr, elem){
-			var len = arr.length;
+	function Array_IndexOf (arr, elem){
+		var len = arr.length;
 
-			var from = Number(arguments[2]) || 0;
-			from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-			if (from < 0) {
-				from += len;
-			}
-
-			for (; from < len; from++) {
-				if (from in arr && arr[from] === elem) {
-					return from;
-				}
-			}
-
-			return -1;
+		var from = Number(arguments[2]) || 0;
+		from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+		if (from < 0) {
+			from += len;
 		}
 
-		function Array_RemoveAtIndex(arr, idx){
-			if (idx !== -1) {
-				arr.splice(idx, 1);
+		for (; from < len; from++) {
+			if (from in arr && arr[from] === elem) {
+				return from;
 			}
 		}
 
+		return -1;
+	}
 
-	/**
-	 *  Arrays holding the translations (keys and values)
-	 * -------------------------------------------------------------
-	 */
-
-	 	var tKeys 	= [];
-		var tValues	= [];
-		var numReplaced	= 0;
+	function Array_RemoveAtIndex(arr, idx){
+		if (idx !== -1) {
+			arr.splice(idx, 1);
+		}
+	}
 
 
-	/**
-	 *  TextConvert.Import Init function
-	 * -------------------------------------------------------------
-	 */
+/**
+ *  Arrays holding the translations (keys and values)
+ * -------------------------------------------------------------
+ */
 
-	 	function initTextConvertImport() {
+	 var tKeys 	= [];
+	var tValues	= [];
+	var numReplaced	= 0;
 
-			// Linefeed stuff
-			if ($.os.search(/windows/i) != -1)
-				fileLineFeed = "windows";
-			else
-				fileLineFeed = "macintosh";
 
-			// Do we have a document open?
-			if (app.documents.length === 0) {
-				alert("Please open a file", "TextConvert.Export Error", true);
-				return;
-			}
+/**
+ *  TextConvert.Import Init function
+ * -------------------------------------------------------------
+ */
 
-			// More than one document open!
-			if (app.documents.length > 1) {
-				var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
 
-				if (runMultiple === true) {
-					docs	= app.documents;
-				} else {
-					docs	= [app.activeDocument];
-				}
+	 function initTextConvertImport() {
 
-			// Only one document open
+		// Linefeed stuff
+		if ($.os.search(/windows/i) != -1)
+			fileLineFeed = "windows";
+		else
+			fileLineFeed = "macintosh";
+
+		// Do we have a document open?
+		if (app.documents.length === 0) {
+			alert("Please open a file", "TextConvert.Export Error", true);
+			return;
+		}
+
+		// More than one document open!
+		if (app.documents.length > 1) {
+
+			var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
+
+			if (runMultiple === true) {
+				docs	= app.documents;
 			} else {
-				runMultiple 	= false;
-				docs 			= [app.activeDocument];
+				docs	= [app.activeDocument];
 			}
 
-			// Loop all documents
-			for (var i = 0; i < docs.length; i++){
-				// fetch translations
-				goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
+		// Only one document open
+		} else {
 
-				// If we have translations
-				if (tKeys.length > 0){
-					// Set active document
-					app.activeDocument = docs[i];
-					// Now apply the translations
-					goTextImport3(app.activeDocument, '/');
-					// update numReplaced
-					numReplaced++;
-				}
-			}
+			runMultiple 	= false;
+			docs 			= [app.activeDocument];
 
-			// Give notice of export
-			alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
-			// alert(tKeys.length + " keys and " + tValues.length + " values found");
 		}
 
-	/**
-	 * goFetchTranslations
-  	 * -------------------------------------------------------------
-	 */
+		// Loop all documents
+		for (var i = 0; i < docs.length; i++){
 
-	 	function goFetchTranslations(filePath){
+			// fetch translations
+			goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
+			// -> hardcode here.
 
-	 		// reset translation arrays
-	 		tKeys 	= [];
-			tValues	= [];
+			// We have translations
+			if (tKeys.length > 0){
+				// Set active document
+				app.activeDocument = docs[i];
 
-			// create fileref
-			var fileIn	= new File(filePath);
+				// Now apply the translations
+				goTextImport3(app.activeDocument, '/');
 
-			// File with translations doesn't exist, no need to open the file
-			if (!fileIn.exists) {
-				return;
+				// update numReplaced
+				numReplaced++;
+
 			}
 
-			// Set encoding
-			fileIn.encoding = "UTF8"
+		}
 
-			// open for read
-			fileIn.open("r", "TEXT", "????");
+		// Give notice of export
+		alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
+		// alert(tKeys.length + " keys and " + tValues.length + " values found");
 
-			// vars used in loop
-			var tagOpen = false;		// Are we in tag?
-			var tKey = '';				// translation key
-			var tVal = '';				// translation value
+	}
 
-			// loop all lines of the document
-			while (!fileIn.eof) {
+/**
+ * goFetchTranslations
+   * -------------------------------------------------------------
+ */
 
-				// fetch lineContents
-				var line = fileIn.readln();
+	 function goFetchTranslations(filePath){
 
-				// Has "[BEGIN" tag
-				if (line.indexOf('[----- ') !== -1){
+		 // reset translation arrays
+		 tKeys 	= [];
+		tValues	= [];
 
-					// fetch Key
-					tKey = line.substr(7, line.length - 9);
+		// create fileref
+		var fileIn	= new File(filePath);
 
-					// clear Value
+		// File with translations doesn't exist, no need to open the file
+		if (!fileIn.exists) {
+			return;
+		}
+
+		// Set encoding
+		fileIn.encoding = "UTF8"
+
+		// open for read
+		fileIn.open("r", "TEXT", "????");
+
+		// vars used in loop
+		var tagOpen = false;		// Are we in tag?
+		var tKey = '';				// translation key
+		var tVal = '';				// translation value
+
+		// loop all lines of the document
+		while (!fileIn.eof) {
+
+			// fetch lineContents
+			var line = fileIn.readln();
+
+			// Has "[BEGIN" tag
+			if (line.indexOf('[----- ') !== -1){
+
+				// fetch Key
+				tKey = line.substr(7, line.length - 9);
+
+				// clear Value
+				tVal = '';
+
+				// set tagOpen to true
+				tagOpen = true;
+
+			}
+
+			// Has "[END" tag
+			else if (line.indexOf('[=== ') !== -1){
+
+				// if it's the closing line of our open key
+				if (tKey == line.substr(5, line.length - 7)){
+
+					// store Key & Value
+					tKeys.push(tKey);
+					tValues.push(tVal);
+
+					// clear tKey & tVal
+					tKey = '';
 					tVal = '';
 
-					// set tagOpen to true
-					tagOpen = true;
+					// set tagOpen to false
+					tagOpen = false;
 
-				}
-
-				// Has "[END" tag
-				else if (line.indexOf('[=== ') !== -1){
-
-					// if it's the closing line of our open key
-					if (tKey == line.substr(5, line.length - 7)){
-
-						// store Key & Value
-						tKeys.push(tKey);
-						tValues.push(tVal);
-
-						// clear tKey & tVal
-						tKey = '';
-						tVal = '';
-
-						// set tagOpen to false
-						tagOpen = false;
-
-					// not the closing tag, add it
-					} else {
-						if (tagOpen) {
-							tVal += line + '\r';
-						}
+				// not the closing tag, add it
+				} else {
+					if (tagOpen) {
+						tVal += line + '\r';
 					}
-
 				}
 
-				// other: if tagOpen, add to value
-				else if (tagOpen) {
-					tVal += line + '\r';
-				}
 			}
 
-			// close the file
-			fileIn.close();
-
+			// other: if tagOpen, add to value
+			else if (tagOpen) {
+				tVal += line + '\r';
+			}
 		}
 
+		// close the file
+		fileIn.close();
 
-  	/**
-  	 * TextImport Core Function
-  	 * -------------------------------------------------------------
-	 */
+	}
 
-		function goTextImport3(el, path){
 
-			// debug
-			// alert(tKeys);
+  /**
+   * TextImport Core Function
+   * -------------------------------------------------------------
+ */
 
-				// Get the frames
-				var frames = el.textFrames;
-						
-				// Loop
-				for (var frameCount = frames.length; frameCount > 0; frameCount--){
+	function goTextImport3(el, path){
+
+		// debug
+		// alert(tKeys);
+
+			// Get the frames
+			var frames = el.textFrames;
 					
-					// curentFrame ref
-					var frameIndex = frameCount-1;
-					var currentFrame = frames[frameIndex];
+			// Loop
+			for (var frameCount = frames.length; frameCount > 0; frameCount--){
+				
+				// curentFrame ref
+				var frameIndex = frameCount-1;
+				var currentFrame = frames[frameIndex];
 
-						// get position in array of the string to translate
-						var pos = Array_IndexOf(tKeys, path + frameIndex);
+					// get position in array of the string to translate
+					var pos = Array_IndexOf(tKeys, path + frameIndex);
 
-						// string found
-						if (pos !== -1){
+					// string found
+					if (pos !== -1){
 
-							// update contents with translated string
-							currentFrame.contents = tValues[pos];
+						// update contents with translated string
+						currentFrame.contents = tValues[pos];
 
-							// clean up tKeys & tValues array (speed improv!)
-							Array_RemoveAtIndex(tKeys, pos);
-							Array_RemoveAtIndex(tValues, pos);
+						// clean up tKeys & tValues array (speed improv!)
+						Array_RemoveAtIndex(tKeys, pos);
+						Array_RemoveAtIndex(tValues, pos);
 
-						}
-			}
+					}
 		}
+	}
 
 
-	/**
-	 *  TextConvert.Export Boot her up
-	 * -------------------------------------------------------------
-	 */
+/**
+ *  TextConvert.Export Boot her up
+ * -------------------------------------------------------------
+ */
 
-	 	initTextConvertImport();
+	 initTextConvertImport();
