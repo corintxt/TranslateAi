@@ -10,12 +10,12 @@ TARGET_LANGUAGE="French"
 
 escape_json() {
     local s="$1"
+    s="${s//$'\n'/ }"
     s="${s//\\/\\\\}"
     s="${s//\"/\\\"}"
     s="${s//\//\\/}"
-    s="${s//$'\n'/\\n}"
-    s="${s//$'\r'/\\r}"
-    s="${s//$'\t'/\\t}"
+    s="${s//$'\r'/ }"
+    s="${s//$'\t'/ }"
     echo "$s"
 }
 
@@ -23,7 +23,7 @@ ESCAPED_TEXT=$(escape_json "$TEXT")
 
 JSON_PAYLOAD='{
     "model": "claude-3-sonnet-20240229",
-    "system": "You are a helpful translator. Translate the following text into '"$TARGET_LANGUAGE"'. Preserve all line breaks and formatting.",
+    "system": "You are a helpful translator. Translate the following text into '"$TARGET_LANGUAGE"'. Keep [-----] markers at the start of sections but place them on new lines.",
     "messages": [
         {
             "role": "user",
@@ -44,7 +44,6 @@ if [[ "$response" == *"error"* ]]; then
     echo "API Response: $response"
     exit 1
 else
-    # Extract text and convert escaped newlines to actual newlines
-    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | sed 's/\\n/\n/g' > "$OUTPUT_FILE"
+    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | tr -d '\\n' | sed 's/\[-----/\n[-----/g' > "$OUTPUT_FILE"
     echo "Translation saved to: $OUTPUT_FILE"
 fi
