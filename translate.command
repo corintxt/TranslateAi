@@ -44,6 +44,6 @@ if [[ "$response" == *"error"* ]]; then
     echo "API Response: $response"
     exit 1
 else
-    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | tr -d '\\n' | sed 's/\[-----/\n[-----/g' > "$OUTPUT_FILE"
+    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | sed 's/\\n//g' | sed 's/\[-----/\n[-----/g' > "$OUTPUT_FILE"
     echo "Translation saved to: $OUTPUT_FILE"
 fi
