@@ -79,7 +79,6 @@
 	 * -------------------------------------------------------------
 	 */
 
-
 	 	function initTextConvertImport() {
 
 			// Linefeed stuff
@@ -94,9 +93,8 @@
 				return;
 			}
 
-			// Oh, we have more than one document open!
+			// More than one document open!
 			if (app.documents.length > 1) {
-
 				var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
 
 				if (runMultiple === true) {
@@ -107,37 +105,29 @@
 
 			// Only one document open
 			} else {
-
 				runMultiple 	= false;
 				docs 			= [app.activeDocument];
-
 			}
 
 			// Loop all documents
 			for (var i = 0; i < docs.length; i++){
-
 				// fetch translations
 				goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
 
-				// Yay, we haz got translations
+				// If we have translations
 				if (tKeys.length > 0){
 					// Set active document
 					app.activeDocument = docs[i];
-
 					// Now apply the translations
 					goTextImport3(app.activeDocument, '/');
-
 					// update numReplaced
 					numReplaced++;
-
 				}
-
 			}
 
 			// Give notice of export
 			alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
 			// alert(tKeys.length + " keys and " + tValues.length + " values found");
-
 		}
 
 	/**
