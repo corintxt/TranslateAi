@@ -68,9 +68,14 @@ function initTextConvertTranslate() {
 
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
+		// Auto set filePath and fileName
+		filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
+
 		// create temp file
-		// var fileOut = new File("/tmp/translate_args.txt");
-		var fileOut = new File("/Users/cfaife/Documents/MATERIALS/Code/Illustrator/IllustratorTextConvert/translate.txt");
+		// filePath = "/tmp/translate_args.txt";
+		
+		// create outfile
+		var fileOut	= new File(filePath);
 		// set linefeed
 		fileOut.linefeed = fileLineFeed;
 		// set encoding
@@ -97,6 +102,9 @@ function initTextConvertTranslate() {
 		// 	//Otherwise we don't need to do anything
 		// }
 	}
+
+	// Execute command script
+	executeCommandScript();
 }
 
 /**
@@ -123,8 +131,10 @@ function goTextExport3(el, fileOut, path) {
  * Execute command script
  * -----------------
 */
-var commandFile = File(File($.fileName).parent.fsName + '/translate.command');
-commandFile.execute()
+function executeCommandScript() {
+	var commandFile = File(File($.fileName).parent.fsName + '/translate.command');
+	commandFile.execute()
+}
 
 /**
  *  Execute script main function

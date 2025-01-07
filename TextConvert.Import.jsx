@@ -69,7 +69,7 @@
  * -------------------------------------------------------------
  */
 
-	 var tKeys 	= [];
+	var tKeys 	= [];
 	var tValues	= [];
 	var numReplaced	= 0;
 
@@ -118,11 +118,12 @@
 
 			// fetch translations
 			goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
-			// -> hardcode here.
+			// goFetchTranslations('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/IllustratorTextConvert/translation.txt')
 
 			// We have translations
 			if (tKeys.length > 0){
 				// Set active document
+				alert("Processing " + docs[i].name, "TextConvert.Import", true);
 				app.activeDocument = docs[i];
 
 				// Now apply the translations
@@ -137,8 +138,6 @@
 
 		// Give notice of export
 		alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
-		// alert(tKeys.length + " keys and " + tValues.length + " values found");
-
 	}
 
 /**
@@ -149,7 +148,7 @@
 	 function goFetchTranslations(filePath){
 
 		 // reset translation arrays
-		 tKeys 	= [];
+		tKeys 	= [];
 		tValues	= [];
 
 		// create fileref
@@ -158,6 +157,8 @@
 		// File with translations doesn't exist, no need to open the file
 		if (!fileIn.exists) {
 			return;
+		} else {
+			alert("File exists: " + fileIn.fsName, "TextConvert.Import", true);
 		}
 
 		// Set encoding
@@ -179,7 +180,6 @@
 
 			// Has "[BEGIN" tag
 			if (line.indexOf('[----- ') !== -1){
-
 				// fetch Key
 				tKey = line.substr(7, line.length - 9);
 
