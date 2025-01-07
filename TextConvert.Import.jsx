@@ -117,8 +117,8 @@
 		for (var i = 0; i < docs.length; i++){
 
 			// fetch translations
-			goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
-			// goFetchTranslations('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/IllustratorTextConvert/translation.txt')
+			// goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
+			goFetchTranslations('/tmp/translation.txt')
 
 			// We have translations
 			if (tKeys.length > 0){

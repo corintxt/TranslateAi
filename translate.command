@@ -3,7 +3,7 @@
 CONFIG=$(cat "$(dirname "$0")/config.json")
 API_KEY=$(echo "$CONFIG" | grep -o '"apiKey": *"[^"]*"' | cut -d'"' -f4)
 
-INPUT_FILE="/Users/cfaife/Documents/TextConvert/Champions copy.ai.txt"
+INPUT_FILE="/tmp/translate_args.txt"
 OUTPUT_FILE="$(dirname "$INPUT_FILE")/translation.txt"
 TEXT=$(cat "$INPUT_FILE")
 TARGET_LANGUAGE="French"

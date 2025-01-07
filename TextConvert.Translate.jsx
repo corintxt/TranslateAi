@@ -69,10 +69,9 @@ function initTextConvertTranslate() {
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
 		// Auto set filePath and fileName
-		filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
-
+		// filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
 		// create temp file
-		// filePath = "/tmp/translate_args.txt";
+		filePath = "/tmp/translate_args.txt";
 		
 		// create outfile
 		var fileOut	= new File(filePath);
