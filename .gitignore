@@ -1,5 +1,5 @@
 .DS_Store
 config.jsx
-config.json
+config*.json
 translate.txt
 translation.txt
