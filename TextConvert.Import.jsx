@@ -156,9 +156,7 @@
 
 		// File with translations doesn't exist, no need to open the file
 		if (!fileIn.exists) {
-			return;
-		} else {
-			alert("File exists: " + fileIn.fsName, "TextConvert.Import", true);
+			alert("No translation file found.", "TextConvert.Import", true);
 		}
 
 		// Set encoding
