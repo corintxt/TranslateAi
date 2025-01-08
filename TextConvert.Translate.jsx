@@ -126,7 +126,11 @@ function goTextExport3(el, fileOut, path) {
 /** Invoke command script
  * ----------------------*/
 function executeCommandScript() {
-	var commandFile = File(File($.fileName).parent.fsName + '/translate.command');
+	// Mac command
+	var cfileName = '/translate.command';
+	// Win command
+	// var cfileName = '/translate.bat'
+	var commandFile = File(File($.fileName).parent.fsName + cfileName);
 	commandFile.execute()
 }
 
