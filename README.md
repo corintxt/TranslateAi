@@ -1,13 +1,13 @@
 # Illustrator Text Convert
-*Simple import-export functions for text in Adobe Illustrator files, to send to machine translation services and re-import.*
+*Export text from Adobe Illustrator files, send to machine translation services and re-import.*
 
-*Forked from an [original project by @Bramus](https://github.com/bramus/PS_BRAMUS.TextConvert) for Adobe Photoshop.*
+*Built from an [original project by @Bramus](https://github.com/bramus/PS_BRAMUS.TextConvert) for Adobe Photoshop.*
 
 ## Installation
 
-To access scripts from the **File > Scripts** menu within Illustrator, the two scripts (`TextConvert.Export.jsx`/`TextConvert.Import.jsx`) must first be placed in the **Scripts** folder.
+To access scripts from the **File > Scripts** menu in Illustrator, the two scripts (`TextConvert.Translate.jsx`/`TextConvert.Import.jsx`) must be placed in the **Scripts** directory.
 
-File path may vary slightly but will resemble:
+File path may vary but will resemble:
 
 **Windows:**
 
@@ -17,37 +17,18 @@ File path may vary slightly but will resemble:
 
 > Applications > Adobe Illustrator {version_number} > Presets > {language} > Scripts
 
+The `translate.command` script must also be placed in the same directory, and made into an **executable file**:
+
+`chmod +x translate.command`
+
 ## Usage
-
-* Create a new directory within Documents (Mac) or My Documents (Win) called `TextConvert`.
-* Open an Illustrator document containing text to be translated.
-* Click **File > Scripts > TextConvert.Export**
-    * Text from the Illustrator doc will be exported to a file inside `TextConvert` called `{Illustrator file name}.txt`
-* Translate the contents of this text file and save it under the same file name (see below).    
-    * Important: the translated file must maintain the section delimiters ("[----- /1 ]" and "[=== /1 ]" etc.)
+* Open an Illustrator document containing text to be translated
+* Click **File > Scripts > TextConvert.Translate**
+    * Text from the Illustrator doc is extracted and written to a temp file. Illustrator script calls command script which sends contents of text file to translation API, then writes response to same file.
 * Click **File > Scripts > TextConvert.Import**
-* The translated text will be reimported into the file in the correct places!
-
-
-## Translation
-### Translate from browser
-When you export text from the Illustrator document, the new `.txt` file will open automatically.
-
-The simplest thing to do is copy-paste everything from that file into Google Translate, copy-paste the translation back into the same text file and save it.
-
-![Google Translate](image/GoogleTranslate.png)
-### Command line
-If you prefer command line, translation can be done quickly with the [`translate-shell` application](https://github.com/soimort/translate-shell).
-
-Note that:
-
-* For `TextConvert` to work, translation output should overwrite the original input file. 
-* `translate-shell` should also be run in "brief mode" (`-b` flag) to avoid introducing unwanted alternate translations.
-
-With `translate-shell` installed, a sample command to translate a file into French would be:
-
-`trans :fr -b -i myfile.txt -o myfile.txt`
-
-*If you're using a command line workflow, in the CONFIG section of `TextConvert.Export.jsx` you may set `var openExport = false;` and the exported `.txt` file will not open automatically after you export.*
+    * Translated text will be reimported into the file in the correct places
 
 ---
+
+### TODO:
+* Make 'plug and play' command scripts for different translation APIs, or abstract this part of the code so that user can easily do so
