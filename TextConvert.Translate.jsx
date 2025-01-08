@@ -1,7 +1,7 @@
 /*****************************************************************
  * TextConvert.Translate v 1.0 (2025) - by Corin Faife
  * 
- * First forked/adapted from: 
+ * Adapted from: 
  * ===============================
  * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
  *
@@ -34,10 +34,8 @@
  *
  *****************************************************************/
 
-/**
- *  TextConvert.Export & Translate function
- * ----------------------------------------
- */
+/** TextConvert Export & Translate function
+ * ----------------------------------------*/
 function initTextConvertTranslate() {
 	// Linefeed stuff
 	if ($.os.search(/windows/i) != -1)
@@ -53,7 +51,7 @@ function initTextConvertTranslate() {
 
 	// More than one document open?
 	if (app.documents.length > 1) {
-		var runMultiple = confirm("TextConvert.Export has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
+		var runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
 		if (runMultiple === true) {
 			docs	= app.documents;
 		} else {
@@ -68,10 +66,11 @@ function initTextConvertTranslate() {
 
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
-		// Auto set filePath and fileName
-		// filePath = Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt';
-		// create temp file
+		// Set filePath and fileName
+		// create temp file (Mac)
 		filePath = "/tmp/translate_args.txt";
+		// create temp file (Win) ?
+		// filePath = Folder.temp + '/translate_args.txt'
 		
 		// create outfile
 		var fileOut	= new File(filePath);
@@ -106,10 +105,8 @@ function initTextConvertTranslate() {
 	executeCommandScript();
 }
 
-/**
- * TextExtraction
- * -----------------
-*/
+/** TextExtraction
+ * ----------------*/
 function goTextExport3(el, fileOut, path) {
 	// Get the frames
 	var frames = el.textFrames;
@@ -126,17 +123,13 @@ function goTextExport3(el, fileOut, path) {
 	}
 }
 
-/**
- * Execute command script
- * -----------------
-*/
+/** Invoke command script
+ * ----------------------*/
 function executeCommandScript() {
 	var commandFile = File(File($.fileName).parent.fsName + '/translate.command');
 	commandFile.execute()
 }
 
-/**
- *  Execute script main function
- * ----------------------------
- */
+/* Call script main function
+ * --------------------------*/
 initTextConvertTranslate();
