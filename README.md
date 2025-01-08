@@ -1,8 +1,6 @@
 # Illustrator Text Convert
 *Export text from Adobe Illustrator files, send to machine translation services and re-import.*
 
-*Built from an [original project by @Bramus](https://github.com/bramus/PS_BRAMUS.TextConvert) for Adobe Photoshop.*
-
 ## Installation
 
 To access scripts from the **File > Scripts** menu in Illustrator, the two scripts (`TextConvert.Translate.jsx`/`TextConvert.Import.jsx`) must be placed in the **Scripts** directory.
