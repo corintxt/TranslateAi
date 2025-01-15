@@ -20,8 +20,7 @@ escape_json() {
 }
 
 ESCAPED_TEXT=$(escape_json "$TEXT")
-
-# Read first line of text from input text file as target language
+# First line of text from input text file defines target language
 TARGET_LANGUAGE=$(echo "$ESCAPED_TEXT" | head -n 1)
 
 JSON_PAYLOAD='{

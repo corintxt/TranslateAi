@@ -35,11 +35,11 @@
  *****************************************************************/
 
  /** CONFIG ////
- * We have to write these arguments to a temp file later
+ * We have to write these arguments into the text input file
  * because Illustrator doesn't support passing arguments to command scripts
  */
 // Set target language
-var target_language = "French ";
+var target_language = 'Italian';
 
 /** TextConvert Export & Translate function
  * ----------------------------------------*/
@@ -80,10 +80,6 @@ function initTextConvertTranslate() {
 
 		// Write text to file
 		writeTextToFile(filePath, docs[i]);
-
-		// argFile = "/tmp/translate_args.txt";
-		// // Write config arguments to temp file
-		// writeArgsToFile(argFile, "French");
 	}
 
 	// Post processing: give notice (multiple) or open file (single)
@@ -117,36 +113,13 @@ function writeTextToFile(filePath, document) {
 		fileOut.close();
 }
 
-/** Write arguments to temp file
- * (currently doesn't work, I don't know why!)
- * ----------------*/
-function writeArgsToFile(argPath, args) {
-	// create outfile
-	var argFile	= new File(argPath);
-	// set linefeed
-	argFile.linefeed = fileLineFeed;
-	// set encoding
-	argFile.encoding = "UTF8"
-	// open for write
-	argFile.open("w", "TEXT", "????");
-	// write arguments
-	argFile.writeln('START') 
-	argFile.writeln(args)
-	argFile.writeln('END')
-	// write multiple arguments
-	// for (var i = 0; i < args.length; i++) {
-	// 	argFile.writeln(args[i]);
-	// }
-	// close the file
-	argFile.close();
-}
-
 /** TextExtraction
  * ----------------*/
 function goTextExport3(el, fileOut, path) {
 	// Get the frames
 	var frames = el.textFrames;
-	fileOut.writeln('SPANISH'); // Write target language
+	// First line of input file defines target language
+	fileOut.writeln(target_language); 
 	// Loop
 	for (var frameCount = frames.length; frameCount > 0; frameCount--){
 		// curentFrame ref
