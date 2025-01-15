@@ -66,12 +66,29 @@ function initTextConvertTranslate() {
 
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
-		// Set filePath and fileName
-		// create temp file (Mac)
+		// set temp file location (Mac)
 		filePath = "/tmp/translate_args.txt";
-		// create temp file (Win) ?
-		// filePath = Folder.temp + '/translate_args.txt'
-		
+		// set temp file location (Win) ?
+		// filePath = Folder.temp + '/translate_args.txt';
+
+		// Write text to file
+		writeTextToFile(filePath, docs);
+	}
+
+	// Post processing: give notice (multiple) or open file (single)
+	if (runMultiple === true) {
+		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
+	} else {
+		//We don't need to do anything?
+	}
+
+	// Execute command script
+	executeCommandScript();
+}
+
+/** Write text to temp file
+ * ----------------*/
+function writeTextToFile(filePath, docs) {
 		// create outfile
 		var fileOut	= new File(filePath);
 		// set linefeed
@@ -86,23 +103,6 @@ function initTextConvertTranslate() {
 		goTextExport3(app.activeDocument, fileOut, '/');
 		// close the file
 		fileOut.close();
-	}
-
-	// Post processing: give notice (multiple) or open file (single)
-	if (runMultiple === true) {
-		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
-	} else {
-		// // Open the new text file if "openExport" is set to true in config
-		// if (openExport){
-		// 	fileOut.execute();
-		// }
-		// else {
-		// 	//Otherwise we don't need to do anything
-		// }
-	}
-
-	// Execute command script
-	executeCommandScript();
 }
 
 /** TextExtraction
