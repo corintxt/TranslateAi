@@ -7,7 +7,6 @@ INPUT_FILE="/tmp/translate_input.txt"
 ARG_FILE="/tmp/translate_args.txt"
 OUTPUT_FILE="$(dirname "$INPUT_FILE")/translation.txt"
 TEXT=$(cat "$INPUT_FILE")
-TARGET_LANGUAGE="French"
 
 escape_json() {
     local s="$1"
@@ -21,6 +20,9 @@ escape_json() {
 }
 
 ESCAPED_TEXT=$(escape_json "$TEXT")
+
+# Read first line of text from input text file as target language
+TARGET_LANGUAGE=$(echo "$ESCAPED_TEXT" | head -n 1)
 
 JSON_PAYLOAD='{
     "model": "claude-3-sonnet-20240229",

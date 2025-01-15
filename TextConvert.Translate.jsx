@@ -80,6 +80,10 @@ function initTextConvertTranslate() {
 
 		// Write text to file
 		writeTextToFile(filePath, docs[i]);
+
+		// argFile = "/tmp/translate_args.txt";
+		// // Write config arguments to temp file
+		// writeArgsToFile(argFile, "French");
 	}
 
 	// Post processing: give notice (multiple) or open file (single)
@@ -89,9 +93,6 @@ function initTextConvertTranslate() {
 		//We don't need to do anything?
 	}
 
-	argFile = "/tmp/translate_args.txt";
-	// Write config arguments to temp file
-	writeArgsToFile(argFile, ["French"]);
 	// Execute command script
 	executeCommandScript();
 }
@@ -109,6 +110,7 @@ function writeTextToFile(filePath, document) {
 		fileOut.open("w", "TEXT", "????");
 		// Set active Illustrator document
 		app.activeDocument = document;
+		// fileOut.writeln('German');
 		// Extract text frames from active document
 		goTextExport3(app.activeDocument, fileOut, '/');
 		// close the file
@@ -116,6 +118,7 @@ function writeTextToFile(filePath, document) {
 }
 
 /** Write arguments to temp file
+ * (currently doesn't work, I don't know why!)
  * ----------------*/
 function writeArgsToFile(argPath, args) {
 	// create outfile
@@ -127,9 +130,13 @@ function writeArgsToFile(argPath, args) {
 	// open for write
 	argFile.open("w", "TEXT", "????");
 	// write arguments
-	for (var i = 0; i < args.length; i++) {
-		argFile.writeln(args[i]);
-	}
+	argFile.writeln('START') 
+	argFile.writeln(args)
+	argFile.writeln('END')
+	// write multiple arguments
+	// for (var i = 0; i < args.length; i++) {
+	// 	argFile.writeln(args[i]);
+	// }
 	// close the file
 	argFile.close();
 }
@@ -139,6 +146,7 @@ function writeArgsToFile(argPath, args) {
 function goTextExport3(el, fileOut, path) {
 	// Get the frames
 	var frames = el.textFrames;
+	fileOut.writeln('SPANISH'); // Write target language
 	// Loop
 	for (var frameCount = frames.length; frameCount > 0; frameCount--){
 		// curentFrame ref
