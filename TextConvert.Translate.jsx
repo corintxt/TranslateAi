@@ -34,6 +34,13 @@
  *
  *****************************************************************/
 
+ /** CONFIG ////
+ * We have to write these arguments to a temp file later
+ * because Illustrator doesn't support passing arguments to command scripts
+ */
+// Set target language
+var target_language = "French ";
+
 /** TextConvert Export & Translate function
  * ----------------------------------------*/
 function initTextConvertTranslate() {
@@ -67,12 +74,12 @@ function initTextConvertTranslate() {
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
 		// set temp file location (Mac)
-		filePath = "/tmp/translate_args.txt";
+		filePath = "/tmp/translate_input.txt";
 		// set temp file location (Win) ?
-		// filePath = Folder.temp + '/translate_args.txt';
+		// filePath = Folder.temp + '/translate_input.txt';
 
 		// Write text to file
-		writeTextToFile(filePath, docs);
+		writeTextToFile(filePath, docs[i]);
 	}
 
 	// Post processing: give notice (multiple) or open file (single)
@@ -82,13 +89,16 @@ function initTextConvertTranslate() {
 		//We don't need to do anything?
 	}
 
+	argFile = "/tmp/translate_args.txt";
+	// Write config arguments to temp file
+	writeArgsToFile(argFile, ["French"]);
 	// Execute command script
 	executeCommandScript();
 }
 
 /** Write text to temp file
  * ----------------*/
-function writeTextToFile(filePath, docs) {
+function writeTextToFile(filePath, document) {
 		// create outfile
 		var fileOut	= new File(filePath);
 		// set linefeed
@@ -98,11 +108,30 @@ function writeTextToFile(filePath, docs) {
 		// open for write
 		fileOut.open("w", "TEXT", "????");
 		// Set active Illustrator document
-		app.activeDocument = docs[i];
+		app.activeDocument = document;
 		// Extract text frames from active document
 		goTextExport3(app.activeDocument, fileOut, '/');
 		// close the file
 		fileOut.close();
+}
+
+/** Write arguments to temp file
+ * ----------------*/
+function writeArgsToFile(argPath, args) {
+	// create outfile
+	var argFile	= new File(argPath);
+	// set linefeed
+	argFile.linefeed = fileLineFeed;
+	// set encoding
+	argFile.encoding = "UTF8"
+	// open for write
+	argFile.open("w", "TEXT", "????");
+	// write arguments
+	for (var i = 0; i < args.length; i++) {
+		argFile.writeln(args[i]);
+	}
+	// close the file
+	argFile.close();
 }
 
 /** TextExtraction
