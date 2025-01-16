@@ -116,6 +116,8 @@
 				goTextImport3(app.activeDocument, '/');
 				// update numReplaced
 				numReplaced++;
+			} else {
+				alert("No translations found", "TextConvert.Import", true);
 			}
 		}
 
