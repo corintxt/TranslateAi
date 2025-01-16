@@ -1,5 +1,5 @@
 /*****************************************************************
- * Translate.Text v 1.0 (2025) - by Corin Faife
+ * Translate.Text v 1.0 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ===============================
@@ -39,7 +39,7 @@
  * because Illustrator doesn't support passing arguments to command scripts
  */
 // Set target language
-var target_language = 'English';
+var targetLanguage = 'English';
 
 /** TextConvert Export & Translate function
  * ----------------------------------------*/
@@ -88,7 +88,6 @@ function initTextConvertTranslate() {
 	} else {
 		//We don't need to do anything?
 	}
-
 	// Execute command script
 	executeCommandScript();
 }
@@ -106,7 +105,6 @@ function writeTextToFile(filePath, document) {
 		fileOut.open("w", "TEXT", "????");
 		// Set active Illustrator document
 		app.activeDocument = document;
-		// fileOut.writeln('German');
 		// Extract text frames from active document
 		goTextExport3(app.activeDocument, fileOut, '/');
 		// close the file
@@ -119,7 +117,7 @@ function goTextExport3(el, fileOut, path) {
 	// Get the frames
 	var frames = el.textFrames;
 	// First line of input file defines target language
-	fileOut.writeln(target_language); 
+	fileOut.writeln(targetLanguage); 
 	// Loop
 	for (var frameCount = frames.length; frameCount > 0; frameCount--){
 		// curentFrame ref

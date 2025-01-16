@@ -29,7 +29,7 @@ The `translate.command` script must also be placed in the same directory, and ma
 ---
 
 ### TODO:
-* Make 'plug and play' command scripts for different translation APIs, or abstract this part of the code so that user can easily do so
+* Make 'plug and play' command scripts for different translation APIs
 
 
 ### BUGS / TOFIX:
