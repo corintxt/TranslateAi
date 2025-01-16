@@ -116,9 +116,10 @@
 		// Loop all documents
 		for (var i = 0; i < docs.length; i++){
 
-			// fetch translations
-			// goFetchTranslations(Folder.myDocuments + '/TextConvert/' + docs[i].name + '.txt');
-			goFetchTranslations('/tmp/translation.txt')
+			// Fetch translations
+			// var translationFile = '???' //WIN
+			var translationFile = '/tmp/translation.txt' //MAC
+			goFetchTranslations(translationFile)
 
 			// We have translations
 			if (tKeys.length > 0){

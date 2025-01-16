@@ -39,7 +39,7 @@
  * because Illustrator doesn't support passing arguments to command scripts
  */
 // Set target language
-var target_language = 'Italian';
+var target_language = 'French';
 
 /** TextConvert Export & Translate function
  * ----------------------------------------*/
