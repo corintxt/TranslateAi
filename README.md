@@ -1,37 +1,53 @@
-# Illustrator Text Convert
-*Export text from Adobe Illustrator files, send to machine translation services and re-import.*
+# Illustrator Text Translator
+Export text from Adobe Illustrator files, send to machine translation services and re-import.
 
-## Installation
+## Installation (Mac)
 
-To access scripts from the **File > Scripts** menu in Illustrator, the two scripts (`TextConvert.Translate.jsx`/`TextConvert.Import.jsx`) must be placed in the **Scripts** directory.
+*NOTE: You will need to have administrator permissions on your machine to install the scripts.*
 
-File path may vary but will resemble:
+To run scripts from the **File > Scripts** menu in Illustrator, they must be placed in your **Scripts** directory.
 
-**Windows:**
-
-> C:\Program Files\Adobe\Adobe Illustrator {version_number}\Presets\ {language} \Scripts\
-
-**Mac**:
+The location should be something like:
 
 > Applications > Adobe Illustrator {version_number} > Presets > {language} > Scripts
 
-The `translate.command` script must also be placed in the same directory, and made into an **executable file**:
+![Mac filepath](img/macfilepath.png)
 
-`chmod +x translate.command`
+First make sure Illustrator is closed. Then copy the following files into the scripts directory:
+* `Translate.[English/Français/Español].jsx` - whichever language(s) you want to translate into.
+* `Translate.Import.jsx`
+* `translate.command`
+* `config.json`
 
-## Usage
-* Open an Illustrator document containing text to be translated
-* Click **File > Scripts > TextConvert.Translate**
-    * Text from the Illustrator doc is extracted and written to a temp file. Illustrator script calls command script which sends contents of text file to translation API, then writes response to same file.
-* Click **File > Scripts > TextConvert.Import**
-    * Translated text will be reimported into the file in the correct places
+You will be prompted to enter your password to do this.
+
+NEXT: 
+
+For the translate function to work, the `translate.command` script must be made into an **executable file**. To do this you must run the "change mode" command, `chmod`, from terminal, with administrator permissions.
+
+1) Open the Terminal application on your Mac
+
+2) Type `sudo chmod +x ` (make sure to press space once after `x`)
+
+![chmod](img/chmod.png)
+
+3) Click on the `translate.command` file in your Scripts folder, and drag it into the terminal window. You should now see the file location in the terminal after the `chmod` command.
+
+![chmod file](img/chmodfilepath.png)
+
+4) Press enter. You should be prompted for your admin password. Type it in and hit enter. (You won't get any confirmation that it worked, but if the terminal starts a new line you're good.)
 
 ---
 
-### TODO:
-* Make 'plug and play' command scripts for different translation APIs
+## Usage
+* Open an Illustrator document containing text to be translated
+* Click **File > Scripts > Translate.[Language]** to select the language you want to translate into.
+* A terminal window will open. Wait until you get the message `"Ready to import translation"`
+![Ready](img/ready.png)
+* Click **File > Scripts > Translate.Import**
+    * You should see a confirmation of the document name. Click 'OK' and text should be re-imported into the document in the correct places.
+---
 
-
-### BUGS / TOFIX:
-* Translated text does not respect original boundary box
+#### KNOWN BUGS / TO FIX:
+* Translated text sometimes does not respect original boundary box
 * Multiple colors within same text box are lost

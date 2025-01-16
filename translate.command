@@ -60,5 +60,6 @@ else # Process text response and save to file
         -e 's/] /]\n/g' > "$OUTPUT_FILE"
     echo "Translation saved to: $OUTPUT_FILE"
 fi
+echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 echo "Ready to import translation!"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
