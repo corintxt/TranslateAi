@@ -3,10 +3,10 @@
 CONFIG=$(cat "$(dirname "$0")/config.json")
 API_KEY=$(echo "$CONFIG" | grep -o '"apiKey": *"[^"]*"' | cut -d'"' -f4)
 
-INPUT_FILE="/path/to/file.txt"
+INPUT_FILE="/tmp/translate_input.txt"
+ARG_FILE="/tmp/translate_args.txt"
 OUTPUT_FILE="$(dirname "$INPUT_FILE")/translation.txt"
 TEXT=$(cat "$INPUT_FILE")
-TARGET_LANGUAGE="French"
 
 escape_json() {
     local s="$1"
@@ -20,6 +20,8 @@ escape_json() {
 }
 
 ESCAPED_TEXT=$(escape_json "$TEXT")
+# First line of text from input text file defines target language
+TARGET_LANGUAGE=$(echo "$ESCAPED_TEXT" | head -n 1)
 
 JSON_PAYLOAD='{
     "model": "claude-3-sonnet-20240229",
@@ -43,7 +45,10 @@ if [[ "$response" == *"error"* ]]; then
     echo "Error: API request failed"
     echo "API Response: $response"
     exit 1
-else
-    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | sed 's/\\n//g' | sed 's/\[-----/\n[-----/g' > "$OUTPUT_FILE"
+else # Process text response and save to file
+    echo "$response" | grep -o '"text":"[^"]*"' | sed 's/"text":"\(.*\)"/\1/' | sed 's/\\n//g' | \
+    sed -e 's/\[----- /\n[----- /g' \
+        -e 's/\[=== /\n[=== /g' \
+        -e 's/] /]\n/g' > "$OUTPUT_FILE"
     echo "Translation saved to: $OUTPUT_FILE"
 fi

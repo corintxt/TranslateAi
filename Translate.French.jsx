@@ -1,5 +1,5 @@
 /*****************************************************************
- * TextConvert.Translate v 1.0 (2025) - by Corin Faife
+ * Translate.Text v 1.0 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ===============================
@@ -88,7 +88,6 @@ function initTextConvertTranslate() {
 	} else {
 		//We don't need to do anything?
 	}
-
 	// Execute command script
 	executeCommandScript();
 }
