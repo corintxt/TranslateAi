@@ -3,7 +3,7 @@ Export text from Adobe Illustrator files, send to machine translation services a
 
 ## Installation (Mac)
 
-*NOTE: You will need to have administrator permissions on your machine to install the scripts.*
+*NOTE: You will need to have administrator permissions on your machine to install the scripts.**
 
 To run scripts from the **File > Scripts** menu in Illustrator, they must be placed in your **Scripts** directory.
 
@@ -27,7 +27,7 @@ For the translate function to work, the `translate.command` script must be made 
 
 1) Open the Terminal application on your Mac
 
-2) Type `sudo chmod +x ` (make sure to press space once after `x`)
+2) Type `chmod +x ` (make sure to press space once after `x`)
 
 ![chmod](img/chmod.png)
 
@@ -39,13 +39,35 @@ For the translate function to work, the `translate.command` script must be made 
 
 ---
 
+Lastly, you'll need to configure your sytem to run software downloaded from outside of the App Store.
+
+Go to:
+> System Preferences > Security & Privacy > General
+
+And select "Allow apps downloaded from: Anywhere"
+
+![software anywhere](img/anywhere.jpg)
+
+Now you should be ready to run the script!
+
+---
+
 ## Usage
+
 * Open an Illustrator document containing text to be translated
 * Click **File > Scripts > Translate.[Language]** to select the language you want to translate into.
+
+![Scripts](img/scripts.png)
+
 * A terminal window will open. Wait until you get the message `"Ready to import translation"`
 ![Ready](img/ready.png)
+
 * Click **File > Scripts > Translate.Import**
-    * You should see a confirmation of the document name. Click 'OK' and text should be re-imported into the document in the correct places.
+
+You should see a confirmation of the document name. Click 'OK' and text should be re-imported into the document in the correct places.
+
+![Processing](img/Processing.png)
+
 ---
 
 #### KNOWN BUGS / TO FIX:
