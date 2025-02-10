@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "~~~~~~~TRANSLATE.TEXT~~~~~~~~~"
+echo "~~~~~AFP-TRANSLATE-TEXT~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 CONFIG="$(dirname "$0")/config.json"
@@ -12,9 +12,8 @@ echo "Found text to translate. Executing translate.py..."
 RESPONSE=$(python /Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/translate.py "$CONFIG" "$INPUT_FILE")
 # Write everything in RESPONSE after | symbol to OUTPUT_FILE, stripping lead space
 echo $RESPONSE | sed 's/.*|//' | sed 's/^ *//' > $OUTPUT_FILE
-# echo $RESPONSE > $OUTPUT_FILE
 echo "Translation saved to: $OUTPUT_FILE"
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "Ready to import translation!"
+echo "=> Ready to import translation."
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
