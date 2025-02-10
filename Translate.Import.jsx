@@ -104,7 +104,7 @@
 		for (var i = 0; i < docs.length; i++){
 			// Fetch translations
 			// var translationFile = '???' //WIN
-			var translationFile = '/tmp/translation.txt' //MAC
+			var translationFile = '/tmp/translation.json' //MAC
 			goFetchTranslations(translationFile)
 
 			// We have translations
