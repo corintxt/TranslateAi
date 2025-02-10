@@ -5,7 +5,7 @@ import requests
 #### GET ARGUMENTS AND TEXT ####
 
 ## Arguments
-# 0. Config / API key
+# 0. Config file
 config_file = sys.argv[1]
 # 1. Text to translate
 input_file = sys.argv[2]
@@ -40,10 +40,6 @@ print("Making request to translate.afp.com...")
 
 response = requests.post(url, data=data, headers=headers, verify=False)
 
-print(response.status_code)
-print(response.json())
-
-print("Request complete.")
-
-# Return translated text => bash script writes to output file
-print("Default text") 
+print(f"Status: {response.status_code}")
+print("|")
+print(json.dumps(response.json()))
