@@ -2,26 +2,48 @@ import json
 import sys
 import requests
 
-
-print("Executing translate.py")
+#### GET ARGUMENTS AND TEXT ####
 
 ## Arguments
 # 0. Config / API key
 config_file = sys.argv[1]
 # 1. Text to translate
 input_file = sys.argv[2]
-# 2. Target language
-## This could also be entered into config.json
-target_language = input("Enter target language: ")
-# 3. Source language
+# 2. Optional: user can specify language
+# destination_language = input("Enter destination language: ")
 
-# Read API key from config
+# Read target lang. from config
 with open(config_file) as f:
     config = json.load(f)
-    api_key = config["apiKey"]
+    target_language = config["targetLanguage"]
+
+print(f"Target language: {target_language}")
 
 # Get text from input file
 with open(input_file) as f:
     text = f.read()
+    # print(text)
 
-# Return translated text / bash script writes to output file
+#### MAKE API CALL ####
+#Prod URL
+url = 'https://translate.afp.com/translateapi/translate'
+
+data = {
+    'inputText': text,
+    'provider': 'OpenAiChatGpt',
+    'destination_lang': target_language
+    }
+
+headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+
+print("Making request to translate.afp.com...")
+
+response = requests.post(url, data=data, headers=headers, verify=False)
+
+print(response.status_code)
+print(response.json())
+
+print("Request complete.")
+
+# Return translated text => bash script writes to output file
+print("Default text") 
