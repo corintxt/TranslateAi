@@ -146,8 +146,11 @@ function textFrameExport(el, fileOut) {
     
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount-1;
+        var contents = frames[frameIndex].contents;
+		// Replace line breaks with \n before writing to JSON
+        contents = contents.toString().replace(/[\r\n]+/g, '\\n');
         jsonData.frames[frameIndex] = {
-            contents: frames[frameIndex].contents
+            contents: contents
         };
     }
     
