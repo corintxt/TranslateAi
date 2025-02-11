@@ -94,7 +94,7 @@ function initTextConvertTranslate() {
 		// Was something here but got deleted?
 	}
 	// Execute command script
-	// executeCommandScript();
+	executeCommandScript();
 }
 
 /** Write text frames to temp file
@@ -115,27 +115,6 @@ function writeTextToFile(filePath, document) {
 		// close the file
 		fileOut.close();
 }
-
-/** TextExtraction
- * ----------------*/
-// This is what we need to modify to write JSON
-// And also extract more information from text frames
-function oldTextFrameExport(el, fileOut) {
-	// Get the frames
-	var frames = el.textFrames;
-	// Loop (will need to be modified to write JSON)
-	for (var frameCount = frames.length; frameCount > 0; frameCount--){
-		// curentFrame ref
-		var frameIndex = frameCount-1;
-		var currentFrame = frames[frameIndex];
-		// fileOut.writeln(separator);
-		fileOut.writeln('[----- ' + frameIndex + ' ]');
-		fileOut.writeln(currentFrame.contents);
-		fileOut.writeln('[=== ' + frameIndex + ' ]');
-		fileOut.writeln('');
-	}
-}
-
 /** Text export into JSON
  * -----------------------*/
 function textFrameExport(el, fileOut) {
@@ -146,12 +125,19 @@ function textFrameExport(el, fileOut) {
     
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount-1;
-        var contents = frames[frameIndex].contents;
-		// Replace line breaks with \n before writing to JSON
-        contents = contents.toString().replace(/[\r\n]+/g, '\\n');
-        jsonData.frames[frameIndex] = {
-            contents: contents
+        var frame = frames[frameIndex];
+		// Replace line breaks in contents with \n before writing to JSON
+        var frameContents = frame.contents.toString().replace(/[\r\n]+/g, '\\n');
+		// Write frame properties to JSON object with index as key
+		// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
+		jsonData.frames[frameIndex] = {
+			anchor: frame.anchor,
+            contents: frameContents,
+			lines: frame.textRange.lines.length
         };
+		// Note: most properties are collections of other subproperties
+		// e.g. frame.words is a *list* of textRange objects
+		// frame.words[0].contents => first word in frame
     }
     
     fileOut.writeln(JSON.stringify(jsonData, null, 2));

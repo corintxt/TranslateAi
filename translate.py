@@ -19,23 +19,30 @@ print(f"Target language: {target_language}")
 
 # Get text from input file
 with open(input_file) as f:
+    # text = json.load(f)
     text = f.read()
     # print(text)
 
+# Parse JSON to extract content for translation
+
 #### MAKE API CALL ####
+def request_translation(url, data, headers):
+    print("Making request to translate.afp.com")
+    # Note: currently, verify=False is needed to avoid SSL error
+    response = requests.post(url, data=data, headers=headers, verify=False)
+    print(f"Status: {response.status_code}")
+    # Add | spacer (command script looks for this)
+    print("|")
+    return(json.dumps(response.json()))
+
 #Prod URL
 url = 'https://translate.afp.com/translateapi/translate'
 data = {
-    'inputText': text,
+    'inputText': text, # this should be processed text 
     'provider': 'OpenAiChatGpt',
     'destination_lang': target_language
     }
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-print("Making request to translate.afp.com")
-# Note: currently, verify=False is needed to avoid SSL error
-response = requests.post(url, data=data, headers=headers, verify=False)
-print(f"Status: {response.status_code}")
-# Add | spacer (command script looks for this)
-print("|")
-print(json.dumps(response.json()))
+response = request_translation(url, data, headers)
+print(response)
