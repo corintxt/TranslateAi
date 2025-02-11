@@ -33,11 +33,15 @@
  * THE SOFTWARE.
  *
  *****************************************************************/
+// Load JSON polyfill.
+#include "jsonparse.jsx"
 
  /** CONFIG ////
- * We have to write these arguments into the text input file
+ * Currently are writing these arguments into the text input file
  * because Illustrator doesn't support passing arguments to command scripts
  */
+// TODO: Replace with dropdown & dialogue box;
+// consult scripts here for guidance: https://github.com/creold/illustrator-scripts
 // Set target language
 var targetLanguage = 'English';
 
@@ -57,6 +61,7 @@ function initTextConvertTranslate() {
 	}
 
 	// More than one document open?
+	// TODO: Add support for multiple files
 	if (app.documents.length > 1) {
 		var runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
 		if (runMultiple === true) {
@@ -64,7 +69,6 @@ function initTextConvertTranslate() {
 		} else {
 			docs	= [app.activeDocument];
 		}
-
 	// Only one document open
 	} else {
 		runMultiple 	= false;
@@ -74,26 +78,27 @@ function initTextConvertTranslate() {
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
 		// set temp file location (Mac)
-		filePath = "/tmp/translate_input.txt";
+		filePath = "/tmp/translateInput.json";
+		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/input.json";
 		// set temp file location (Win) ?
 		// filePath = Folder.temp + '/translate_input.txt';
-
 		// Write text to file
-		writeTextToFile(filePath, docs[i]);
+		writeTextToFile(devPath, docs[i]);
 	}
 
 	// Post processing: give notice (multiple) or open file (single)
 	if (runMultiple === true) {
 		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
 	} else {
-		//We don't need to do anything?
+		// We don't need to do anything, why is this condition here?
+		// Was something here but got deleted?
 	}
 	// Execute command script
-	executeCommandScript();
+	// executeCommandScript();
 }
 
-/** Write text to temp file
- * ----------------*/
+/** Write text frames to temp file
+ * -----------------------------*/
 function writeTextToFile(filePath, document) {
 		// create outfile
 		var fileOut	= new File(filePath);
@@ -106,29 +111,47 @@ function writeTextToFile(filePath, document) {
 		// Set active Illustrator document
 		app.activeDocument = document;
 		// Extract text frames from active document
-		goTextExport3(app.activeDocument, fileOut, '/');
+		textFrameExport(app.activeDocument, fileOut);
 		// close the file
 		fileOut.close();
 }
 
 /** TextExtraction
  * ----------------*/
-function goTextExport3(el, fileOut, path) {
+// This is what we need to modify to write JSON
+// And also extract more information from text frames
+function oldTextFrameExport(el, fileOut) {
 	// Get the frames
 	var frames = el.textFrames;
-	// First line of input file defines target language
-	fileOut.writeln(targetLanguage); 
-	// Loop
+	// Loop (will need to be modified to write JSON)
 	for (var frameCount = frames.length; frameCount > 0; frameCount--){
 		// curentFrame ref
 		var frameIndex = frameCount-1;
 		var currentFrame = frames[frameIndex];
 		// fileOut.writeln(separator);
-		fileOut.writeln('[----- ' + path + frameIndex + ' ]');
+		fileOut.writeln('[----- ' + frameIndex + ' ]');
 		fileOut.writeln(currentFrame.contents);
-		fileOut.writeln('[=== ' + path + frameIndex + ' ]');
+		fileOut.writeln('[=== ' + frameIndex + ' ]');
 		fileOut.writeln('');
 	}
+}
+
+/** Text export into JSON
+ * -----------------------*/
+function textFrameExport(el, fileOut) {
+    var frames = el.textFrames;
+    var jsonData = {
+        frames: {}
+    };
+    
+    for (var frameCount = frames.length; frameCount > 0; frameCount--) {
+        var frameIndex = frameCount-1;
+        jsonData.frames[frameIndex] = {
+            contents: frames[frameIndex].contents
+        };
+    }
+    
+    fileOut.writeln(JSON.stringify(jsonData, null, 2));
 }
 
 /** Invoke command script

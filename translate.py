@@ -2,21 +2,19 @@ import json
 import sys
 import requests
 
-#### GET ARGUMENTS AND TEXT ####
-
+#### HANDLE ARGUMENTS, LOAD TEXT ####
 ## Arguments
-# 0. Config file
+# 1. Config file
 config_file = sys.argv[1]
-# 1. Text to translate
+# 2. Text to translate
 input_file = sys.argv[2]
-# 2. Optional: user can specify language
+# Optional: user can specify language through CLI dialogue
 # destination_language = input("Enter destination language: ")
 
-# Read target lang. from config
+# Read config variables
 with open(config_file) as f:
     config = json.load(f)
     target_language = config["targetLanguage"]
-
 print(f"Target language: {target_language}")
 
 # Get text from input file
@@ -27,19 +25,17 @@ with open(input_file) as f:
 #### MAKE API CALL ####
 #Prod URL
 url = 'https://translate.afp.com/translateapi/translate'
-
 data = {
     'inputText': text,
     'provider': 'OpenAiChatGpt',
     'destination_lang': target_language
     }
-
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-print("Making request to translate.afp.com...")
-
+print("Making request to translate.afp.com")
+# Note: currently, verify=False is needed to avoid SSL error
 response = requests.post(url, data=data, headers=headers, verify=False)
-
 print(f"Status: {response.status_code}")
+# Add | spacer (command script looks for this)
 print("|")
 print(json.dumps(response.json()))
