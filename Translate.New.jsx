@@ -1,5 +1,5 @@
 /*****************************************************************
- * Translate.Text v 1.0 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
+ * Translate.Text v 1.2 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ===============================

@@ -24,10 +24,11 @@ with open(input_file) as f:
     # print(text)
 
 # Parse JSON to extract content for translation
+# => start from here Weds.
 
 #### MAKE API CALL ####
 def request_translation(url, data, headers):
-    print("Making request to translate.afp.com")
+    print(f"Making request to {url}")
     # Note: currently, verify=False is needed to avoid SSL error
     response = requests.post(url, data=data, headers=headers, verify=False)
     print(f"Status: {response.status_code}")
@@ -35,6 +36,8 @@ def request_translation(url, data, headers):
     print("|")
     return(json.dumps(response.json()))
 
+#Dev URL
+dev_url = 'https://vspar-ia-t-transcript-01.afp.com:8046/translate'
 #Prod URL
 url = 'https://translate.afp.com/translateapi/translate'
 data = {
@@ -43,6 +46,6 @@ data = {
     'destination_lang': target_language
     }
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-
-response = request_translation(url, data, headers)
+response = request_translation(dev_url, data, headers)
+# Print response to stdout for command script to capture
 print(response)
