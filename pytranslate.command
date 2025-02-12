@@ -4,7 +4,7 @@ echo "~~~~~AFP-TRANSLATE-TEXT~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 CONFIG="$(dirname "$0")/config.json"
-INPUT_FILE="/tmp/translate_input.txt"
+INPUT_FILE="/tmp/translateinput.json"
 OUTPUT_FILE="$(dirname "$INPUT_FILE")/translation.json"
 
 DEV_INPUT="/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/input.json"

@@ -78,7 +78,7 @@ function initTextConvertTranslate() {
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
 		// set temp file location (Mac)
-		filePath = "/tmp/translateInput.json";
+		filePath = "/tmp/translateinput.json";
 		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/input.json";
 		// set temp file location (Win) ?
 		// filePath = Folder.temp + '/translate_input.txt';
