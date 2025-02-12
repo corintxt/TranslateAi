@@ -1,14 +1,9 @@
 /*****************************************************************
- * Translate.Import v 1.0 (2024) - Corin Faife - https://corinfaife.co/
+ * Translate.Import v 1.1 (2025) - Corin Faife - https://corinfaife.co/
  * 
- * forked from: 
- * ===============================
+ * Adapted from: 
+ * ==============
  * TextConvert.Import 1.1 - by Bramus! - https://www.bram.us/
- *
- * v 1.1 - 2016.02.17 - UTF-8 support
- *                      Update license to MIT License
- *
- * v 1.0 - 2008.10.30 - Measure twice, cut once ;-)
  *
  *****************************************************************
  *
@@ -33,6 +28,8 @@
  * THE SOFTWARE.
  *
  *****************************************************************/
+// Load JSON polyfill (doesn't natively exist in Illustrator).
+#include "jsonparse.jsx"
 
 	/**
 	 * Array Fixes: indexOf and remove don't natively exist!
@@ -105,7 +102,8 @@
 			// Fetch translations
 			// var translationFile = '???' //WIN
 			var translationFile = '/tmp/translation.json' //MAC
-			goFetchTranslations(translationFile)
+			var devTranslationFile = '/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json' //MAC
+			fetchTranslations(devTranslationFile)
 
 			// We have translations
 			if (tKeys.length > 0){
@@ -113,7 +111,7 @@
 				alert("Processing " + docs[i].name, "TextConvert.Import", true);
 				app.activeDocument = docs[i];
 				// Now apply the translations
-				goTextImport3(app.activeDocument, '/');
+				textFrameImport(app.activeDocument, '/');
 				// update numReplaced
 				numReplaced++;
 			} else {
@@ -126,96 +124,74 @@
 	}
 
 /**
- * goFetchTranslations
-   * -------------------------------------------------------------
+ * fetchTranslations (v2: JSON)
+   * ---------------------------
  */
-	 function goFetchTranslations(filePath){
-		 // reset translation arrays
-		tKeys 	= [];
-		tValues	= [];
-		// create fileref
-		var fileIn	= new File(filePath);
-		// File with translations doesn't exist, no need to open the file
+	function fetchTranslations(filePath) {
+		// Reset translation arrays
+		tKeys = [];
+		tValues = [];
+
+		// Create fileref
+		var fileIn = new File(filePath);
+		
+		// Check if file exists
 		if (!fileIn.exists) {
 			alert("No translation file found.", "TextConvert.Import", true);
+			return;
 		}
-		// Set encoding
-		fileIn.encoding = "UTF8"
-		// open for read
-		fileIn.open("r", "TEXT", "????");
-		// vars used in loop
-		var tagOpen = false;		// Are we in tag?
-		var tKey = '';				// translation key
-		var tVal = '';				// translation value
 
-		// loop all lines of the document
-		while (!fileIn.eof) {
-			// fetch lineContents
-			var line = fileIn.readln();
-			// Has "[BEGIN" tag
-			if (line.indexOf('[----- ') !== -1){
-				// fetch Key
-				tKey = line.substr(7, line.length - 9);
-				// clear Value
-				tVal = '';
-				// set tagOpen to true
-				tagOpen = true;
-			}
+		// Set encoding and open file
+		fileIn.encoding = "UTF8";
+		fileIn.open("r", "TEXT");
 
-			// Has "[END" tag
-			else if (line.indexOf('[=== ') !== -1){
-				// if it's the closing line of our open key
-				if (tKey == line.substr(5, line.length - 7)){
-					// store Key & Value
-					tKeys.push(tKey);
-					tValues.push(tVal);
-					// clear tKey & tVal
-					tKey = '';
-					tVal = '';
-					// set tagOpen to false
-					tagOpen = false;
-				// not the closing tag, add it
-				} else {
-					if (tagOpen) {
-						tVal += line + '\r';
-					}
+		// Read entire file contents
+		var jsonString = fileIn.read();
+		fileIn.close();
+
+		try {
+			// Parse JSON content
+			var jsonData = JSON.parse(jsonString);
+			
+			// Extract frames data into translation arrays
+			for (var frameIndex in jsonData.frames) {
+				if (jsonData.frames.hasOwnProperty(frameIndex)) {
+					tKeys.push(frameIndex);
+					tValues.push(jsonData.frames[frameIndex].contents);
 				}
 			}
-			// other: if tagOpen, add to value
-			else if (tagOpen) {
-				tVal += line + '\r';
-			}
+		} catch(e) {
+			alert("Error parsing JSON file: " + e.message, "TextConvert.Import", true);
 		}
-		// close the file
-		fileIn.close();
 	}
 
   /**
    * TextImport Core Function
    * -------------------------------------------------------------
  */
-	function goTextImport3(el, path){
-		// debug
-		// alert(tKeys);
-			// Get the frames
-			var frames = el.textFrames;
-			// Loop
-			for (var frameCount = frames.length; frameCount > 0; frameCount--){
-				// curentFrame ref
-				var frameIndex = frameCount-1;
-				var currentFrame = frames[frameIndex];
-				// get position in array of the string to translate
-				var pos = Array_IndexOf(tKeys, path + frameIndex);
-				// string found
-				if (pos !== -1){
-					// update contents with translated string
-					currentFrame.contents = tValues[pos];
-					// clean up tKeys & tValues array (speed improv!)
-					Array_RemoveAtIndex(tKeys, pos);
-					Array_RemoveAtIndex(tValues, pos);
-				}
-		}
-	}
+  function textFrameImport(el, path) {
+    // Get the frames
+    var frames = el.textFrames;
+    
+    // Loop through frames
+    for (var frameCount = frames.length; frameCount > 0; frameCount--) {
+        var frameIndex = frameCount-1;
+        var currentFrame = frames[frameIndex];
+        
+        // Get position in array of the frame index
+        var pos = Array_IndexOf(tKeys, frameIndex.toString());
+        
+        // If we have a translation for this frame
+        if (pos !== -1) {
+            // Update contents with translated string
+            currentFrame.contents = tValues[pos];
+            
+            // Clean up arrays (speed improvement)
+            Array_RemoveAtIndex(tKeys, pos);
+            Array_RemoveAtIndex(tValues, pos);
+        }
+    }
+}
 
 /** Call TextConvert.Import Init function
  * --------------------------------------

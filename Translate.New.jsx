@@ -2,13 +2,8 @@
  * Translate.Text v 1.2 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
- * ===============================
+ * ==============
  * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
- *
- * v 1.1 - 2016.02.17 - UTF-8 support
- *                      Update license to MIT License
- *
- * v 1.0 - 2008.10.30 - (based upon TextExport 1.3, without the "save dialog" option)
  *
  *****************************************************************
  *
@@ -33,7 +28,7 @@
  * THE SOFTWARE.
  *
  *****************************************************************/
-// Load JSON polyfill.
+// Load JSON polyfill (doesn't natively exist in Illustrator).
 #include "jsonparse.jsx"
 
  /** CONFIG ////
@@ -126,8 +121,8 @@ function textFrameExport(el, fileOut) {
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount-1;
         var frame = frames[frameIndex];
-		// Replace line breaks in contents with \n before writing to JSON
-        var frameContents = frame.contents.toString().replace(/[\r\n]+/g, '\\n');
+		// Remove any line breaks from contents before writing to JSON
+        var frameContents = frame.contents.toString().replace(/[\r\n]+/g, '');
 		// Write frame properties to JSON object with index as key
 		// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
 		jsonData.frames[frameIndex] = {

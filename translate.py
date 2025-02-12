@@ -63,7 +63,7 @@ if r['translationText'] != '':
 else:
     print("Translate API returned no text")
 
-# => merge translation with original frame values
+# Merge translation with frame 'contents', keeping other values
 def merge_translations(input_json, translations):
     for key in input_json['frames']:
         if key in translations:
