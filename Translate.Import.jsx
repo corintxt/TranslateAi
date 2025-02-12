@@ -1,5 +1,5 @@
 /*****************************************************************
- * Translate.Import v 1.1 (2025) - Corin Faife - https://corinfaife.co/
+ * TextConvert.Import v 2.0 (2025) - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ==============
@@ -7,14 +7,14 @@
  *
  *****************************************************************
  *
- * Copyright (c) 2016 Bram(us) Van Damme - https://www.bram.us/
+ * Original Copyright (c) 2016 Bram(us) Van Damme - https://www.bram.us/
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
+ * to do so, subject to the follow ing conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
@@ -166,10 +166,11 @@
 	}
 
   /**
-   * TextImport Core Function
+   * textFrameImport: 
+   * Import translated strings into the text frames by text frame index
    * -------------------------------------------------------------
  */
-  function textFrameImport(el, path) {
+  function textFrameImport(el) {
     // Get the frames
     var frames = el.textFrames;
     

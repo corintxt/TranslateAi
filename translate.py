@@ -82,4 +82,4 @@ def write_json(filename, json_data):
     except Exception as e:
         print(f"Error writing to file: {e}")
 
-write_json('test/merged.json', merged)
+write_json('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json', merged)
