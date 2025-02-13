@@ -31,40 +31,8 @@
 // Load JSON polyfill (doesn't natively exist in Illustrator).
 #include "jsonparse.jsx"
 
-	/**
-	 * Array Fixes: indexOf and remove don't natively exist!
-	 * -------------------------------------------------------------
-	 */
-
-	function Array_IndexOf (arr, elem){
-		var len = arr.length;
-
-		var from = Number(arguments[2]) || 0;
-		from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-		if (from < 0) {
-			from += len;
-		}
-
-		for (; from < len; from++) {
-			if (from in arr && arr[from] === elem) {
-				return from;
-			}
-		}
-		return -1;
-	}
-
-	function Array_RemoveAtIndex(arr, idx){
-		if (idx !== -1) {
-			arr.splice(idx, 1);
-		}
-	}
-
-/** Arrays holding the translations (keys and values)
- * -------------------------------------------------------------
- */
-	var tKeys 	= [];
-	var tValues	= [];
-	var numReplaced	= 0;
+var jsonData; // Global variable to hold the JSON data
+var numReplaced	= 0;
 
 /** TextConvert.Import Init function
  * -------------------------------------------------------------
@@ -106,7 +74,7 @@
 			fetchTranslations(devTranslationFile)
 
 			// We have translations
-			if (tKeys.length > 0){
+			if (jsonData && jsonData.frames) {
 				// Set active document
 				alert("Processing " + docs[i].name, "TextConvert.Import", true);
 				app.activeDocument = docs[i];
@@ -128,10 +96,6 @@
    * ---------------------------
  */
 	function fetchTranslations(filePath) {
-		// Reset translation arrays
-		tKeys = [];
-		tValues = [];
-
 		// Create fileref
 		var fileIn = new File(filePath);
 		
@@ -151,15 +115,8 @@
 
 		try {
 			// Parse JSON content
-			var jsonData = JSON.parse(jsonString);
-			
-			// Extract frames data into translation arrays
-			for (var frameIndex in jsonData.frames) {
-				if (jsonData.frames.hasOwnProperty(frameIndex)) {
-					tKeys.push(frameIndex);
-					tValues.push(jsonData.frames[frameIndex].contents);
-				}
-			}
+			jsonData = JSON.parse(jsonString);
+			// The tKeys and tValues arrays are no longer needed
 		} catch(e) {
 			alert("Error parsing JSON file: " + e.message, "TextConvert.Import", true);
 		}
@@ -167,31 +124,61 @@
 
   /**
    * textFrameImport: 
-   * Import translated strings into the text frames by text frame index
+   * Import translated strings into the text frames from JSON
    * -------------------------------------------------------------
  */
   function textFrameImport(el) {
-    // Get the frames
+    // Get all text frames in document
     var frames = el.textFrames;
     
-    // Loop through frames
+    // Loop through frames in reverse order (since frame indices are zero-based)
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
-        var frameIndex = frameCount-1;
+        var frameIndex = frameCount - 1;
         var currentFrame = frames[frameIndex];
         
-        // Get position in array of the frame index
-        var pos = Array_IndexOf(tKeys, frameIndex.toString());
+        // Get the corresponding frame data from JSON
+        var frameData = jsonData.frames[frameIndex];
         
-        // If we have a translation for this frame
-        if (pos !== -1) {
-            // Update contents with translated string
-            currentFrame.contents = tValues[pos];
+        // If we have data for this frame
+        if (frameData) {
+            // Update the frame contents
+            currentFrame.contents = frameData.contents;
             
-            // Clean up arrays (speed improvement)
-            Array_RemoveAtIndex(tKeys, pos);
-            Array_RemoveAtIndex(tValues, pos);
+            // Optional: Update frame position if needed
+            // currentFrame.position = frameData.anchor;
+            
+            // Optional: Could also update other properties like:
+            // - frameData.longestLine
+            // - frameData.lineCount
+            // - frameData.charCount
+            // - frameData.wordCount
         }
     }
+}
+
+function lineBuilder(text, maxCharCount) {
+	// Split text into words
+	var words = text.split(' ');
+	// Init line array
+	var lines = [];
+	// Init line
+	var line = '';
+	// Loop through words
+	for (var i = 0; i < words.length; i++) {
+		// Add word to line
+		line += words[i] + ' ';
+		// If line is too long
+		if (line.length > maxCharCount - 3) {
+			// Add line to lines array
+			lines.push(line);
+			// Reset line
+			line = '';
+		}
+	}
+	// Add last line
+	lines.push(line);
+	// Return lines
+	return lines;
 }
 
 /** Call TextConvert.Import Init function

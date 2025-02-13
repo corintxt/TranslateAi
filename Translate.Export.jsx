@@ -136,11 +136,10 @@ function textFrameExport(el, fileOut) {
 				longestLine = characters[i];
 			}
 		}
-
+		// Add frame data to JSON object
 		jsonData.frames[frameIndex] = {
 			anchor: frame.anchor,
             contents: contentString,
-			// firstLine: frame.textRange.lines[0].contents,
 			lineCount: frame.textRange.lines.length,
 			wordCount: frame.textRange.words.length,
 			charCount: frame.textRange.characters.length,
