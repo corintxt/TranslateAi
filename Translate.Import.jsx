@@ -38,7 +38,7 @@ var numReplaced	= 0;
  * -------------------------------------------------------------
  */
 	 function initTextConvertImport() {
-		// Linefeed stuff
+		// Linefeed stuff (-currently unused-)
 		if ($.os.search(/windows/i) != -1)
 			fileLineFeed = "windows";
 		else
@@ -141,17 +141,14 @@ var numReplaced	= 0;
         
         // If we have data for this frame
         if (frameData) {
-            // Update the frame contents
-            currentFrame.contents = frameData.contents;
+            // Use lineBuilder to split content into lines
+            var lines = lineBuilder(frameData.contents, frameData.longestLine);
+            
+            // Join the lines with line breaks and update frame contents
+            currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
             
             // Optional: Update frame position if needed
             // currentFrame.position = frameData.anchor;
-            
-            // Optional: Could also update other properties like:
-            // - frameData.longestLine
-            // - frameData.lineCount
-            // - frameData.charCount
-            // - frameData.wordCount
         }
     }
 }

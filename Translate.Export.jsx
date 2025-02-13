@@ -83,7 +83,7 @@ function initTextConvertTranslate() {
 		// Was something here but got deleted?
 	}
 	// Execute command script
-	// executeCommandScript();
+	executeCommandScript();
 }
 
 /** Write text frames to temp file
