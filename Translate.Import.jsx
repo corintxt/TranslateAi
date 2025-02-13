@@ -40,9 +40,9 @@ var numReplaced	= 0;
 	 function initTextConvertImport() {
 		// Linefeed stuff (-currently unused-)
 		if ($.os.search(/windows/i) != -1)
-			fileLineFeed = "windows";
+			operatingSystem = "windows";
 		else
-			fileLineFeed = "macintosh";
+			operatingSystem = "mac";
 
 		// Do we have a document open?
 		if (app.documents.length === 0) {
@@ -86,7 +86,6 @@ var numReplaced	= 0;
 				alert("No translations found", "TextConvert.Import", true);
 			}
 		}
-
 		// Give notice of export
 		alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
 	}

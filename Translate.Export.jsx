@@ -30,6 +30,7 @@
  *****************************************************************/
 // Load JSON polyfill.
 #include "jsonparse.jsx"
+var callAPI = false; // Set false to export JSON without calling API
 
 // TODO: Set target languate with dropdown & dialogue box;
 // consult scripts here for guidance: https://github.com/creold/illustrator-scripts
@@ -82,8 +83,10 @@ function initTextConvertTranslate() {
 		// We don't need to do anything, why is this condition here?
 		// Was something here but got deleted?
 	}
-	// Execute command script
-	executeCommandScript();
+	// Execute command script (unless we're in export-only mode)
+	if (callAPI){
+		executeCommandScript();
+	}
 }
 
 /** Write text frames to temp file
