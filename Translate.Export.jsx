@@ -30,7 +30,7 @@
  *****************************************************************/
 // Load JSON polyfill.
 #include "jsonparse.jsx"
-var callAPI = false; // Set false to export JSON without calling API
+var callAPI = true; // Set false to export JSON without calling API
 
 // TODO: Set target languate with dropdown & dialogue box;
 // consult scripts here for guidance: https://github.com/creold/illustrator-scripts
