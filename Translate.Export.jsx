@@ -124,39 +124,67 @@ function textFrameExport(el, fileOut) {
         frames: {}
     };
     
+	$.writeln("=== Starting TextFrame Export ===");
+    $.writeln("Total frames found: " + frames.length);
+    
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
-        var frameIndex = frameCount-1;
-        var frame = frames[frameIndex];
-		// Remove any line breaks from contents before writing to JSON
-		var contentString = sanitizeString(frame.textRange.contents);
-		// Write frame properties to JSON object with index as key
-		// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
-		// Get reference to all lines in range
-		var lines = frame.textRange.lines;
-		var lineCount = lines.length;
-		// Get character count for each line
-		var characters = [];
-		for (var i = 0; i < lineCount; i++) {
-			var line = lines[i];
-			var lineCharCount = line.characters.length;
-			characters.push(lineCharCount);
-		}
-		// Get longest character count of all lines in frame
-		var longestLine = 0;
-		for (var i = 0; i < characters.length; i++) {
-			if (characters[i] > longestLine) {
-				longestLine = characters[i];
+        try {
+            var frameIndex = frameCount-1;
+            var frame = frames[frameIndex];
+            
+            // Enhanced debugging info
+            $.writeln("\n--- Frame " + frameIndex + " ---");
+            $.writeln("Kind: " + frame.kind);
+            $.writeln("Type: " + frame.typename);
+            $.writeln("Contents: " + frame.contents);
+            
+            // Check if textRange is available
+            if (!frame.textRange) {
+                throw new Error("No textRange available for this frame");
+            }
+		
+			// Remove any line breaks from contents before writing to JSON
+			var contentString = sanitizeString(frame.textRange.contents);
+			// Write frame properties to JSON object with index as key
+			// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
+			// Get reference to all lines in range
+			var lines = frame.textRange.lines; // could we put this directly into jsonData?
+			var lineCount = lines.length;
+			// Get character count for each line
+			var characters = [];
+			for (var i = 0; i < lineCount; i++) {
+				var line = lines[i];
+				var lineCharCount = line.characters.length;
+				characters.push(lineCharCount);
 			}
-		}
-		// Add frame data to JSON object
-		jsonData.frames[frameIndex] = {
-			anchor: frame.anchor,
-            contents: contentString,
-			lineCount: frame.textRange.lines.length,
-			wordCount: frame.textRange.words.length,
-			charCount: frame.textRange.characters.length,
-			longestLine: longestLine
-        };
+			// Get longest character count of all lines in frame
+			var longestLine = 0;
+			for (var i = 0; i < characters.length; i++) {
+				if (characters[i] > longestLine) {
+					longestLine = characters[i];
+				}
+			}
+			// Add frame data to JSON object
+			jsonData.frames[frameIndex] = {
+				anchor: frame.anchor,
+				contents: contentString,
+				// lineCount: frame.textRange.lines.length,
+				// wordCount: frame.textRange.words.length,
+				// charCount: frame.textRange.characters.length,
+				// longestLine: longestLine
+			};
+		} catch (e) {
+            $.writeln("ERROR in frame " + frameIndex + ":");
+            $.writeln("Error message: " + e.message);
+            $.writeln("Frame properties:");
+            for (var prop in frame) {
+                try {
+                    $.writeln("  " + prop + ": " + frame[prop]);
+                } catch(e) {
+                    $.writeln("  " + prop + ": [Unable to read property]");
+                }
+            }
+        }
     }
     
     fileOut.writeln(JSON.stringify(jsonData, null, 2));

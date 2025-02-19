@@ -152,6 +152,11 @@ var numReplaced	= 0;
     }
 }
 
+// LineBuilder function:
+// We need this to split the text into lines that fit the text frame
+// when re-importing the translated text.
+// maxCharCount is a property of each text frame that we will 
+// read in from the JSON file
 function lineBuilder(text, maxCharCount) {
 	// Split text into words
 	var words = text.split(' ');
@@ -164,7 +169,7 @@ function lineBuilder(text, maxCharCount) {
 		// Add word to line
 		line += words[i] + ' ';
 		// If line is too long
-		if (line.length > maxCharCount - 3) {
+		if (line.length > maxCharCount - 4) {
 			// Add line to lines array
 			lines.push(line);
 			// Reset line
