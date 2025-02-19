@@ -107,6 +107,15 @@ function writeTextToFile(filePath, document) {
 		// close the file
 		fileOut.close();
 }
+
+// Sanitize string so that text can be written to JSON
+// (called in textFrameExport)
+function sanitizeString(str) {
+    return str.toString()
+             .replace(/[\r\n]+/g, '')  // Remove line breaks
+             .replace(/"/g, '\\"');     // Escape quotes
+}
+
 /** Text export into JSON
  * -----------------------*/
 function textFrameExport(el, fileOut) {
@@ -119,7 +128,7 @@ function textFrameExport(el, fileOut) {
         var frameIndex = frameCount-1;
         var frame = frames[frameIndex];
 		// Remove any line breaks from contents before writing to JSON
-        var contentString = frame.textRange.contents.toString().replace(/[\r\n]+/g, '');
+		var contentString = sanitizeString(frame.textRange.contents);
 		// Write frame properties to JSON object with index as key
 		// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
 		// Get reference to all lines in range
