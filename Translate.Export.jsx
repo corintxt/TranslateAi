@@ -168,10 +168,10 @@ function textFrameExport(el, fileOut) {
 			jsonData.frames[frameIndex] = {
 				anchor: frame.anchor,
 				contents: contentString,
-				// lineCount: frame.textRange.lines.length,
-				// wordCount: frame.textRange.words.length,
-				// charCount: frame.textRange.characters.length,
-				// longestLine: longestLine
+				lineCount: frame.textRange.lines.length,
+				wordCount: frame.textRange.words.length,
+				charCount: frame.textRange.characters.length,
+				longestLine: longestLine
 			};
 		} catch (e) {
             $.writeln("ERROR in frame " + frameIndex + ":");

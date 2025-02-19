@@ -9,12 +9,13 @@ config_file = sys.argv[1]
 # 2. Text to translate
 input_file = sys.argv[2]
 # Optional: user can specify language through CLI dialogue
-# destination_language = input("Enter destination language: ")
+target_language = input("Enter target language code: ")
 
 # Read config variables
 with open(config_file) as f:
     config = json.load(f)
-    target_language = config["targetLanguage"]
+    # target_language = config["targetLanguage"]
+
 print(f"Target language: {target_language}")
 
 # Get text from input json, extract frame index and contents
@@ -59,9 +60,10 @@ r = json.loads(response)
 if r['translationText'] != '':
     # Escape some characters that break JSON
     string_check = r['translationText'].replace("\\'", "'")
-    trans = json.loads(string_check)
+    translation = json.loads(string_check)
 else:
-    print("Translate API returned no text")
+    print("Translate API returned no text! Try again later.")
+    translation = None
 
 # Merge translation with frame 'contents', keeping other values
 def merge_translations(input_json, translations):
@@ -69,10 +71,6 @@ def merge_translations(input_json, translations):
         if key in translations:
             input_json['frames'][key]['contents'] = translations[key]
     return input_json
-
-merged = merge_translations(input, trans)
-# Print merged translation to stdout
-# print(merged)
 
 # Write to file as JSON (for debugging)
 def write_json(filename, json_data):
@@ -82,4 +80,11 @@ def write_json(filename, json_data):
     except Exception as e:
         print(f"Error writing to file: {e}")
 
-write_json('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json', merged)
+if translation:
+    merged = merge_translations(input, translation)
+    write_json('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json', merged)
+
+# Print merged translation to stdout
+# print(merged)
+
+

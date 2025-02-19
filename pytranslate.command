@@ -20,5 +20,5 @@ python /Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/translat
 # echo "Translation saved to: $OUTPUT_FILE"
 
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "=> Ready to import translation."
+echo "~~~~~~~~~FINISHED.~~~~~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
