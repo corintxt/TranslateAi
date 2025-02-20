@@ -141,7 +141,7 @@ var numReplaced	= 0;
         // If we have data for this frame
         if (frameData) {
             // Use lineBuilder to split content into lines
-            var lines = lineBuilder(frameData.contents, frameData.longestLine);
+            var lines = lineBuilder(frameData.contents, frameData.lineChars);
             
             // Join the lines with line breaks and update frame contents
             currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
@@ -153,33 +153,74 @@ var numReplaced	= 0;
 }
 
 // LineBuilder function:
-// We need this to split the text into lines that fit the text frame
-// when re-importing the translated text.
-// maxCharCount is a property of each text frame that we will 
+// We use this to split the text into lines that fit into the text frame
+// when re-importing our translated text.
+// the character limit array is a property of each text frame that we will 
 // read in from the JSON file
-function lineBuilder(text, maxCharCount) {
-	// Split text into words
-	var words = text.split(' ');
-	// Init line array
-	var lines = [];
-	// Init line
-	var line = '';
-	// Loop through words
-	for (var i = 0; i < words.length; i++) {
-		// Add word to line
-		line += words[i] + ' ';
-		// If line is too long
-		if (line.length > maxCharCount - 4) {
-			// Add line to lines array
-			lines.push(line);
-			// Reset line
-			line = '';
-		}
-	}
-	// Add last line
-	lines.push(line);
-	// Return lines
-	return lines;
+function lineBuilder(text, charArray) {
+    function trimString(str) {
+        return str.replace(/^\s+|\s+$/g, '');
+    }
+    
+    var words = text.split(' ');
+    var lines = [];
+    var line = '';
+    var wordIndex = 0;
+    var limitIndex = 0;
+    var maxLineLength = Math.max.apply(null, charArray);
+
+    // Process words according to line limits in charArray
+    while (wordIndex < words.length && limitIndex < charArray.length) {
+        var currentWord = words[wordIndex] + ' ';
+        
+        if (line.length + currentWord.length <= charArray[limitIndex]) {
+            line += currentWord;
+            wordIndex++;
+        } else {
+            lines.push(trimString(line));
+            line = '';
+            limitIndex++;
+        }
+    }
+
+    // Handle remaining words with respect to max line length
+    if (wordIndex < words.length) {
+        // First add any partial line if it exists
+        if (line.length > 0) {
+            lines.push(trimString(line));
+            line = '';
+        }
+        
+        // Process remaining words respecting max line length
+        while (wordIndex < words.length) {
+            var currentWord = words[wordIndex] + ' ';
+            
+            if (line.length + currentWord.length <= maxLineLength) {
+                line += currentWord;
+                wordIndex++;
+            } else {
+                if (line.length > 0) {
+                    lines.push(trimString(line));
+                    line = '';
+                }
+                // If a single word is longer than maxLineLength, 
+                // we need to add it anyway to avoid infinite loop
+                if (currentWord.length > maxLineLength) {
+                    lines.push(trimString(currentWord));
+                    wordIndex++;
+                }
+            }
+        }
+        
+        // Add final line if anything remains
+        if (line.length > 0) {
+            lines.push(trimString(line));
+        }
+    } else if (line.length > 0) {
+        lines.push(trimString(line));
+    }
+
+    return lines;
 }
 
 /** Call TextConvert.Import Init function

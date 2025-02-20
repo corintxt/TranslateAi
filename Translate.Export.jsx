@@ -136,7 +136,7 @@ function textFrameExport(el, fileOut) {
             $.writeln("\n--- Frame " + frameIndex + " ---");
             $.writeln("Kind: " + frame.kind);
             $.writeln("Type: " + frame.typename);
-            $.writeln("Contents: " + frame.contents);
+            // $.writeln("Contents: " + frame.contents);
             
             // Check if textRange is available
             if (!frame.textRange) {
@@ -157,22 +157,16 @@ function textFrameExport(el, fileOut) {
 				var lineCharCount = line.characters.length;
 				characters.push(lineCharCount);
 			}
-			// Get longest character count of all lines in frame
-			var longestLine = 0;
-			for (var i = 0; i < characters.length; i++) {
-				if (characters[i] > longestLine) {
-					longestLine = characters[i];
-				}
-			}
 			// Add frame data to JSON object
 			jsonData.frames[frameIndex] = {
 				anchor: frame.anchor,
 				contents: contentString,
-				lineCount: frame.textRange.lines.length,
+				lineCount: lineCount,
+				lineChars:characters,
 				wordCount: frame.textRange.words.length,
-				charCount: frame.textRange.characters.length,
-				longestLine: longestLine
+				charCount: frame.textRange.characters.length
 			};
+
 		} catch (e) {
             $.writeln("ERROR in frame " + frameIndex + ":");
             $.writeln("Error message: " + e.message);
