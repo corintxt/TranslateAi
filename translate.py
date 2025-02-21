@@ -62,7 +62,7 @@ if r['translationText'] != '':
     string_check = r['translationText'].replace("\\'", "'")
     translation = json.loads(string_check)
 else:
-    print("Translate API returned no text! Try again later.")
+    print("!! Translate API returned no text !! Please try again.")
     translation = None
 
 # Merge translation with frame 'contents', keeping other values
@@ -83,8 +83,6 @@ def write_json(filename, json_data):
 if translation:
     merged = merge_translations(input, translation)
     write_json('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json', merged)
-
-# Print merged translation to stdout
-# print(merged)
+    print("Translation complete!")
 
 

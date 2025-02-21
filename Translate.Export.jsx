@@ -1,33 +1,11 @@
 /*****************************************************************
- * TextConvert.Export v 2.0 (2025) - by Corin Faife - Corin Faife - https://corinfaife.co/
+ * TextConvert.Export v 2.0 (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
- * ==============
+ * =========================
  * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
- *
- *****************************************************************
- *
- * Original Copyright (c) 2016 Bram(us) Van Damme - https://www.bram.us/
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is furnished
- * to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
  *****************************************************************/
+
 // Load JSON polyfill.
 #include "jsonparse.jsx"
 var callAPI = true; // Set false to export JSON without calling API
@@ -67,11 +45,15 @@ function initTextConvertTranslate() {
 
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
-		// set temp file location (Mac)
-		filePath = "/tmp/translateinput.json";
-		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/input.json";
-		// set temp file location (Win) ?
+		// MAC: set temp file location
+		// Auto set filePath and fileName
+		// filePath = Folder.myDocuments + '/TextConvert-' + docs[i].name + '.txt';
+		filePath = "/tmp/" + docs[i].name + ".json";
+		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docs[i].name + ".json";
+		
+		// WINDOWS: set temp file location?
 		// filePath = Folder.temp + '/translate_input.txt';
+		
 		// Write text to file
 		writeTextToFile(devPath, docs[i]);
 	}
