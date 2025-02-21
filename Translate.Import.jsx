@@ -47,8 +47,8 @@ var numReplaced	= 0;
 		for (var i = 0; i < docs.length; i++){
 			// Fetch translations
 			// var translationFile = '???' //WIN
-			var translationFile = "/tmp/" + docs[i].name + ".json"; //MAC
-			devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docs[i].name + ".json";
+			var translationFile = "/tmp/T-" + docs[i].name + ".json"; //MAC
+			devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docs[i].name + ".json";
 			fetchTranslations(devTranslationFile)
 
 			// We have translations
@@ -151,7 +151,7 @@ function lineBuilder(text, charArray) {
     while (wordIndex < words.length && limitIndex < charArray.length) {
         var currentWord = words[wordIndex] + ' ';
         
-        if (line.length + currentWord.length <= charArray[limitIndex]) {
+        if (line.length + currentWord.length <= charArray[limitIndex]+1) {
             line += currentWord;
             wordIndex++;
         } else {

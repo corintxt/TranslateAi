@@ -36,8 +36,7 @@ def request_translation(url, data, headers):
     # Note: currently, verify=False is needed to avoid SSL error
     response = requests.post(url, data=data, headers=headers, verify=False)
     print(f"Status: {response.status_code}")
-    # Add | spacer (command script looks for this)
-    print("|")
+    print()
     return(json.dumps(response.json()))
 
 #Dev URL
@@ -51,8 +50,8 @@ data = {
     }
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 response = request_translation(dev_url, data, headers)
-# Print response to stdout for command script to capture
-# print(response)
+
+print("~~~~~~~~~Result:~~~~~~~~~~~")
 
 #### PARSE RESPONSE & MERGE WITH FRAME PROPERTIES ####
 r = json.loads(response)
@@ -82,7 +81,8 @@ def write_json(filename, json_data):
 
 if translation:
     merged = merge_translations(input, translation)
-    write_json('/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/merged.json', merged)
+    # Get last 15 chars of filename (just Ai file without path)
+    short_name = input_file[-15:]
+    # Write to file (dev location)
+    write_json(f'/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-{short_name}', merged)
     print("Translation complete!")
-
-

@@ -169,12 +169,23 @@ function textFrameExport(el, fileOut) {
 /** Invoke command script
  * ----------------------*/
 function executeCommandScript() {
-	// Mac command
-	var cfileName = '/pytranslate.command';
-	// Win command
-	// var cfileName = '/translate.bat'
-	var commandFile = File(File($.fileName).parent.fsName + cfileName);
-	commandFile.execute()
+    // Get current document name and build command string
+    var currentDoc = app.activeDocument.name;
+    var cfileName = '/pytranslate.command';
+    var commandFile = File(File($.fileName).parent.fsName + cfileName);
+    
+    if (commandFile.exists) {
+        // Make sure command file is executable
+        commandFile.execute();
+        
+        // Create a temporary file to store the document name
+        var tempFile = new File("/tmp/current_doc.txt");
+        tempFile.open("w");
+        tempFile.write(currentDoc);
+        tempFile.close();
+    } else {
+        alert("Command file not found: " + commandFile.fsName);
+    }
 }
 
 /* Call script main function
