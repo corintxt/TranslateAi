@@ -1,6 +1,7 @@
-import json
+import os
 import sys
 import requests
+import json
 
 #### HANDLE ARGUMENTS, LOAD TEXT ####
 ## Arguments
@@ -8,14 +9,19 @@ import requests
 config_file = sys.argv[1]
 # 2. Text to translate
 input_file = sys.argv[2]
-# Optional: user can specify language through CLI dialogue
-target_language = input("Enter target language code: ")
 
 # Read config variables
 with open(config_file) as f:
     config = json.load(f)
-    # target_language = config["targetLanguage"]
+    target_language = config.get('targetLanguage')
+    dev_url = config.get('devUrl')
+    prod_url = config.get('prodUrl')
 
+if not target_language:
+    print("Error: targetLanguage not set in config file")
+    sys.exit(1)
+
+print(f"Processing file: {input_file}")
 print(f"Target language: {target_language}")
 
 # Get text from input json, extract frame index and contents
@@ -39,16 +45,14 @@ def request_translation(url, data, headers):
     print()
     return(json.dumps(response.json()))
 
-#Dev URL
-dev_url = 'https://vspar-ia-t-transcript-01.afp.com:8046/translate'
-#Prod URL
-url = 'https://translate.afp.com/translateapi/translate'
 data = {
-    'inputText': json.dumps(contents), # this should be processed text 
+    'inputText': json.dumps(contents), 
     'provider': 'OpenAiChatGpt',
     'destination_lang': target_language
     }
+# Headers for form data (needed by translate API)
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+# Make request
 response = request_translation(dev_url, data, headers)
 
 print("~~~~~~~~~Result:~~~~~~~~~~~")
@@ -81,8 +85,9 @@ def write_json(filename, json_data):
 
 if translation:
     merged = merge_translations(input, translation)
-    # Get last 15 chars of filename (just Ai file without path)
-    short_name = input_file[-15:]
+    # Get base filename without path
+    base_name = os.path.basename(input_file)
     # Write to file (dev location)
-    write_json(f'/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-{short_name}', merged)
-    print("Translation complete!")
+    output_path = f'/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-{base_name}'
+    write_json(output_path, merged)
+    print(f"Translation complete for {base_name}!")

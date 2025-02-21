@@ -8,6 +8,7 @@
 
 // Load JSON polyfill.
 #include "jsonparse.jsx"
+var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
 
 // TODO: Set target languate with dropdown & dialogue box;
@@ -31,7 +32,7 @@ function initTextConvertTranslate() {
 	// More than one document open?
 	// TODO: Add support for multiple files
 	if (app.documents.length > 1) {
-		var runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
+		runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
 		if (runMultiple === true) {
 			docs	= app.documents;
 		} else {
@@ -48,8 +49,11 @@ function initTextConvertTranslate() {
 		// MAC: set temp file location
 		// Auto set filePath and fileName
 		// filePath = Folder.myDocuments + '/TextConvert-' + docs[i].name + '.txt';
-		filePath = "/tmp/" + docs[i].name + ".json";
-		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docs[i].name + ".json";
+
+		// Remove .ai extension before writing
+		var docName = docs[i].name.replace(/\.ai$/i, "");
+		filePath = "/tmp/" + docName + ".json";
+		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docName + ".json";
 		
 		// WINDOWS: set temp file location?
 		// filePath = Folder.temp + '/translate_input.txt';
@@ -169,20 +173,32 @@ function textFrameExport(el, fileOut) {
 /** Invoke command script
  * ----------------------*/
 function executeCommandScript() {
-    // Get current document name and build command string
-    var currentDoc = app.activeDocument.name;
     var cfileName = '/pytranslate.command';
     var commandFile = File(File($.fileName).parent.fsName + cfileName);
     
-    if (commandFile.exists) {
-        // Make sure command file is executable
-        commandFile.execute();
-        
-        // Create a temporary file to store the document name
+    if (commandFile.exists) {        
+        // Create a temporary file to store document name(s)
         var tempFile = new File("/tmp/current_doc.txt");
+        tempFile.encoding = "UTF8";
+        tempFile.lineFeed = "Unix"; // Force Unix line endings
         tempFile.open("w");
-        tempFile.write(currentDoc);
+        
+        // Write all document names if running in multiple mode
+        if (runMultiple === true) {
+            for (var i = 0; i < docs.length; i++) {
+                // Remove .ai extension before writing
+                var docName = docs[i].name.replace(/\.ai$/i, "");
+                tempFile.writeln(docName);
+            }
+        } else {
+            // Remove .ai extension before writing
+            var docName = app.activeDocument.name.replace(/\.ai$/i, "");
+            tempFile.write(docName);
+        }
         tempFile.close();
+        
+        // Execute command file
+        commandFile.execute();
     } else {
         alert("Command file not found: " + commandFile.fsName);
     }

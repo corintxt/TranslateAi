@@ -27,8 +27,7 @@ var numReplaced	= 0;
 			alert("Please open a file", "TextConvert.Export Error", true);
 			return;
 		}
-
-		// More than one document open!
+		// More than one document open
 		if (app.documents.length > 1) {
 			var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
 			if (runMultiple === true) {
@@ -36,19 +35,20 @@ var numReplaced	= 0;
 			} else {
 				docs	= [app.activeDocument];
 			}
-
 		// Only one document open
 		} else {
 			runMultiple 	= false;
 			docs 			= [app.activeDocument];
 		}
-
 		// Loop all documents
 		for (var i = 0; i < docs.length; i++){
 			// Fetch translations
 			// var translationFile = '???' //WIN
-			var translationFile = "/tmp/T-" + docs[i].name + ".json"; //MAC
-			devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docs[i].name + ".json";
+
+			// Get document name without .ai extension
+			var docName = docs[i].name.replace(/\.ai$/i, "");			
+			var translationFile = "/tmp/T-" + docName + ".json"; //MAC
+			devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docName + ".json";
 			fetchTranslations(devTranslationFile)
 
 			// We have translations

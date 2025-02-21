@@ -11,7 +11,6 @@ Next steps (dev):
 * Think about better name!
 * Test more graphics
 * Work on multiple translate
-    * Write to filename.json rather than 'input'
 
 * Package for beta release:
     * Write list of things that Translator *can* and *can't* handle currently -- e.g. currently can't do multiple files; currently can't do different text formats in same text box.
@@ -24,13 +23,10 @@ Next steps (dev):
 * Should we ditch bash command script and make the whole thing Python?
 * Instead of writing to /tmp/ - maybe we should make a folder called TextTranslate (etc.) and write translations there by filename
 * Look into SSL cert warning
---
-
-Starting up on Thurs:
-
-* Write translation to file with name of doc - so we can do multiple files at once.
 
 ## Testfiles / notes / bugs
+Bug: Illustrator shows SPOD after running export!
+Example: Inconsistent...
 
 Bug: Error caused by type of text box (red frame) used in graphic
 Example: 36TW4YQ - Hakuto-R lunar mission
@@ -49,7 +45,8 @@ Example: 36YA72
 
 ---
 ## Changelog
-25-2-20: Line reconstruction
+2025-2-21: Scripts now write to filename based on .ai file (not input.json)
+2025-2-20: Line reconstruction
 
 ## References
 * https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
