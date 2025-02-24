@@ -13,20 +13,21 @@ input_file = sys.argv[2]
 # Read config variables
 with open(config_file) as f:
     config = json.load(f)
-    target_language = config.get('targetLanguage')
     dev_url = config.get('devUrl')
     prod_url = config.get('prodUrl')
 
-if not target_language:
-    print("Error: targetLanguage not set in config file")
-    sys.exit(1)
-
 print(f"Processing file: {input_file}")
-print(f"Target language: {target_language}")
+print()
 
 # Get text from input json, extract frame index and contents
 with open(input_file) as f:
     input = json.load(f)
+
+    target_language = input.get('targetLanguage')
+    if not target_language:
+        print("Error: targetLanguage not set")
+        sys.exit(1)
+
     frames = input['frames']
     # Create new dictionary with just key and contents
     contents = {}
@@ -52,10 +53,10 @@ data = {
     }
 # Headers for form data (needed by translate API)
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-# Make request
+# Make request - URL is read from config
 response = request_translation(dev_url, data, headers)
 
-print("~~~~~~~~~Result:~~~~~~~~~~~")
+print("---------Result:---------")
 
 #### PARSE RESPONSE & MERGE WITH FRAME PROPERTIES ####
 r = json.loads(response)
@@ -65,17 +66,17 @@ if r['translationText'] != '':
     string_check = r['translationText'].replace("\\'", "'")
     translation = json.loads(string_check)
 else:
-    print("!! Translate API returned no text !! Please try again.")
+    print("!! Translate API returned no text !!")
     translation = None
 
-# Merge translation with frame 'contents', keeping other values
+# Merge translation contents with original JSON input, keeping other values same
 def merge_translations(input_json, translations):
     for key in input_json['frames']:
         if key in translations:
             input_json['frames'][key]['contents'] = translations[key]
     return input_json
 
-# Write to file as JSON (for debugging)
+# Write to file as JSON
 def write_json(filename, json_data):
     try:
         with open(filename, 'w', encoding='utf-8') as f:
@@ -83,6 +84,7 @@ def write_json(filename, json_data):
     except Exception as e:
         print(f"Error writing to file: {e}")
 
+# Write to file if translation is successful
 if translation:
     merged = merge_translations(input, translation)
     # Get base filename without path
@@ -90,4 +92,4 @@ if translation:
     # Write to file (dev location)
     output_path = f'/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-{base_name}'
     write_json(output_path, merged)
-    print(f"Translation complete for {base_name}!")
+    print(f"Translation successful!")

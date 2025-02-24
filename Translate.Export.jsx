@@ -6,10 +6,13 @@
  * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
-// Load JSON polyfill.
-#include "jsonparse.jsx"
+// Load dependencies
+#include "jsonparse.jsx" // JSON polyfill
+#include "languageselect.jsx" // Language selection dialog
+
 var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
+var targetLanguage; // Will be set by dialog
 
 // TODO: Set target languate with dropdown & dialogue box;
 // consult scripts here for guidance: https://github.com/creold/illustrator-scripts
@@ -17,6 +20,10 @@ var callAPI = true; // Set false to export JSON without calling API
 /** TextConvert Export & Translate function
  * ----------------------------------------*/
 function initTextConvertTranslate() {
+    // Show language selection dialog first
+    targetLanguage = showLanguageDialog();
+    if (!targetLanguage) return; // User cancelled
+
 	// Linefeed stuff
 	if ($.os.search(/windows/i) != -1)
 		fileLineFeed = "windows";
@@ -107,6 +114,7 @@ function sanitizeString(str) {
 function textFrameExport(el, fileOut) {
     var frames = el.textFrames;
     var jsonData = {
+		targetLanguage: targetLanguage,
         frames: {}
     };
     
