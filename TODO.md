@@ -8,7 +8,7 @@ Next steps (dev):
     * Write list of things that Translator *can* and *can't* handle currently -- e.g. currently can't do multiple files; currently can't do different text formats in same text box.
     * Look into whether it could be installed with makefile, rather than step-by-step
         => Where possible, executable scripts shouldn't be in Applications folder.
-        => So we make a new folder for 'TextTranslate'
+        => So we make a new folder for 'TextTranslate', and put Python script and command script there too.
     * Make a feedback form for bug reporting! With screenshots uploaded etc.
     * Merge to main branch:
         * Switch API to prod
@@ -33,6 +33,7 @@ Example:
 
 Bug: Translation does not preserve variations in text formatting within text frame
 Example: 36Y44DJ (Biodiversity)
+=> Second release of the script should identify special formatting.
 
 Bug: Unexpected end of JSON input
 Example: 36YA72

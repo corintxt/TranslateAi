@@ -47,21 +47,25 @@ function initTextConvertTranslate() {
 	}
 
 	// Loop all documents
-	for (var i = 0; i < docs.length; i++){
-		// Remove .ai extension before writing
-		var docName = docs[i].name.replace(/\.ai$/i, "");
-		// MAC: set file location
-		filePath = Folder.myDocuments + '/TextConvert/' + docName + ".json";
-		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docName + ".json";
-		// WINDOWS: set file location - can we use same path for my docs?
-		// filePath = Folder.myDocuments + '/TextConvert/' + docName + ".json";
-		
-		writeTextToFile(devPath, docs[i]);
-	}
+    for (var i = 0; i < docs.length; i++){
+        // Remove .ai extension before writing
+        var docName = docs[i].name.replace(/\.ai$/i, "");
+        
+        // Use platform-specific separator for file paths
+        var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+        
+        // Set file location (cross-platform)
+        filePath = Folder.myDocuments + separator + "TextConvert" + separator + docName + ".json";
+        
+        // Optional dev path for testing
+        devPath = File($.fileName).parent.fsName + separator + "test" + separator + docName + ".json";
+        
+        writeTextToFile(filePath, docs[i]);
+    }
 
 	// Post processing: give notice (multiple) or open file (single)
 	if (runMultiple === true) {
-		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
+		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder. Click OK to start translation.", "TextExport");
 	} else {
 		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TextExport");
 	}
@@ -167,34 +171,40 @@ function textFrameExport(el, fileOut) {
 
 /** Invoke command script
  * ----------------------*/
+
 function executeCommandScript() {
-    var cfileName = '/pytranslate.command';
+	// Use platform-specific file separator
+    var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+    var cfileName = separator + 'pytranslate' + ($.os.search(/windows/i) != -1 ? '.bat' : '.command');
     var commandFile = File(File($.fileName).parent.fsName + cfileName);
     
     if (commandFile.exists) {        
-        // Create a temporary file to store document name(s) in TextConvert folder
-        var tempFile = new File("/tmp/current_doc.txt"); // MAC
-		// var tempFile = new File("C:\\Windows\\Temp\\current_doc.txt"); // WINDOWS
+		// Create platform-specific path for temporary file
+		// var tempFile = new File("/tmp/current_doc.txt"); // MAC
+        var tempFile = new File(Folder.myDocuments + separator + "TextConvert" + separator + "current_doc.txt");
+        
+        // Create TextConvert directory if it doesn't exist
+        var textConvertFolder = new Folder(Folder.myDocuments + separator + "TextConvert");
+        if (!textConvertFolder.exists) {
+            textConvertFolder.create();
+        }
+        
         tempFile.encoding = "UTF8";
         tempFile.lineFeed = "Unix"; // Force Unix line endings
         tempFile.open("w");
         
-        // Write all document names if running in multiple mode
+        // Rest of the code remains the same
         if (runMultiple === true) {
             for (var i = 0; i < docs.length; i++) {
-                // Remove .ai extension before writing
                 var docName = docs[i].name.replace(/\.ai$/i, "");
                 tempFile.writeln(docName);
             }
         } else {
-            // Remove .ai extension before writing
             var docName = app.activeDocument.name.replace(/\.ai$/i, "");
-			// Write active document name
             tempFile.writeln(docName);
         }
         tempFile.close();
         
-        // Execute command file
         commandFile.execute();
     } else {
         alert("Command file not found: " + commandFile.fsName);

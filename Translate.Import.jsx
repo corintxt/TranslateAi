@@ -41,14 +41,17 @@ function initTextConvertImport() {
     }
     // Loop all documents
     for (var i = 0; i < docs.length; i++){
-        // Fetch translations
-        // var translationFile = '???' //WIN
-
         // Get document name without .ai extension
         var docName = docs[i].name.replace(/\.ai$/i, "");
-        var translationFile = Folder.myDocuments + '/TextConvert/T-' + docName + ".json";	//MAC(?)		
-        devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docName + ".json";
-        fetchTranslations(devTranslationFile)
+        // Use platform-specific separator
+        var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+        // Set cross-platform translation file path
+        var translationFile = Folder.myDocuments + separator + "TextConvert" + separator + "T-" + docName + ".json";
+        // Optional dev path for testing
+        var devTranslationFile = File($.fileName).parent.fsName + separator + "test" + separator + "T-" + docName + ".json";
+        
+        // Use production path by default
+        fetchTranslations(translationFile);
 
         // If we have translations
         if (jsonData && jsonData.frames) {
@@ -56,11 +59,11 @@ function initTextConvertImport() {
             alert("Processing " + docs[i].name, "TextConvert.Import", true);
             app.activeDocument = docs[i];
             // Apply the translations
-            textFrameImport(app.activeDocument, '/');
+            textFrameImport(app.activeDocument);
             // update numReplaced
             numReplaced++;
         } else {
-            alert("No translations found", "TextConvert.Import", true);
+            alert("No translations found for " + docs[i].name, "TextConvert.Import", true);
         }
     }
     // Give notice of changes
