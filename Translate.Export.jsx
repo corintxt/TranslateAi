@@ -201,7 +201,7 @@ function executeCommandScript() {
         } else {
             // Remove .ai extension before writing
             var docName = app.activeDocument.name.replace(/\.ai$/i, "");
-            tempFile.write(docName);
+            tempFile.writeln(docName);
         }
         tempFile.close();
         

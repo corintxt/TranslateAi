@@ -16,7 +16,7 @@ with open(config_file) as f:
     dev_url = config.get('devUrl')
     prod_url = config.get('prodUrl')
 
-print(f"Processing file: {input_file}")
+print(f"Reading file: {input_file}")
 print()
 
 # Get text from input json, extract frame index and contents
@@ -89,7 +89,7 @@ if translation:
     merged = merge_translations(input, translation)
     # Get base filename without path
     base_name = os.path.basename(input_file)
-    # Write to file (dev location)
-    output_path = f'/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-{base_name}'
+    # Write to file - same directory as input
+    output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
     write_json(output_path, merged)
     print(f"Translation successful!")

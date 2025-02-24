@@ -16,10 +16,6 @@ Next steps (dev):
 * Instead of writing to /tmp/ - maybe we should make a folder called TextTranslate (etc.) and write translations there by filename
 * Look into SSL cert warning in translate.py
 
-* Eventually replace CLI target language with dropdown & dialogue box?
-// consult scripts here for guidance: https://github.com/creold/illustrator-scripts
-x
-
 ## Testfiles / notes / bugs
 Bug: Illustrator shows SPOD after running export!
 Example: Inconsistent...
@@ -41,6 +37,7 @@ Example: 36YA72
 
 ---
 ## Changelog
+2025-2-24: Target language now selected from dialogue box
 2025-2-21: Translate multiple works!
 2025-2-21: Scripts now write to filename based on .ai file (not input.json); API URL now read from config.json.
 2025-2-20: Line reconstruction

@@ -22,4 +22,4 @@ while IFS= read -r document_name; do
     fi
 done < /tmp/current_doc.txt
 
-echo "~~~~~~~~~FINISHED.~~~~~~~~~~~"
+echo "~~~~~~~~~FINISHED~~~~~~~~~~~"
