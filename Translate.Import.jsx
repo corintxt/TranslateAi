@@ -1,110 +1,104 @@
 /*****************************************************************
- * TextConvert.Import v 2.0 (2025) - Corin Faife - https://corinfaife.co/
+ * Translate.Import v 2.0 (2025) - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ==============
- * TextConvert.Import 1.1 - by Bramus! - https://www.bram.us/
+ * TextConvert.Import 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
 // Load JSON polyfill (doesn't natively exist in Illustrator).
 #include "jsonparse.jsx"
 
-var jsonData; // Global variable to hold the JSON data
+var jsonData; // Declare global
 var numReplaced	= 0;
 
 /** TextConvert.Import Init function
- * -------------------------------------------------------------
- */
-	 function initTextConvertImport() {
-		// Linefeed stuff (-currently unused-)
-		if ($.os.search(/windows/i) != -1)
-			operatingSystem = "windows";
-		else
-			operatingSystem = "mac";
+ * --------------------------------*/
+function initTextConvertImport() {
+    // Linefeed stuff (-currently unused?-)
+    if ($.os.search(/windows/i) != -1)
+        operatingSystem = "windows";
+    else
+        operatingSystem = "mac";
 
-		// Do we have a document open?
-		if (app.documents.length === 0) {
-			alert("Please open a file", "TextConvert.Export Error", true);
-			return;
-		}
-		// More than one document open
-		if (app.documents.length > 1) {
-			var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
-			if (runMultiple === true) {
-				docs	= app.documents;
-			} else {
-				docs	= [app.activeDocument];
-			}
-		// Only one document open
-		} else {
-			runMultiple 	= false;
-			docs 			= [app.activeDocument];
-		}
-		// Loop all documents
-		for (var i = 0; i < docs.length; i++){
-			// Fetch translations
-			// var translationFile = '???' //WIN
+    // Do we have a document open?
+    if (app.documents.length === 0) {
+        alert("Please open a file", "TextConvert.Export Error", true);
+        return;
+    }
+    // More than one document open
+    if (app.documents.length > 1) {
+        var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
+        if (runMultiple === true) {
+            docs	= app.documents;
+        } else {
+            docs	= [app.activeDocument];
+        }
+    // Only one document open
+    } else {
+        runMultiple 	= false;
+        docs 			= [app.activeDocument];
+    }
+    // Loop all documents
+    for (var i = 0; i < docs.length; i++){
+        // Fetch translations
+        // var translationFile = '???' //WIN
 
-			// Get document name without .ai extension
-			var docName = docs[i].name.replace(/\.ai$/i, "");			
-			var translationFile = "/tmp/T-" + docName + ".json"; //MAC
-			devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docName + ".json";
-			fetchTranslations(devTranslationFile)
+        // Get document name without .ai extension
+        var docName = docs[i].name.replace(/\.ai$/i, "");
+        var translationFile = Folder.myDocuments + '/TextConvert/T-' + docName + ".json";	//MAC(?)		
+        devTranslationFile = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/T-" + docName + ".json";
+        fetchTranslations(devTranslationFile)
 
-			// We have translations
-			if (jsonData && jsonData.frames) {
-				// Set active document
-				alert("Processing " + docs[i].name, "TextConvert.Import", true);
-				app.activeDocument = docs[i];
-				// Now apply the translations
-				textFrameImport(app.activeDocument, '/');
-				// update numReplaced
-				numReplaced++;
-			} else {
-				alert("No translations found", "TextConvert.Import", true);
-			}
-		}
-		// Give notice of export
-		alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
-	}
+        // If we have translations
+        if (jsonData && jsonData.frames) {
+            // Set active document
+            alert("Processing " + docs[i].name, "TextConvert.Import", true);
+            app.activeDocument = docs[i];
+            // Apply the translations
+            textFrameImport(app.activeDocument, '/');
+            // update numReplaced
+            numReplaced++;
+        } else {
+            alert("No translations found", "TextConvert.Import", true);
+        }
+    }
+    // Give notice of changes
+    alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
+}
 
-/**
- * fetchTranslations (v2: JSON)
-   * ---------------------------
- */
-	function fetchTranslations(filePath) {
-		// Create fileref
-		var fileIn = new File(filePath);
-		
-		// Check if file exists
-		if (!fileIn.exists) {
-			alert("No translation file found.", "TextConvert.Import", true);
-			return;
-		}
+/** fetchTranslations (v2: reads from JSON)
+* --------------------------------------- */
+function fetchTranslations(filePath) {
+    // Create fileref
+    var fileIn = new File(filePath);
+    
+    // Check if file exists
+    if (!fileIn.exists) {
+        alert("No translation file found.", "TextConvert.Import", true);
+        return;
+    }
 
-		// Set encoding and open file
-		fileIn.encoding = "UTF8";
-		fileIn.open("r", "TEXT");
+    // Set encoding and open file
+    fileIn.encoding = "UTF8";
+    fileIn.open("r", "TEXT");
 
-		// Read entire file contents
-		var jsonString = fileIn.read();
-		fileIn.close();
+    // Read entire file contents
+    var jsonString = fileIn.read();
+    fileIn.close();
 
-		try {
-			// Parse JSON content
-			jsonData = JSON.parse(jsonString);
-			// The tKeys and tValues arrays are no longer needed
-		} catch(e) {
-			alert("Error parsing JSON file: " + e.message, "TextConvert.Import", true);
-		}
-	}
+    try {
+        // Parse JSON content
+        jsonData = JSON.parse(jsonString);
+    } catch(e) {
+        alert("Error parsing JSON file: " + e.message, "TextConvert.Import", true);
+    }
+}
 
-  /**
-   * textFrameImport: 
-   * Import translated strings into the text frames from JSON
-   * -------------------------------------------------------------
- */
-  function textFrameImport(el) {
+/** textFrameImport: 
+* Import translated strings into the text frames from JSON
+* --------------------------------------------------------*/
+function textFrameImport(el) {
     // Get all text frames in document
     var frames = el.textFrames;
     
@@ -120,21 +114,19 @@ var numReplaced	= 0;
         if (frameData) {
             // Use lineBuilder to split content into lines
             var lines = lineBuilder(frameData.contents, frameData.lineChars);
-            
             // Join the lines with line breaks and update frame contents
             currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
-            
-            // Optional: Update frame position if needed
+            // Optional: Update frame position if needed?
             // currentFrame.position = frameData.anchor;
         }
     }
 }
 
-// LineBuilder function:
-// We use this to split the text into lines that fit into the text frame
-// when re-importing our translated text.
-// the character limit array is a property of each text frame that we will 
-// read in from the JSON file
+/** LineBuilder function: ///
+* We use this to split translated text into lines that fit the text frame.
+* The character limit array is a property of each text frame that we will 
+* read in from the JSON file
+----------------------------------------------*/
 function lineBuilder(text, charArray) {
     function trimString(str) {
         return str.replace(/^\s+|\s+$/g, '');
@@ -201,7 +193,6 @@ function lineBuilder(text, charArray) {
     return lines;
 }
 
-/** Call TextConvert.Import Init function
- * --------------------------------------
- */
+/** Call main import function
+ * --------------------------- */
 	 initTextConvertImport();

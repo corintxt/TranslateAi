@@ -10,7 +10,9 @@ Next steps (dev):
         => Where possible, executable scripts shouldn't be in Applications folder.
         => So we make a new folder for 'TextTranslate'
     * Make a feedback form for bug reporting! With screenshots uploaded etc.
-    * Switch API to prod
+    * Merge to main branch:
+        * Switch API to prod
+        * Change folder paths from devmode to prod => remove references to my file system in main branch
 
 * Should we ditch bash command script and make the whole thing Python?
 * Instead of writing to /tmp/ - maybe we should make a folder called TextTranslate (etc.) and write translations there by filename
