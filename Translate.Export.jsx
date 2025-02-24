@@ -1,9 +1,9 @@
 /*****************************************************************
- * TextConvert.Export v 2.0 (2025) - by Corin Faife - https://corinfaife.co/
+ * Translate.Export v 2.0 (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * =========================
- * TextConvert.Export 1.1 - by Bramus! - https://www.bram.us/
+ * TextConvert.Export 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
 // Load dependencies
@@ -12,13 +12,10 @@
 
 var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
-var targetLanguage; // Will be set by dialog
+var targetLanguage; // Declare global - will be set by dialog
 
-// TODO: Set target languate with dropdown & dialogue box;
-// consult scripts here for guidance: https://github.com/creold/illustrator-scripts
-
-/** TextConvert Export & Translate function
- * ----------------------------------------*/
+/** TextConvert Export function
+ * -----------------------------*/
 function initTextConvertTranslate() {
     // Show language selection dialog first
     targetLanguage = showLanguageDialog();
@@ -35,9 +32,7 @@ function initTextConvertTranslate() {
 		alert("Please open a file", "TextConvert.Export Error", true);
 		return;
 	}
-
 	// More than one document open?
-	// TODO: Add support for multiple files
 	if (app.documents.length > 1) {
 		runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
 		if (runMultiple === true) {
@@ -53,19 +48,14 @@ function initTextConvertTranslate() {
 
 	// Loop all documents
 	for (var i = 0; i < docs.length; i++){
-		// MAC: set temp file location
-		// Auto set filePath and fileName
-		// filePath = Folder.myDocuments + '/TextConvert-' + docs[i].name + '.txt';
-
 		// Remove .ai extension before writing
 		var docName = docs[i].name.replace(/\.ai$/i, "");
-		filePath = "/tmp/" + docName + ".json";
+		// MAC: set file location
+		filePath = Folder.myDocuments + '/TextConvert/' + docName + ".json";
 		devPath = "/Users/cfaife/Documents/MATERIALS/Code/Illustrator/TranslateText/test/" + docName + ".json";
+		// WINDOWS: set file location - can we use same path for my docs?
+		// filePath = Folder.myDocuments + '/TextConvert/' + docName + ".json";
 		
-		// WINDOWS: set temp file location?
-		// filePath = Folder.temp + '/translate_input.txt';
-		
-		// Write text to file
 		writeTextToFile(devPath, docs[i]);
 	}
 
@@ -73,8 +63,7 @@ function initTextConvertTranslate() {
 	if (runMultiple === true) {
 		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder", "TextExport");
 	} else {
-		// We don't need to do anything, why is this condition here?
-		// Was something here but got deleted?
+		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TextExport");
 	}
 	// Execute command script (unless we're in export-only mode)
 	if (callAPI){
@@ -126,11 +115,11 @@ function textFrameExport(el, fileOut) {
             var frameIndex = frameCount-1;
             var frame = frames[frameIndex];
             
-            // Enhanced debugging info
+            // Debugging info
             $.writeln("\n--- Frame " + frameIndex + " ---");
             $.writeln("Kind: " + frame.kind);
             $.writeln("Type: " + frame.typename);
-            // $.writeln("Contents: " + frame.contents);
+			// end debug
             
             // Check if textRange is available
             if (!frame.textRange) {
@@ -139,10 +128,8 @@ function textFrameExport(el, fileOut) {
 		
 			// Remove any line breaks from contents before writing to JSON
 			var contentString = sanitizeString(frame.textRange.contents);
-			// Write frame properties to JSON object with index as key
-			// => docs on frame properties: https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
-			// Get reference to all lines in range
-			var lines = frame.textRange.lines; // could we put this directly into jsonData?
+			// Get all lines in range
+			var lines = frame.textRange.lines;
 			var lineCount = lines.length;
 			// Get character count for each line
 			var characters = [];
@@ -160,7 +147,7 @@ function textFrameExport(el, fileOut) {
 				wordCount: frame.textRange.words.length,
 				charCount: frame.textRange.characters.length
 			};
-
+		// Error handling / debug
 		} catch (e) {
             $.writeln("ERROR in frame " + frameIndex + ":");
             $.writeln("Error message: " + e.message);
@@ -185,8 +172,9 @@ function executeCommandScript() {
     var commandFile = File(File($.fileName).parent.fsName + cfileName);
     
     if (commandFile.exists) {        
-        // Create a temporary file to store document name(s)
-        var tempFile = new File("/tmp/current_doc.txt");
+        // Create a temporary file to store document name(s) in TextConvert folder
+        var tempFile = new File("/tmp/current_doc.txt"); // MAC
+		// var tempFile = new File("C:\\Windows\\Temp\\current_doc.txt"); // WINDOWS
         tempFile.encoding = "UTF8";
         tempFile.lineFeed = "Unix"; // Force Unix line endings
         tempFile.open("w");
@@ -201,6 +189,7 @@ function executeCommandScript() {
         } else {
             // Remove .ai extension before writing
             var docName = app.activeDocument.name.replace(/\.ai$/i, "");
+			// Write active document name
             tempFile.writeln(docName);
         }
         tempFile.close();
@@ -212,6 +201,6 @@ function executeCommandScript() {
     }
 }
 
-/* Call script main function
- * --------------------------*/
+/* Call main function 
+ * --------------------*/
 initTextConvertTranslate();
