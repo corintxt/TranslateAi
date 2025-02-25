@@ -65,7 +65,7 @@ function initTextConvertTranslate() {
 
 	// Post processing: give notice (multiple) or open file (single)
 	if (runMultiple === true) {
-		alert("Parsed " + documents.length + " files;\nFiles were saved in your documents folder. Click OK to start translation.", "TextExport");
+		alert("Exported text from " + documents.length + " files.\nFiles were saved in your documents folder. Click OK to start translation.", "TextExport");
 	} else {
 		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TextExport");
 	}
@@ -99,7 +99,8 @@ function writeTextToFile(filePath, document) {
 function sanitizeString(str) {
     return str.toString()
              .replace(/[\r\n]+/g, '')  // Remove line breaks
-             .replace(/"/g, '\\"');     // Escape quotes
+             .replace(/"/g, '\\"')     // Escape quotes
+			 .replace(/\t/g, '\\t');    // Escape tabs
 }
 
 /** Text export into JSON

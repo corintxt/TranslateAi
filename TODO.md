@@ -2,7 +2,6 @@
 
 Next steps (dev):
 * Think about better name!
-* Test more graphics
 
 * Package for beta release:
     * Write list of things that Translator *can* and *can't* handle currently -- e.g. currently can't do multiple files; currently can't do different text formats in same text box.
@@ -19,8 +18,9 @@ Next steps (dev):
 * Look into SSL cert warning in translate.py
 
 ## Testfiles / notes / bugs
+
 Bug: Illustrator shows SPOD after running export!
-Example: Inconsistent...
+Example: Inconsistent..
 
 Bug: Error caused by type of text box (red frame) used in graphic
 Example: 36TW4YQ - Hakuto-R lunar mission
@@ -40,7 +40,8 @@ Example: 36YA72
 
 ---
 ## Changelog
-2025-2-24: Target language now selected from dialogue box
+2025-2-25: Fix bug where tab (\t) characters not handled
+2025-2-24: Target language now selected from dialogue box. Translated files now save to Documents/TextConvert; directory structure written in cross-platform way.
 2025-2-21: Translate multiple works!
 2025-2-21: Scripts now write to filename based on .ai file (not input.json); API URL now read from config.json.
 2025-2-20: Line reconstruction
