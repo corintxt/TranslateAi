@@ -1,20 +1,22 @@
 /*****************************************************************
- * Translate.Import v 2.0 (2025) - Corin Faife - https://corinfaife.co/
+ * TranslateAi.Import v 2.0 (2025) - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ==============
  * TextConvert.Import 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
-// Load JSON polyfill (doesn't natively exist in Illustrator).
-#include "jsonparse.jsx"
+// Load dependencies from script directory
+var scriptPath = File($.fileName).parent.fsName;
+var helpers = scriptPath + "/Scripts";
+$.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 
 var jsonData; // Declare global
 var numReplaced	= 0;
 
-/** TextConvert.Import Init function
+/** Translate.Import Init function
  * --------------------------------*/
-function initTextConvertImport() {
+function initTranslateImport() {
     // Linefeed stuff (-currently unused?-)
     if ($.os.search(/windows/i) != -1)
         operatingSystem = "windows";
@@ -23,12 +25,12 @@ function initTextConvertImport() {
 
     // Do we have a document open?
     if (app.documents.length === 0) {
-        alert("Please open a file", "TextConvert.Export Error", true);
+        alert("Please open a file", "TranslateAi.Export Error", true);
         return;
     }
     // More than one document open
     if (app.documents.length > 1) {
-        var runMultiple = confirm("TextConvert.Import has detected Multiple Files.\nDo you wish to run TextConvert.Import on all opened files?", true, "TextConvert.Import");
+        var runMultiple = confirm("Translate.Import has detected multiple files.\nDo you want to import text to all opened files?", true, "Translate.Import");
         if (runMultiple === true) {
             docs	= app.documents;
         } else {
@@ -46,7 +48,7 @@ function initTextConvertImport() {
         // Use platform-specific separator
         var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
         // Set cross-platform translation file path
-        var translationFile = Folder.myDocuments + separator + "TextConvert" + separator + "T-" + docName + ".json";
+        var translationFile = Folder.myDocuments + separator + "TranslateAi" + separator + "T-" + docName + ".json";
         // Optional dev path for testing
         var devTranslationFile = File($.fileName).parent.fsName + separator + "test" + separator + "T-" + docName + ".json";
         
@@ -56,18 +58,18 @@ function initTextConvertImport() {
         // If we have translations
         if (jsonData && jsonData.frames) {
             // Set active document
-            alert("Processing " + docs[i].name, "TextConvert.Import", true);
+            alert("Processing " + docs[i].name, "Translate.Import", true);
             app.activeDocument = docs[i];
             // Apply the translations
             textFrameImport(app.activeDocument);
             // update numReplaced
             numReplaced++;
         } else {
-            alert("No translations found for " + docs[i].name, "TextConvert.Import", true);
+            alert("No translations found for " + docs[i].name, "Translate.Import", true);
         }
     }
     // Give notice of changes
-    alert("Changed the contents of " + numReplaced + " files in total", "TextConvert.Import");
+    alert("Changed the contents of " + numReplaced + " files in total", "Translate.Import");
 }
 
 /** fetchTranslations (v2: reads from JSON)
@@ -78,7 +80,7 @@ function fetchTranslations(filePath) {
     
     // Check if file exists
     if (!fileIn.exists) {
-        alert("No translation file found.", "TextConvert.Import", true);
+        alert("No translation file found.", "TranslateAi.Import", true);
         return;
     }
 
@@ -94,7 +96,7 @@ function fetchTranslations(filePath) {
         // Parse JSON content
         jsonData = JSON.parse(jsonString);
     } catch(e) {
-        alert("Error parsing JSON file: " + e.message, "TextConvert.Import", true);
+        alert("Error parsing JSON file: " + e.message, "TranslateAi.Import", true);
     }
 }
 
@@ -198,4 +200,4 @@ function lineBuilder(text, charArray) {
 
 /** Call main import function
  * --------------------------- */
-	 initTextConvertImport();
+	 initTranslateImport();

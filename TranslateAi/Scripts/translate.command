@@ -4,7 +4,7 @@ echo "~~~~~AFP-TRANSLATE-TEXT~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 # Define document paths
-DOCS_DIR="$HOME/Documents/TextConvert"
+DOCS_DIR="$HOME/Documents/TranslateAi"
 SCRIPT_DIR="$(dirname "$0")"
 CURRENT_DOC="$DOCS_DIR/current_doc.txt"
 

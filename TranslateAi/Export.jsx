@@ -1,22 +1,24 @@
 /*****************************************************************
- * Translate.Export v 2.0 (2025) - by Corin Faife - https://corinfaife.co/
+ * TranslateAi.Export v 2.0 (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * =========================
  * TextConvert.Export 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
-// Load dependencies
-#include "jsonparse.jsx" // JSON polyfill
-#include "languageselect.jsx" // Language selection dialog
+// Load dependencies from TranslateAi directory
+var scriptPath = File($.fileName).parent.fsName;
+var helpers = scriptPath + "/Scripts";
+$.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
+$.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
 
 var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
 var targetLanguage; // Declare global - will be set by dialog
 
-/** TextConvert Export function
+/** Translate Export function
  * -----------------------------*/
-function initTextConvertTranslate() {
+function initTranslateTranslate() {
     // Show language selection dialog first
     targetLanguage = showLanguageDialog();
     if (!targetLanguage) return; // User cancelled
@@ -29,12 +31,12 @@ function initTextConvertTranslate() {
 
 	// Do we have a document open?
 	if (app.documents.length === 0) {
-		alert("Please open a file", "TextConvert.Export Error", true);
+		alert("Please open a file", "Translate.Export Error", true);
 		return;
 	}
 	// More than one document open?
 	if (app.documents.length > 1) {
-		runMultiple = confirm("TextConvert.Translate has detected Multiple Files.\nDo you wish to run TextConvert.Export on all opened files?", true, "TextConvert.Export");
+		runMultiple = confirm("Translate.Export has detected multiple files.\nDo you want to export text from all open files?", true, "Translate.Export");
 		if (runMultiple === true) {
 			docs	= app.documents;
 		} else {
@@ -55,7 +57,7 @@ function initTextConvertTranslate() {
         var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
         
         // Set file location (cross-platform)
-        filePath = Folder.myDocuments + separator + "TextConvert" + separator + docName + ".json";
+        filePath = Folder.myDocuments + separator + "TranslateAi" + separator + docName + ".json";
         
         // Optional dev path for testing
         devPath = File($.fileName).parent.fsName + separator + "test" + separator + docName + ".json";
@@ -176,16 +178,16 @@ function textFrameExport(el, fileOut) {
 function executeCommandScript() {
 	// Use platform-specific file separator
     var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
-    var cfileName = separator + 'pytranslate' + ($.os.search(/windows/i) != -1 ? '.bat' : '.command');
-    var commandFile = File(File($.fileName).parent.fsName + cfileName);
+    var cfileName = separator + 'translate' + ($.os.search(/windows/i) != -1 ? '.bat' : '.command');
+    var commandFile = File(helpers + cfileName);
     
     if (commandFile.exists) {        
 		// Create platform-specific path for temporary file
 		// var tempFile = new File("/tmp/current_doc.txt"); // MAC
-        var tempFile = new File(Folder.myDocuments + separator + "TextConvert" + separator + "current_doc.txt");
+        var tempFile = new File(Folder.myDocuments + separator + "TranslateAi" + separator + "current_doc.txt");
         
-        // Create TextConvert directory if it doesn't exist
-        var textConvertFolder = new Folder(Folder.myDocuments + separator + "TextConvert");
+        // Create TranslateAi directory if it doesn't exist
+        var textConvertFolder = new Folder(Folder.myDocuments + separator + "TranslateAi");
         if (!textConvertFolder.exists) {
             textConvertFolder.create();
         }
@@ -214,4 +216,4 @@ function executeCommandScript() {
 
 /* Call main function 
  * --------------------*/
-initTextConvertTranslate();
+initTranslateTranslate();
