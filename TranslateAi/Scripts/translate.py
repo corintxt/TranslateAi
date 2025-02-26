@@ -1,95 +1,123 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import requests
 import json
+from log_helper import log_via_http
 
-#### HANDLE ARGUMENTS, LOAD TEXT ####
-## Arguments
-# 1. Config file
-config_file = sys.argv[1]
-# 2. Text to translate
-input_file = sys.argv[2]
-
-# Read config variables
-with open(config_file) as f:
-    config = json.load(f)
-    dev_url = config.get('devUrl')
-    prod_url = config.get('prodUrl')
-
-print(f"Reading file: {input_file}")
-print()
-
-# Get text from input json, extract frame index and contents
-with open(input_file) as f:
-    input = json.load(f)
-
-    target_language = input.get('targetLanguage')
-    if not target_language:
-        print("Error: targetLanguage not set")
-        sys.exit(1)
-
-    frames = input['frames']
-    # Create new dictionary with just key and contents
-    contents = {}
-    for k, v in frames.items():
-        text = v['contents']
-        # Use json to sanitize string, handle apostrophes etc.
-        safe_text = json.loads(json.dumps(text))
-        contents[k] = safe_text
-
-#### MAKE API CALL ####
-def request_translation(url, data, headers):
-    print(f"Making request to {url}")
-    # Note: currently, verify=False is needed to avoid SSL error
-    response = requests.post(url, data=data, headers=headers, verify=False)
-    print(f"Status: {response.status_code}")
-    print()
-    return(json.dumps(response.json()))
-
-data = {
-    'inputText': json.dumps(contents), 
-    'provider': 'OpenAiChatGpt',
-    'destination_lang': target_language
+def log_translation_event(config, input_file, target_language, status_code, got_translation):
+    """
+    Log translation details to Cloud Storage.
+    """
+    job = {
+        "input_file": os.path.basename(input_file),
+        "target_language": target_language,
+        "status_code": status_code,
+        "got_translation": got_translation
     }
-# Headers for form data (needed by translate API)
-headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-# Make request - URL is read from config
-response = request_translation(prod_url, data, headers)
+    
+    logging_endpoint = config.get('devEndpoint')
+    api_key = config.get('logging-key')
+    
+    response = log_via_http(
+        message=json.dumps(job),
+        logging_endpoint=logging_endpoint,
+        api_key=api_key
+    )
+    
+    if not response:
+        print("Warning: Failed to log translation event", file=sys.stderr)
 
-print("---------Result:---------")
+def main():
+    # Argument handling
+    if len(sys.argv) < 3:
+        print("Usage: translate_log.py <config_file> <input_file>")
+        sys.exit(1)
+        
+    config_file = sys.argv[1]
+    input_file = sys.argv[2]
 
-#### PARSE RESPONSE & MERGE WITH FRAME PROPERTIES ####
-r = json.loads(response)
-# First we should check if translationText is more than empty string.
-if r['translationText'] != '':
-    # Escape some characters that break JSON
-    string_check = r['translationText'].replace("\\'", "'")
-    translation = json.loads(string_check)
-else:
-    print("!! Translate API returned no text !!")
-    translation = None
+    # Read config variables
+    with open(config_file) as f:
+        config = json.load(f)
+        dev_url = config.get('devUrl')
+        prod_url = config.get('prodUrl')
 
-# Merge translation contents with original JSON input, keeping other values same
-def merge_translations(input_json, translations):
-    for key in input_json['frames']:
-        if key in translations:
-            input_json['frames'][key]['contents'] = translations[key]
-    return input_json
+    print(f"Reading file: {input_file}")
+    print()
 
-# Write to file as JSON
-def write_json(filename, json_data):
-    try:
-        with open(filename, 'w', encoding='utf-8') as f:
-            json.dump(json_data, f, indent=4, ensure_ascii=False)
-    except Exception as e:
-        print(f"Error writing to file: {e}")
+    # Get text from input json
+    with open(input_file) as f:
+        input = json.load(f)
 
-# Write to file if translation is successful
-if translation:
-    merged = merge_translations(input, translation)
-    # Get base filename without path
-    base_name = os.path.basename(input_file)
-    # Write to file - same directory as input
-    output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
-    write_json(output_path, merged)
-    print(f"Translation successful!")
+        target_language = input.get('targetLanguage')
+        if not target_language:
+            print("Error: targetLanguage not set")
+            sys.exit(1)
+
+        frames = input['frames']
+        contents = {}
+        for k, v in frames.items():
+            text = v['contents']
+            safe_text = json.loads(json.dumps(text))
+            contents[k] = safe_text
+
+    # Send to translation API
+    data = {
+        'inputText': json.dumps(contents), 
+        'provider': 'OpenAiChatGpt',
+        'destination_lang': target_language
+    }
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    
+    print(f"Making request to {prod_url}")
+    response = requests.post(prod_url, data=data, headers=headers, verify=False)
+    status_code = response.status_code
+    print(f"Status: {status_code}")
+    print()
+
+    # Continue with response handling
+    response_json = json.dumps(response.json())
+    r = json.loads(response_json)
+
+    # First we should check if translationText is more than empty string:
+    if r['translationText'] != '':
+        got_translation = True
+        # Escape some characters that break JSON
+        string_check = r['translationText'].replace("\\'", "'")
+        translation = json.loads(string_check)
+    else:
+        print("!! Translate API returned no text !!")
+        got_translation = False
+
+    # Log translation event
+    log_translation_event(config, input_file, target_language, status_code, got_translation)
+
+    # Merge translation contents with original JSON input, keeping other values same
+    def merge_translations(input_json, translations):
+        for key in input_json['frames']:
+            if key in translations:
+                input_json['frames'][key]['contents'] = translations[key]
+        return input_json
+
+    # Write to file as JSON
+    def write_json(filename, json_data):
+        try:
+            with open(filename, 'w', encoding='utf-8') as f:
+                json.dump(json_data, f, indent=4, ensure_ascii=False)
+        except Exception as e:
+            print(f"Error writing to file: {e}")
+
+    # Write to file if translation is successful
+    if got_translation:
+        merged = merge_translations(input, translation)
+        # Get base filename without path
+        base_name = os.path.basename(input_file)
+        # Write to file - same directory as input
+        output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
+        write_json(output_path, merged)
+        print(f"Translation successful!")
+
+if __name__ == "__main__":
+   main()
