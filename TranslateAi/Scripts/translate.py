@@ -54,7 +54,7 @@ data = {
 # Headers for form data (needed by translate API)
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 # Make request - URL is read from config
-response = request_translation(dev_url, data, headers)
+response = request_translation(prod_url, data, headers)
 
 print("---------Result:---------")
 

@@ -1,4 +1,4 @@
-# Illustrator Text Translator
+# TranslateAI
 Export text from Adobe Illustrator files, send to machine translation services and re-import.
 
 ## Installation (Mac)
