@@ -4,13 +4,65 @@ import os
 import sys
 import requests
 import json
-from log_helper import log_via_http
+import datetime
+import uuid
+import socket
+import platform
 
-def log_translation_event(config, input_file, target_language, status_code, got_translation):
+
+def log_via_http(message, logging_endpoint, api_key=None, client_id=None):
     """
-    Log translation details to Cloud Storage.
+    Log a message to Google Cloud Storage via an HTTP endpoint.
+    
+    Args:
+        message: JSON string containing the message to log
+        logging_endpoint: URL of the logging service
+        api_key: API key for authentication
+        client_id: Unique identifier for this client
+    
+    Returns:
+        Server response
+    """
+    # Set up headers with authentication if provided
+    headers = {
+        "Content-Type": "application/json"
+    }
+    
+    if api_key:
+        headers["X-API-Key"] = api_key
+    
+    # Send the data to the logging endpoint
+    try:
+        response = requests.post(
+            logging_endpoint,
+            headers=headers,
+            data=message,  # Send message directly since it's already formatted
+            timeout=10
+        )
+        
+        # Check if the request was successful
+        response.raise_for_status()
+        return response.json()
+    
+    except requests.exceptions.RequestException as e:
+        print(f"Error sending log: {e}", file=sys.stderr)
+        return None
+
+
+def log_translation_event(config, 
+                          input_file, 
+                          target_language, 
+                          status_code, 
+                          got_translation):
+    """
+    Log translation event to Cloud Storage as JSON.
     """
     job = {
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "client_id": str(uuid.uuid4()),
+        "hostname": socket.gethostname(),
+        "platform": platform.platform(),
+        "python_version": platform.python_version(),
         "input_file": os.path.basename(input_file),
         "target_language": target_language,
         "status_code": status_code,
