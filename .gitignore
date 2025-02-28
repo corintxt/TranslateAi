@@ -2,3 +2,4 @@
 config*.json
 *.txt
 /test
+/Examples
