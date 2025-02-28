@@ -1,5 +1,35 @@
 @echo off
 setlocal EnableDelayedExpansion
+
+:: Check directory existence
+if not exist "%USERPROFILE%\Documents\TranslateAi" (
+    echo Error: Directory %USERPROFILE%\Documents\TranslateAi does not exist
+    pause
+    exit /b 1
+)
+
+:: Check current_doc.txt
+if not exist "%DOCS_DIR%\current_doc.txt" (
+    echo Error: current_doc.txt not found at %DOCS_DIR%
+    pause
+    exit /b 1
+)
+
+:: Check config.json
+if not exist "%SCRIPT_DIR%config.json" (
+    echo Error: config.json not found at %SCRIPT_DIR%
+    pause
+    exit /b 1
+)
+
+:: Try to read current_doc.txt
+type "%DOCS_DIR%\current_doc.txt" >nul 2>&1
+if errorlevel 1 (
+    echo Error: Cannot read current_doc.txt
+    pause
+    exit /b 1
+)
+
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo ~~~~~AFP-TRANSLATE-TEXT~~~~~~~
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -30,3 +60,4 @@ for /f "usebackq tokens=* delims=" %%a in ("%CURRENT_DOC%") do (
 )
 
 echo ~~~~~~~~~FINISHED~~~~~~~~~~~
+pause

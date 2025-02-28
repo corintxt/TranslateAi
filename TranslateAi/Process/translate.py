@@ -9,21 +9,21 @@ import uuid
 import socket
 import platform
 
-
+## THE LOGGING PART
 def log_via_http(message, logging_endpoint, api_key=None, client_id=None):
     """
-    Log a message to Google Cloud Storage via an HTTP endpoint.
+    Adaptable function to log data to Google Cloud Storage via HTTP endpoint.
     
     Args:
-        message: JSON string containing the message to log
-        logging_endpoint: URL of the logging service
-        api_key: API key for authentication
-        client_id: Unique identifier for this client
+        message: JSON string containing data
+        logging_endpoint: URL of logging service
+        api_key: Key for authentication
+        client_id: Optional identifier for the client
     
     Returns:
         Server response
     """
-    # Set up headers with authentication if provided
+    # Set up headers with authentication (if provided)
     headers = {
         "Content-Type": "application/json"
     }
@@ -36,7 +36,7 @@ def log_via_http(message, logging_endpoint, api_key=None, client_id=None):
         response = requests.post(
             logging_endpoint,
             headers=headers,
-            data=message,  # Send message directly since it's already formatted
+            data=message,
             timeout=10
         )
         
@@ -55,7 +55,7 @@ def log_translation_event(config,
                           status_code, 
                           got_translation):
     """
-    Log translation event to Cloud Storage as JSON.
+    Specific function to log data from Translate.Ai translation event.
     """
     job = {
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
@@ -82,10 +82,15 @@ def log_translation_event(config,
     if not response:
         print("Warning: Failed to log translation event", file=sys.stderr)
 
+## THE API PART
 def main():
+    """
+    Take config file and input file from system arguments.
+    Read input file, send contents to translation API, and write to output file.
+    """
     # Argument handling
     if len(sys.argv) < 3:
-        print("Usage: translate_log.py <config_file> <input_file>")
+        print("Usage: translate.py <config_file> <input_file>")
         sys.exit(1)
         
     config_file = sys.argv[1]
@@ -147,14 +152,15 @@ def main():
     # Log translation event
     log_translation_event(config, input_file, target_language, status_code, got_translation)
 
-    # Merge translation contents with original JSON input, keeping other values same
+    # Merge translation contents with original JSON input,
+    # preserving other values (e.g. frame properties)
     def merge_translations(input_json, translations):
         for key in input_json['frames']:
             if key in translations:
                 input_json['frames'][key]['contents'] = translations[key]
         return input_json
 
-    # Write to file as JSON
+    # Func: write file as JSON
     def write_json(filename, json_data):
         try:
             with open(filename, 'w', encoding='utf-8') as f:
