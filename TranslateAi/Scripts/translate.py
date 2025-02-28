@@ -59,14 +59,15 @@ def log_translation_event(config,
     """
     job = {
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "client_id": str(uuid.uuid4()),
+        "client_id": str(uuid.uuid4())[:8],
         "hostname": socket.gethostname(),
         "platform": platform.platform(),
         "python_version": platform.python_version(),
         "input_file": os.path.basename(input_file),
         "target_language": target_language,
         "status_code": status_code,
-        "got_translation": got_translation
+        "translation_returned": got_translation,
+        "error_message": None
     }
     
     logging_endpoint = config.get('devEndpoint')

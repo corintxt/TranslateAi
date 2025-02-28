@@ -3,13 +3,13 @@
 ## Beta release 
 For beta release:
 * Document the new install process, with screenshots
-* Create the Windows file version & ask Valentin to test.
+* Create the Windows file version & ask someone to test.
+* Add Python error logging
 
 * Write list of things that TranslateAi *can* and *can't* handle currently -- e.g. currently can't do multiple files; currently can't do different text formats in same text box.
 * Make a feedback form for bug reporting! With screenshots uploaded etc.
 * Merge to main branch:
     * Change folder paths from devmode to prod => remove references to my file system in main branch
-
     
 
 ## Stage 2 release
