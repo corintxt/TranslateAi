@@ -3,20 +3,18 @@
 ## Beta release 
 For beta release:
 * Document the new install process, with screenshots
-* Create the Windows file version & ask someone to test.
 * Add Python error logging
 
 * Write list of things that TranslateAi *can* and *can't* handle currently -- e.g. currently can't do multiple files; currently can't do different text formats in same text box.
 * Make a feedback form for bug reporting! With screenshots uploaded etc.
 * Merge to main branch:
-    * Change folder paths from devmode to prod => remove references to my file system in main branch
+    * Change folder paths from devmode to prod => remove references to personal file system in main branch
     
 
 ## Stage 2 release
 * Look into SSL cert warning in translate.py
-* Should we ditch bash command script and make the whole thing Python..?
-* More sophisticated logging
-* Fix more bugs
+* Fix bugs (see below and in Basecamp)
+* Research Arabic R-L text possibilities
 
 ## Bugs and examples
 
@@ -41,6 +39,7 @@ Example: 36YA72
 
 ---
 ### Changelog
+2025-2-28: Create translate.bat file for Windows
 2025-2-25: Fix bug where tab (\t) characters not handled
 2025-2-24: Target language now selected from dialogue box. Translated files now save to Documents/TextConvert; directory structure written in cross-platform way.
 2025-2-21: Translate multiple works!
