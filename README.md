@@ -3,25 +3,9 @@ Export text from Adobe Illustrator files, send to machine translation services a
 
 ## Installation (Mac)
 
-*NOTE: You will need to have administrator permissions on your machine to install the scripts.**
+*NOTE: You will need to have administrator permissions on your machine to install the scripts.*
 
-To run scripts from the **File > Scripts** menu in Illustrator, they must be placed in your **Scripts** directory.
-
-The location should be something like:
-
-> Applications > Adobe Illustrator {version_number} > Presets > {language} > Scripts
-
-![Mac filepath](img/macfilepath.png)
-
-First make sure Illustrator is closed. Then copy the following files into the scripts directory:
-* `Translate.[English/Français/Español].jsx` - whichever language(s) you want to translate into.
-* `Translate.Import.jsx`
-* `translate.command`
-* `config.json`
-
-You will be prompted to enter your password to do this.
-
-NEXT: 
+### Make command script executable 
 
 For the translate function to work, the `translate.command` script must be made into an **executable file**. To do this you must run the "change mode" command, `chmod`, from terminal, with administrator permissions.
 
@@ -37,7 +21,21 @@ For the translate function to work, the `translate.command` script must be made 
 
 4) Press enter. You should be prompted for your admin password. Type it in and hit enter. (You won't get any confirmation that it worked, but if the terminal starts a new line you're good.)
 
----
+### Place scripts into Illustrator script folder
+
+To run scripts from the **File > Scripts** menu in Illustrator, they must be placed in your **Scripts** directory.
+
+The location should be something like:
+
+> Applications > Adobe Illustrator {version_number} > Presets > {language} > Scripts
+
+![Mac filepath](img/macfilepath.png)
+
+First make sure Illustrator is closed. Then move the `TranslateAi` folder into your Scripts directory.
+
+You will be prompted to enter your password to do this.
+
+### Allow apps from anywhere
 
 Lastly, you'll need to configure your sytem to run software downloaded from outside of the App Store.
 
@@ -67,9 +65,3 @@ Now you should be ready to run the script!
 You should see a confirmation of the document name. Click 'OK' and text should be re-imported into the document in the correct places.
 
 ![Processing](img/Processing.png)
-
----
-
-#### KNOWN BUGS / TO FIX:
-* Translated text sometimes does not respect original boundary box
-* Multiple colors within same text box are lost

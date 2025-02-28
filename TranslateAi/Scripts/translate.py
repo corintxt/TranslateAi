@@ -70,7 +70,7 @@ def log_translation_event(config,
         "error_message": None
     }
     
-    logging_endpoint = config.get('devEndpoint')
+    logging_endpoint = config.get('loggingEndpoint')
     api_key = config.get('logging-key')
     
     response = log_via_http(
