@@ -1,6 +1,15 @@
 @echo off
 setlocal EnableDelayedExpansion
 
+echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+echo ~~~~~AFP-TRANSLATE-TEXT~~~~~~~
+echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+:: Define document paths
+set "DOCS_DIR=%USERPROFILE%\Documents\TranslateAi"
+set "SCRIPT_DIR=%~dp0"
+set "CURRENT_DOC=%DOCS_DIR%\current_doc.txt"
+
 :: Check directory existence
 if not exist "%USERPROFILE%\Documents\TranslateAi" (
     echo Error: Directory %USERPROFILE%\Documents\TranslateAi does not exist
@@ -30,14 +39,7 @@ if errorlevel 1 (
     exit /b 1
 )
 
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo ~~~~~AFP-TRANSLATE-TEXT~~~~~~~
-echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-:: Define document paths
-set "DOCS_DIR=%USERPROFILE%\Documents\TranslateAi"
-set "SCRIPT_DIR=%~dp0"
-set "CURRENT_DOC=%DOCS_DIR%\current_doc.txt"
+:: START MAIN SCRIPT.
 
 :: Read all document names from temp file
 for /f "usebackq tokens=* delims=" %%a in ("%CURRENT_DOC%") do (
