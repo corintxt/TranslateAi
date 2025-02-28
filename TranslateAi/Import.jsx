@@ -8,7 +8,7 @@
 
 // Load dependencies from script directory
 var scriptPath = File($.fileName).parent.fsName;
-var helpers = scriptPath + "/Scripts";
+var helpers = scriptPath + "/Process";
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 
 var jsonData; // Declare global

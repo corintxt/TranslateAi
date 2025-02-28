@@ -8,7 +8,7 @@
 
 // Load dependencies from TranslateAi directory
 var scriptPath = File($.fileName).parent.fsName;
-var helpers = scriptPath + "/Scripts";
+var helpers = scriptPath + "/Process";
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 $.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
 
