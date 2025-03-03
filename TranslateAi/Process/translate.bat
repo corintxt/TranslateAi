@@ -5,8 +5,27 @@ echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 echo ~~~~~AFP-TRANSLATE-TEXT~~~~~~~
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:: Define document paths
-set "DOCS_DIR=%USERPROFILE%\Documents\TranslateAi"
+:: Look for multiple possible OneDrive Documents folder paths
+if exist "%USERPROFILE%\OneDrive - Agence France-Presse\Documents\TranslateAi" (
+    set "DOCS_DIR=%USERPROFILE%\OneDrive - Agence France-Presse\Documents\TranslateAi"
+    echo Using OneDrive AFP Documents folder
+) else if exist "%USERPROFILE%\OneDrive\Documents\TranslateAi" (
+    set "DOCS_DIR=%USERPROFILE%\OneDrive\Documents\TranslateAi"
+    echo Using OneDrive Documents folder
+) else if exist "%USERPROFILE%\Documents\TranslateAi" (
+    set "DOCS_DIR=%USERPROFILE%\Documents\TranslateAi"
+    echo Using local Documents folder
+) else (
+    echo Error: Could not find TranslateAi directory in Documents
+    echo Checked: 
+    echo - %USERPROFILE%\OneDrive\Documents\TranslateAi
+    echo - %USERPROFILE%\OneDrive - Agence France-Presse\Documents\TranslateAi
+    echo - %USERPROFILE%\Documents\TranslateAi
+    pause
+    exit /b 1
+)
+
+:: Define other document paths
 set "SCRIPT_DIR=%~dp0"
 set "CURRENT_DOC=%DOCS_DIR%\current_doc.txt"
 

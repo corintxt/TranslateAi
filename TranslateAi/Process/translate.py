@@ -96,30 +96,48 @@ def main():
     config_file = sys.argv[1]
     input_file = sys.argv[2]
 
+    # Normalize paths for cross-platform compatibility
+    config_file = os.path.normpath(config_file)
+    input_file = os.path.normpath(input_file)
+
     # Read config variables
-    with open(config_file) as f:
-        config = json.load(f)
-        dev_url = config.get('devUrl')
-        prod_url = config.get('prodUrl')
+    try:
+        with open(config_file, encoding='utf-8') as f:
+            config = json.load(f)
+            dev_url = config.get('devUrl')
+            prod_url = config.get('prodUrl')
+    except FileNotFoundError:
+        print(f"Error: Config file not found: {config_file}")
+        sys.exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: Invalid JSON in config file: {config_file}")
+        sys.exit(1)
 
     print(f"Reading file: {input_file}")
     print()
 
     # Get text from input json
-    with open(input_file) as f:
-        input = json.load(f)
+    try:
+        with open(input_file, encoding='utf-8') as f:
+            input = json.load(f)
+            
+            target_language = input.get('targetLanguage')
+            if not target_language:
+                print("Error: targetLanguage not set")
+                sys.exit(1)
 
-        target_language = input.get('targetLanguage')
-        if not target_language:
-            print("Error: targetLanguage not set")
-            sys.exit(1)
-
-        frames = input['frames']
-        contents = {}
-        for k, v in frames.items():
-            text = v['contents']
-            safe_text = json.loads(json.dumps(text))
-            contents[k] = safe_text
+            frames = input.get('frames', {})
+            contents = {}
+            for k, v in frames.items():
+                text = v.get('contents', '')
+                safe_text = json.loads(json.dumps(text))
+                contents[k] = safe_text
+    except FileNotFoundError:
+        print(f"Error: Input file not found: {input_file}")
+        sys.exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: Invalid JSON in input file: {input_file}")
+        sys.exit(1)
 
     # Send to translation API
     data = {

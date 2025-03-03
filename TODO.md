@@ -9,14 +9,24 @@ For beta release:
 * Make a feedback form for bug reporting! With screenshots uploaded etc.
 * Merge to main branch:
     * Change folder paths from devmode to prod => remove references to personal file system in main branch
-    
 
 ## Stage 2 release
-* Look into SSL cert warning in translate.py
+* Look at how to fix SSL cert warning in translate.py (ask Baptiste at DSI)
 * Fix bugs (see below and in Basecamp)
 * Research Arabic R-L text possibilities
+* Start writing tests (!) in order to make changes and know nothing will break.
 
 ## Bugs and examples
+
+### Windows install issue
+
+The JSX scripts and the translate.bat script both read the MyDocuments path from a *variable*. But the scripts are receiving different variables: JSX gets a link to the user's documents file in One Drive, whereas translate.bat gets a link to the local C:/Users/MyDocuments folder.
+
+=> We need to check for the presence of a OneDrive account -- perhaps in the variables we use to get user's Docs folder? -- and if it exists, point both links at the same place.
+
+*Hopefully* we can do this in a cross platform way. However if this is not possible, we can also release a Windows version and a Mac version of the script. (Only problem will be to sync changes between them.)
+
+---
 
 Bug: Illustrator shows SPOD after running export!
 Example: Inconsistent..
