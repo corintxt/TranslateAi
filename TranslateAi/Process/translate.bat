@@ -2,7 +2,7 @@
 setlocal EnableDelayedExpansion
 
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-echo ~~~~~AFP-TRANSLATE-TEXT~~~~~~~
+echo ~~~~~~AFP-TRANSLATE-AI~~~~~~~~
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 :: Look for multiple possible OneDrive Documents folder paths

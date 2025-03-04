@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-echo "~~~~~AFP-TRANSLATE-TEXT~~~~~~~"
+echo "~~~~~~AFP-TRANSLATE-AI~~~~~~~~"
 echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 
 # Define document paths
