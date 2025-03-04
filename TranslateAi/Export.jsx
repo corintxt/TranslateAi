@@ -31,12 +31,12 @@ function initTranslateTranslate() {
 
 	// Do we have a document open?
 	if (app.documents.length === 0) {
-		alert("Please open a file", "Translate.Export Error", true);
+		alert("Please open a file", "TranslateAi.Export Error", true);
 		return;
 	}
 	// More than one document open?
 	if (app.documents.length > 1) {
-		runMultiple = confirm("Translate.Export has detected multiple files.\nDo you want to export text from all open files?", true, "Translate.Export");
+		runMultiple = confirm("TranslateAi has detected multiple files.\nDo you want to export text from all open files?", true, "TranslateAi");
 		if (runMultiple === true) {
 			docs	= app.documents;
 		} else {
@@ -67,9 +67,9 @@ function initTranslateTranslate() {
 
 	// Post processing: give notice (multiple) or open file (single)
 	if (runMultiple === true) {
-		alert("Exported text from " + documents.length + " files.\nFiles were saved in your documents folder. Click OK to start translation.", "TextExport");
+		alert("Exported text from " + documents.length + " files.\nFiles were saved in your documents folder. Click OK to start translation.", "TranslateAi");
 	} else {
-		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TextExport");
+		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TranslateAi");
 	}
 	// Execute command script (unless we're in export-only mode)
 	if (callAPI){

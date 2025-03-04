@@ -25,12 +25,12 @@ function initTranslateImport() {
 
     // Do we have a document open?
     if (app.documents.length === 0) {
-        alert("Please open a file", "TranslateAi.Export Error", true);
+        alert("Please open a file", "TranslateAi.Import Error", true);
         return;
     }
     // More than one document open
     if (app.documents.length > 1) {
-        var runMultiple = confirm("Translate.Import has detected multiple files.\nDo you want to import text to all opened files?", true, "Translate.Import");
+        var runMultiple = confirm("TranslateAi.Import has detected multiple files.\nDo you want to import text to all opened files?", true, "TranslateAi");
         if (runMultiple === true) {
             docs	= app.documents;
         } else {
@@ -58,18 +58,18 @@ function initTranslateImport() {
         // If we have translations
         if (jsonData && jsonData.frames) {
             // Set active document
-            alert("Processing " + docs[i].name, "Translate.Import", true);
+            alert("Processing " + docs[i].name, "TranslateAi", true);
             app.activeDocument = docs[i];
             // Apply the translations
             textFrameImport(app.activeDocument);
             // update numReplaced
             numReplaced++;
         } else {
-            alert("No translations found for " + docs[i].name, "Translate.Import", true);
+            alert("No translations found for " + docs[i].name, "TranslateAi", true);
         }
     }
     // Give notice of changes
-    alert("Changed the contents of " + numReplaced + " files in total", "Translate.Import");
+    alert("Changed the contents of " + numReplaced + " files in total", "TranslateAi");
 }
 
 /** fetchTranslations (v2: reads from JSON)

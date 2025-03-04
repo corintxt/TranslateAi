@@ -1,16 +1,16 @@
-# TranslateAI
-Export text from Adobe Illustrator files, send to machine translation services and re-import.
+# TranslateAi
+Export text from Adobe Illustrator files, send to translation API and re-import into correct text boxes.
 
 ## Installation (Windows)
 ### Download the code
 
-Click on the blue **Code** box, then Download source code: **zip**. (If you're familiar with Git you can also just clone the repo instead.)
+Click on the blue **Code** box above, then Download source code: **zip**. (If you're familiar with Git you can also clone the repo instead.)
 
 ![Zip file](img/DownloadZip.PNG)
 
-Extract the folder from the zip file – you can put it anywhere on your computer at this stage.
+Extract the folder from the zip file – you can put it anywhere on your computer for now.
 
-Open the extracted folder, find the TranslateAI folder, and inside it the Process subfolder. Put the `config.json` file into the Process folder.
+Open the zip file, find the TranslateAi folder, and put the `config.json` file (sent separately) into the Process folder.
 
 ![ConfigJSON](img/configJSON.PNG)
 
@@ -18,19 +18,19 @@ Copy the TranslateAI folder into your Adobe Illustrator Scripts folder. The loca
 
 `C:\Program Files\Adobe\Adobe Illustrator 202X\Presets\[language]\Scripts`
 
-NOTE: You will need an admin password to do this.
+NOTE: You will need an administrator password to do this.
 
 ![ConfigJSON](img/ScriptsFolder.PNG)
 
-When the TranslateAI folder is inside the Scripts folder, the translation script is installed. You will need to restart Illustrator to use it.
+When the TranslateAI folder is inside the Scripts folder the translation script is installed. You will need to restart Illustrator to use it.
 
-### Running the script 
+### Running the script
 
 #### Install Python
 
-If you don't already have Python installed, you will need to download it from the AFP app portal.
+If you don't already have Python installed, you will need to download it from the AFP app management portal.
 
-You will also need to install the `requests` Python module.
+You will also need to install the `requests` module.
 
 When Python is installed, open the Windows command prompt and type:
 
@@ -40,9 +40,9 @@ Then hit Enter to install.
 
 #### Translate a graphic document
 
-Open the graphic document you wish to translate. 
+Open the graphic you want to translate. 
 
-If you haven't already done so: Save your work! (Sometimes the script makes Illustrator crash)
+If you haven't already done so, save your work. (Sometimes the script makes Illustrator crash. I'm working on fixing this!)
 
 Click: `File > Scripts > TranslateAi > Export`
 
