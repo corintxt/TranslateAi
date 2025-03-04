@@ -29,13 +29,6 @@ if exist "%USERPROFILE%\OneDrive - Agence France-Presse\Documents\TranslateAi" (
 set "SCRIPT_DIR=%~dp0"
 set "CURRENT_DOC=%DOCS_DIR%\current_doc.txt"
 
-:: Check directory existence
-if not exist "%USERPROFILE%\Documents\TranslateAi" (
-    echo Error: Directory %USERPROFILE%\Documents\TranslateAi does not exist
-    pause
-    exit /b 1
-)
-
 :: Check current_doc.txt
 if not exist "%DOCS_DIR%\current_doc.txt" (
     echo Error: current_doc.txt not found at %DOCS_DIR%
