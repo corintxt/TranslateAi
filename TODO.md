@@ -29,7 +29,6 @@ Example:
 
 Bug: Translation does not preserve variations in text formatting within text frame
 Example: 36Y44DJ (Biodiversity)
-=> Second release of the script should identify special formatting.
 
 Bug: Unexpected end of JSON input
 Example: 36YA72
