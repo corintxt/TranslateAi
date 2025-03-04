@@ -205,7 +205,8 @@ def main():
         # Write to file - same directory as input
         output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
         write_json(output_path, merged)
-        print(f"Translation successful!")
+        print(f"** Translation successful **")
+        print()
 
 if __name__ == "__main__":
    main()

@@ -1,6 +1,72 @@
 # TranslateAI
 Export text from Adobe Illustrator files, send to machine translation services and re-import.
 
+## Installation (Windows)
+### Download the code
+
+Click on the blue **Code** box, then Download source code: **zip**. (If you're familiar with Git you can also just clone the repo instead.)
+
+![Zip file](img/DownloadZip.PNG)
+
+Extract the folder from the zip file – you can put it anywhere on your computer at this stage.
+
+Open the extracted folder, find the TranslateAI folder, and inside it the Process subfolder. Put the `config.json` file into the Process folder.
+
+![ConfigJSON](img/configJSON.PNG)
+
+Copy the TranslateAI folder into your Adobe Illustrator Scripts folder. The location will be something like:
+
+`C:\Program Files\Adobe\Adobe Illustrator 202X\Presets\[language]\Scripts`
+
+NOTE: You will need an admin password to do this.
+
+![ConfigJSON](img/ScriptsFolder.PNG)
+
+When the TranslateAI folder is inside the Scripts folder, the translation script is installed. You will need to restart Illustrator to use it.
+
+### Running the script 
+
+#### Install Python
+
+If you don't already have Python installed, you will need to download it from the AFP app portal.
+
+You will also need to install the `requests` Python module.
+
+When Python is installed, open the Windows command prompt and type:
+
+`pip install requests`
+
+Then hit Enter to install.
+
+#### Translate a graphic document
+
+Open the graphic document you wish to translate. 
+
+If you haven't already done so: Save your work! (Sometimes the script makes Illustrator crash)
+
+Click: `File > Scripts > TranslateAi > Export`
+
+![TranslateExport](img/TranslateExport.PNG)
+
+You should see a message telling you that text was exported.
+ Click **OK**.
+
+![ClickOK](img/StartTranslation.PNG)
+
+You will see a command prompt window open, while the translation script communicates with the AFP translate API. 
+
+Wait for the text that says "Translation successful"
+
+![Successful](img/TranslationSuccessful.PNG)
+
+Click `File > Scripts > TranslateAi > Import` to place the translated text into the graphic document.
+
+Sometimes you will see a message that says "Translate API returned no text." 
+
+When this happens, try running the TranslateAi > Export script again from Illustrator.
+
+![NoText](img/NoText.PNG)
+
 ## Installation (Mac)
 
 *NOTE: You will need to have administrator permissions on your machine to install the scripts.*
@@ -46,22 +112,4 @@ And select "Allow apps downloaded from: Anywhere"
 
 ![software anywhere](img/anywhere.jpg)
 
-Now you should be ready to run the script!
-
----
-
-## Usage
-
-* Open an Illustrator document containing text to be translated
-* Click **File > Scripts > Translate.[Language]** to select the language you want to translate into.
-
-![Scripts](img/scripts.png)
-
-* A terminal window will open. Wait until you get the message `"Ready to import translation"`
-![Ready](img/ready.png)
-
-* Click **File > Scripts > Translate.Import**
-
-You should see a confirmation of the document name. Click 'OK' and text should be re-imported into the document in the correct places.
-
-![Processing](img/Processing.png)
+Now the tool should be ready to run.
