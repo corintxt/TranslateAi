@@ -147,7 +147,7 @@ function textFrameExport(el, fileOut) {
 			}
 			// Add frame data to JSON object
 			jsonData.frames[frameIndex] = {
-				anchor: frame.anchor,
+				// anchor: frame.anchor, -- not needed, sometimes creates error
 				contents: contentString,
 				lineCount: lineCount,
 				lineChars:characters,

@@ -1,4 +1,4 @@
-// Add these variables at the top of the file with other global variables
+// Limit available languages to those used by graphics dept.
 var targetLanguage = "fr"; // default to French
 var languageOptions = {
     "en": "English",

@@ -4,7 +4,6 @@
 For beta release:
 
 * Write list of things TranslateAi *can* and *can't* handle -- e.g. can't do different text formats in same text box.
-* Make a feedback form for bug reporting! With screenshots uploaded etc.
 * Change folder paths from devmode to prod => remove references to personal file system in main branch
 
 ## Stage 2 release
