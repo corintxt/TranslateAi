@@ -1,11 +1,5 @@
 # TODO / development roadmap
 
-## Beta release 
-For beta release:
-
-* Write list of things TranslateAi *can* and *can't* handle -- e.g. can't do different text formats in same text box.
-* Change folder paths from devmode to prod => remove references to personal file system in main branch
-
 ## Stage 2 release
 * Look at how to fix SSL cert warning in translate.py (ask Baptiste at DSI)
 * Fix bugs (see below and in Basecamp)
