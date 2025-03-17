@@ -65,7 +65,6 @@ def main():
     if len(sys.argv) < 2:
         print("Usage: translate.py <input_file>")
         sys.exit(1)
-    
 
     input_file = sys.argv[1]
     tl = sys.argv[2]
@@ -75,7 +74,6 @@ def main():
     input_data, target_language, contents = load_input_file(input_file)
 
     print(f"Reading file: {input_file}")
-    print()
 
     # Send to translation API
     data = {
@@ -87,8 +85,11 @@ def main():
     
     prod_url = config.get('prodUrl')
     print(f"Making request to {prod_url}")
-    print()
-    response = requests.post(prod_url, data=data, headers=headers, verify=False)
+    print(data)
+    cert_path = '_.afp.com.pem'
+    response = requests.post(prod_url, data=data, 
+                             headers=headers, 
+                             verify=cert_path)
     status_code = response.status_code
     print(f"Status: {status_code}")
     print()
@@ -113,7 +114,7 @@ def main():
         base_name = os.path.basename(input_file)
         # Write to file - same directory as input
         output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
-        write_json(output_path, translation)
+        write_json(output_path, translation) # We could even switch this off for testing
         print(f"** Translation successful **")
 
 if __name__ == "__main__":
