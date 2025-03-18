@@ -53,7 +53,8 @@ def log_translation_event(config,
                           input_file, 
                           target_language, 
                           status_code, 
-                          got_translation):
+                          got_translation,
+                          error_message=None):
     """
     Specific function to log data from Translate.Ai translation event.
     """
@@ -67,7 +68,7 @@ def log_translation_event(config,
         "target_language": target_language,
         "status_code": status_code,
         "translation_returned": got_translation,
-        "error_message": None
+        "error_message": error_message
     }
     
     logging_endpoint = config.get('loggingEndpoint')
@@ -182,7 +183,8 @@ def main():
     
     prod_url = config.get('prodUrl')
     print(f"Making request to {prod_url}")
-    print()
+    # Debugging: print data
+    print(data)
     
     response = requests.post(prod_url, data=data, 
                              headers=headers, 
@@ -197,6 +199,7 @@ def main():
 
     # Debugging: print response
     print(f"Response: {r}")
+    print()
 
     # Check if translationText is empty string
     if r['translationText'] != '':
@@ -209,8 +212,18 @@ def main():
         got_translation = False
 
     # Log translation event
-    log_translation_event(config, input_file, target_language, status_code, got_translation)
-
+    error_message = None
+    if not got_translation:
+        error_message = str(r)
+    
+    log_translation_event(
+        config, 
+        input_file, 
+        target_language, 
+        status_code, 
+        got_translation,
+        error_message
+    )
     # Write to file if translation is successful
     if got_translation:
         merged = merge_translations(input_data, translation)

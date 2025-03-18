@@ -26,7 +26,7 @@ while IFS= read -r document_name; do
         CONFIG="$SCRIPT_DIR/config.json"
         INPUT="$DOCS_DIR/${document_name}.json"
         
-        echo "Found text to translate. Executing translate.py..."
+        echo "Found text to translate. Executing translate.py"
         python "$SCRIPT_DIR/translate.py" "$CONFIG" "$INPUT" "$CERT_PATH"
         
         echo "Completed processing: $document_name"
