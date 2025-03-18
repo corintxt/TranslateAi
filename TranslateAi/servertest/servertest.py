@@ -86,6 +86,7 @@ def main():
     prod_url = config.get('prodUrl')
     print(f"Making request to {prod_url}")
     print(data)
+    ## Add path to certificate to fix SSL warning
     cert_path = '_.afp.com.pem'
     response = requests.post(prod_url, data=data, 
                              headers=headers, 
@@ -98,8 +99,11 @@ def main():
     response_json = json.dumps(response.json())
     r = json.loads(response_json)
 
+    # Debugging: print response
+    print(f"Response: {r}")
+
     # Check if translationText is empty string
-    if r['translationText'] != '':
+    if r['translationText'] != None:
         got_translation = True
         # Escape some characters that break JSON
         string_check = r['translationText'].replace("\\'", "'")

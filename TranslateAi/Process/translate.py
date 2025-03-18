@@ -146,22 +146,30 @@ def main():
     Read input file, send contents to translation API, and write to output file.
     """
     # Argument handling
-    if len(sys.argv) < 3:
-        print("Usage: translate.py <config_file> <input_file>")
+    if len(sys.argv) < 4:
+        print("Usage: translate.py <config_file> <input_file> <cert_file>")
         sys.exit(1)
         
     config_file = sys.argv[1]
     input_file = sys.argv[2]
+    cert_path = sys.argv[3]  # New: certificate path as third argument
 
     # Normalize paths for cross-platform compatibility
     config_file = os.path.normpath(config_file)
     input_file = os.path.normpath(input_file)
+    cert_path = os.path.normpath(cert_path)
 
-     # Load configuration and input file
+    # Verify certificate file exists
+    if not os.path.exists(cert_path):
+        print(f"Error: Certificate file not found: {cert_path}")
+        sys.exit(1)
+
+    # Load configuration and input file
     config = load_config(config_file)
     input_data, target_language, contents = load_input_file(input_file)
 
     print(f"Reading file: {input_file}")
+    print(f"Using certificate: {cert_path}")
     print()
 
     # Send to translation API
@@ -175,7 +183,10 @@ def main():
     prod_url = config.get('prodUrl')
     print(f"Making request to {prod_url}")
     print()
-    response = requests.post(prod_url, data=data, headers=headers, verify=False)
+    
+    response = requests.post(prod_url, data=data, 
+                             headers=headers, 
+                             verify=cert_path)
     status_code = response.status_code
     print(f"Status: {status_code}")
     print()
@@ -183,6 +194,9 @@ def main():
     # Continue with response handling
     response_json = json.dumps(response.json())
     r = json.loads(response_json)
+
+    # Debugging: print response
+    print(f"Response: {r}")
 
     # Check if translationText is empty string
     if r['translationText'] != '':

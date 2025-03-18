@@ -7,6 +7,13 @@ echo "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
 DOCS_DIR="$HOME/Documents/TranslateAi"
 SCRIPT_DIR="$(dirname "$0")"
 CURRENT_DOC="$DOCS_DIR/current_doc.txt"
+CERT_PATH="$SCRIPT_DIR/_.afp.com.pem"
+
+# Verify certificate exists
+if [ ! -f "$CERT_PATH" ]; then
+    echo "Error: Certificate file not found at $CERT_PATH"
+    exit 1
+fi
 
 # Read all document names from temp file, removing any carriage returns
 while IFS= read -r document_name; do
@@ -20,7 +27,7 @@ while IFS= read -r document_name; do
         INPUT="$DOCS_DIR/${document_name}.json"
         
         echo "Found text to translate. Executing translate.py..."
-        python "$SCRIPT_DIR/translate.py" "$CONFIG" "$INPUT"
+        python "$SCRIPT_DIR/translate.py" "$CONFIG" "$INPUT" "$CERT_PATH"
         
         echo "Completed processing: $document_name"
         echo "------------------------"
