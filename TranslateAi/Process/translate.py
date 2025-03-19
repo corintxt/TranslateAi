@@ -8,6 +8,7 @@ import datetime
 import uuid
 import socket
 import platform
+import time
 
 ## LOGGING STUFF
 def log_via_http(message, logging_endpoint, api_key=None, client_id=None):
@@ -141,6 +142,61 @@ def load_input_file(input_file):
 
 
 ## THE API PART
+def send_translation_request(prod_url, data, cert_path):
+    """
+    Send translation request to the API endpoint.
+    
+    Args:
+        prod_url: URL of the translation service
+        data: Request data
+        cert_path: Path to SSL certificate
+        
+    Returns:
+        Tuple of (status_code, response_json, got_translation, translation, error_message)
+    """
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    
+    print(f"Making request to {prod_url}")
+    # Debugging: print data
+    print(data)
+    
+    try:
+        response = requests.post(prod_url, data=data, 
+                                headers=headers, 
+                                verify=cert_path)
+        status_code = response.status_code
+        print(f"Status: {status_code}")
+        print()
+
+        # Handle response
+        response_json = json.dumps(response.json())
+        r = json.loads(response_json)
+
+        # Debugging: print response
+        print(f"Response: {r}")
+        print()
+
+        got_translation = False
+        translation = None
+        error_message = None
+
+        # Check if translationText is empty string
+        if r['translationText'] != '':
+            got_translation = True
+            # Escape some characters that break JSON
+            string_check = r['translationText'].replace("\\'", "'")
+            translation = json.loads(string_check)
+        else:
+            print("!! Translate API returned no text !!")
+            error_message = str(r)
+            got_translation = False
+
+        return status_code, r, got_translation, translation, error_message
+        
+    except Exception as e:
+        print(f"Error during API request: {e}")
+        return 500, {"error": str(e)}, False, None, str(e)
+
 def main():
     """
     Take config file and input file from system arguments.
@@ -173,49 +229,36 @@ def main():
     print(f"Using certificate: {cert_path}")
     print()
 
-    # Send to translation API
+    # Prepare data for translation API
     data = {
         'inputText': json.dumps(contents), 
         'provider': 'OpenAiChatGpt',
         'destination_lang': target_language
     }
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     
     prod_url = config.get('prodUrl')
-    print(f"Making request to {prod_url}")
-    # Debugging: print data
-    print(data)
     
-    response = requests.post(prod_url, data=data, 
-                             headers=headers, 
-                             verify=cert_path)
-    status_code = response.status_code
-    print(f"Status: {status_code}")
-    print()
-
-    # Continue with response handling
-    response_json = json.dumps(response.json())
-    r = json.loads(response_json)
-
-    # Debugging: print response
-    print(f"Response: {r}")
-    print()
-
-    # Check if translationText is empty string
-    if r['translationText'] != '':
-        got_translation = True
-        # Escape some characters that break JSON
-        string_check = r['translationText'].replace("\\'", "'")
-        translation = json.loads(string_check)
-    else:
-        print("!! Translate API returned no text !!")
-        got_translation = False
+    # Send request and handle retries
+    status_code, response_json, got_translation, translation, error_message = send_translation_request(
+        prod_url, data, cert_path
+    )
+    
+    # Automatic retry mechanism
+    max_retries = 5
+    retry_count = 0
+    
+    while not got_translation and retry_count < max_retries:
+        retry_count += 1
+        wait_time = retry_count * 2  # Exponential backoff
+        
+        print(f"Translation failed. Automatically retrying ({retry_count}/{max_retries}) in {wait_time} seconds...")
+        time.sleep(wait_time)  # Wait before retrying
+        
+        status_code, response_json, got_translation, translation, error_message = send_translation_request(
+            prod_url, data, cert_path
+        )
 
     # Log translation event
-    error_message = None
-    if not got_translation:
-        error_message = str(r)
-    
     log_translation_event(
         config, 
         input_file, 
@@ -224,6 +267,7 @@ def main():
         got_translation,
         error_message
     )
+    
     # Write to file if translation is successful
     if got_translation:
         merged = merge_translations(input_data, translation)
@@ -233,6 +277,8 @@ def main():
         output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
         write_json(output_path, merged)
         print(f"** Translation successful **")
+    else:
+        print(f"Translation failed after {retry_count} retries. No output file was created.")
 
 if __name__ == "__main__":
    main()
