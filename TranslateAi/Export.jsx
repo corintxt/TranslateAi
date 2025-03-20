@@ -145,6 +145,15 @@ function textFrameExport(el, fileOut) {
 				var lineCharCount = line.characters.length;
 				characters.push(lineCharCount);
 			}
+
+			// Get bounds: geometricBounds returns [top, left, bottom, right]
+			var bounds = null;
+			try {
+				bounds = frame.geometricBounds;
+			} catch(e) {
+				$.writeln("Warning: Could not get bounds for frame " + frameIndex + ": " + e);
+			}
+
 			// Add frame data to JSON object
 			jsonData.frames[frameIndex] = {
 				// anchor: frame.anchor, -- not needed, sometimes creates error
@@ -152,7 +161,8 @@ function textFrameExport(el, fileOut) {
 				lineCount: lineCount,
 				lineChars:characters,
 				wordCount: frame.textRange.words.length,
-				charCount: frame.textRange.characters.length
+				charCount: frame.textRange.characters.length,
+				bounds: bounds
 			};
 		// Error handling / debug
 		} catch (e) {
