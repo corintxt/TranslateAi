@@ -10,6 +10,7 @@
 var scriptPath = File($.fileName).parent.fsName;
 var helpers = scriptPath + "/Process";
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
+$.evalFile(helpers + "/boundsdetect.jsx"); // Bounds detection
 
 var jsonData; // Declare global
 var numReplaced	= 0;
@@ -125,6 +126,8 @@ function textFrameImport(el) {
             // currentFrame.position = frameData.anchor;
         }
     }
+    // Draw bounds for debugging
+    detectAndVisualizeFrameIssues(el);
 }
 
 /** LineBuilder function: ///
