@@ -219,10 +219,102 @@ function executeCommandScript() {
         tempFile.close();
         
         commandFile.execute();
+		
+		// Wait for translation and import automatically
+        if (callAPI) {
+            waitForTranslationAndImport();
+        }
     } else {
         alert("Command file not found: " + commandFile.fsName);
     }
 }
+
+
+/** Wait for translation completion and import
+ * -------------------------------*/
+function waitForTranslationAndImport() {
+    var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+    var completionFlag = new File(Folder.myDocuments + separator + "TranslateAi" + separator + "translation_complete.flag");
+    var importScript = File(File($.fileName).parent.fsName + separator + "Import.jsx");
+    
+    // Set up timer to check for completion flag
+    var maxWaitTime = 300; // 5 minutes (300 seconds)
+    var waitInterval = 2; // Check every 2 seconds
+    var elapsedTime = 0;
+    
+    // Create waiting dialog
+    var waitDialog = new Window("palette", "TranslateAi", undefined, {closeButton: true});
+    waitDialog.orientation = "column";
+    waitDialog.alignChildren = ["center", "top"];
+    waitDialog.spacing = 10;
+    waitDialog.margins = 16;
+    
+    waitDialog.statusText = waitDialog.add("statictext", undefined, "Translating text... Please wait");
+    waitDialog.statusText.preferredSize.width = 300;
+    
+    var progressBar = waitDialog.add("progressbar", undefined, 0, maxWaitTime);
+    progressBar.preferredSize.width = 300;
+    
+    var cancelBtn = waitDialog.add("button", undefined, "Cancel");
+    cancelBtn.onClick = function() {
+        waitDialog.close();
+    };
+    
+    // The main monitoring loop
+    var waitForTranslation = true;
+    
+    // Start showing the dialog (non-modal)
+    waitDialog.show();
+    
+    // Main monitoring loop
+    while (waitForTranslation && elapsedTime < maxWaitTime) {
+        // Update progress bar
+        progressBar.value = elapsedTime;
+        waitDialog.statusText.text = "Translating text... " + elapsedTime + "s elapsed";
+        
+        // Check for completion flag
+        if (completionFlag.exists) {
+            // Read the flag file to confirm it's for our document
+            completionFlag.open("r");
+            var translatedDoc = completionFlag.read();
+            completionFlag.close();
+            
+            // Delete the flag file
+            completionFlag.remove();
+            
+            // Close the dialog
+            waitDialog.close();
+            
+            // Give UI time to update before running Import
+            $.sleep(300);
+            
+            // Run the Import script
+            $.evalFile(importScript);
+            return;
+        }
+        
+        // Process events to keep UI responsive
+        waitDialog.update();
+        
+        // Sleep for the interval period
+        $.sleep(waitInterval * 1000);
+        
+        // Increment elapsed time
+        elapsedTime += waitInterval;
+        
+        // Check if dialog was closed
+        if (!waitDialog.visible) {
+            waitForTranslation = false;
+        }
+    }
+    
+    // Handle timeout
+    if (elapsedTime >= maxWaitTime && waitDialog.visible) {
+        waitDialog.close();
+        alert("Translation timed out after " + maxWaitTime + " seconds. Please run Import script manually.", "TranslateAi");
+    }
+}
+
 
 /* Call main function 
  * --------------------*/

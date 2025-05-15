@@ -277,6 +277,11 @@ def main():
         output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
         write_json(output_path, merged)
         print(f"** Translation successful **")
+
+        # Write completion flag (triggers import script)
+        completion_flag_path = os.path.join(os.path.dirname(input_file), "translation_complete.flag")
+        with open(completion_flag_path, 'w') as flag_file:
+            flag_file.write(base_name)
     else:
         print(f"Translation failed after {retry_count} retries. No output file was created.")
 
