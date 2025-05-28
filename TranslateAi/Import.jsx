@@ -107,6 +107,17 @@ function fetchTranslations(filePath) {
 function textFrameImport(el) {
     // Get all text frames in document
     var frames = el.textFrames;
+
+    // Find the title frame directly from the document
+    var titleInfo = findTitleFrame(el);
+    if (titleInfo) {
+        // debugLog("Found title frame at index " + titleInfo.index + 
+        //          " with font size " + titleInfo.fontSize);
+        // debugLog("Title contents: '" + titleInfo.contents + "'");
+        alert("Title frame found: " + titleInfo.contents, "TranslateAi.Import", true);
+    } else {
+        debugLog("No title frame detected in document");
+    }
     
     // Loop through frames in reverse order (since frame indices are zero-based)
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {

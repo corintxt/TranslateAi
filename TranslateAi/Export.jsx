@@ -11,6 +11,7 @@ var scriptPath = File($.fileName).parent.fsName;
 var helpers = scriptPath + "/Process";
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 $.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
+$.evalFile(helpers + "/styledetect.jsx"); // Style detection module
 
 var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
