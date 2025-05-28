@@ -238,7 +238,7 @@ function waitForTranslationAndImport() {
     var importScript = File(File($.fileName).parent.fsName + separator + "Import.jsx");
     
     // Set up timer to check for completion flag
-    var maxWaitTime = 300; // 5 minutes (300 seconds)
+    var maxWaitTime = 60; // 1 minute estimated maximum wait time
     var waitInterval = 2; // Check every 2 seconds
     var elapsedTime = 0;
     

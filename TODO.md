@@ -1,10 +1,12 @@
 # TODO / development roadmap
 
 ## Stage 2 release
-* Look at how to fix SSL cert warning in translate.py (ask Baptiste at DSI)
 * Fix bugs (see below and in Basecamp)
-* Research Arabic R-L text possibilities
 * Start writing tests (!) in order to make changes and know nothing will break.
+
+## Stage 3 release
+* Research Arabic R-L text possibilities
+* Rewrite using [Adobe CEP](https://github.com/Adobe-CEP)
 
 ## Bugs and examples
 
