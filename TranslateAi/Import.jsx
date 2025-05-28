@@ -127,12 +127,18 @@ function textFrameImport(el) {
         // Get the corresponding frame data from JSON
         var frameData = jsonData.frames[frameIndex];
         
-        // If we have data for this frame
+        // If we have data for this frame:
         if (frameData) {
-            // Use lineBuilder to split content into lines
-            var lines = lineBuilder(frameData.contents, frameData.lineChars);
-            // Join the lines with line breaks and update frame contents
-            currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
+            // Check if current frame is the title frame
+            if (frameIndex === titleInfo.index) {
+                // If so, use titleBuilder for title frame
+                currentFrame.contents = titleBuilder(frameData.contents, frameData.lineChars);
+            } else {
+                // Use lineBuilder for regular frames
+                var lines = lineBuilder(frameData.contents, frameData.lineChars);
+                // Join the lines with line breaks and update frame contents
+                currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
+            }
             // Optional: Update frame position if needed?
             // currentFrame.position = frameData.anchor;
         }
@@ -211,6 +217,21 @@ function lineBuilder(text, charArray) {
 
     return lines;
 }
+
+/** titleBuilder function: ///
+* Handling title frames: check if title has just one line,
+* if so we don't do any line splitting.
+----------------------------------------------*/
+function titleBuilder(text, charArray) {
+    // If the title has only one line, return it as is
+    if (charArray.length === 1) {
+        return text;
+    }
+    
+    // Otherwise, use lineBuilder to split into lines
+    return lineBuilder(text, charArray).join('\r');
+}
+
 
 /** Call main import function
  * --------------------------- */
