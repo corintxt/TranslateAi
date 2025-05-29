@@ -154,6 +154,8 @@ function textFrameExport(el, fileOut) {
 			} catch(e) {
 				$.writeln("Warning: Could not get bounds for frame " + frameIndex + ": " + e);
 			}
+            // Get style information
+            var styleInfo = extractStyleInfo(frame.textRange);
 
 			// Add frame data to JSON object
 			jsonData.frames[frameIndex] = {
@@ -163,7 +165,8 @@ function textFrameExport(el, fileOut) {
 				lineChars:characters,
 				wordCount: frame.textRange.words.length,
 				charCount: frame.textRange.characters.length,
-				bounds: bounds
+				bounds: bounds,
+                styleInfo: styleInfo
 			};
 		// Error handling / debug
 		} catch (e) {
