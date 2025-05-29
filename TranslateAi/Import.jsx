@@ -1,5 +1,5 @@
 /*****************************************************************
- * TranslateAi.Import v 2.1 (2025) - Corin Faife - https://corinfaife.co/
+ * TranslateAi.Import v 0.3 (2025) - Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * ==============

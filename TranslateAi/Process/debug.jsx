@@ -1,5 +1,5 @@
 /*****************************************************************
- * TranslateAi Debug Module v1.0 (2025) - Corin Faife
+ * TranslateAi Debug Module v0.1 (2025) - Corin Faife
  * 
  * Provides centralized debugging functionality for TranslateAi
  *****************************************************************/

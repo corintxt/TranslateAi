@@ -1,5 +1,5 @@
 /*****************************************************************
- * TranslateAi Style Detect Module v2.0 (2025) - Corin Faife
+ * TranslateAi Style Detect Module v0.2 (2025) - Corin Faife
  * 
  * Helper module for detecting text styles in Adobe Illustrator documents.
  *****************************************************************/
@@ -56,3 +56,4 @@ function findTitleFrame(doc) {
         return null;
     }
 }
+

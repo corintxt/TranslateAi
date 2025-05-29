@@ -1,5 +1,5 @@
 /*****************************************************************
- * TranslateAi.Export v 2.1 (2025) - by Corin Faife - https://corinfaife.co/
+ * TranslateAi.Export v 0.3 (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Adapted from: 
  * =========================

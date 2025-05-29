@@ -57,7 +57,7 @@ function visualizeFrameBounds(textFrame, layer, index) {
 function checkForOverlaps(textFrames) {
         var doc = app.activeDocument;
         var overlaps = [];
-        // debugLog("Checking for overlaps among " + textFrames.length + " text frames");
+        debugLog("Checking for overlaps among " + textFrames.length + " text frames");
         
         // Create a layer for visualizing overlaps
         try {
@@ -122,14 +122,14 @@ function checkForOverlaps(textFrames) {
                             area: overlapWidth * overlapHeight
                         });
                         
-                        // debugLog("Overlap detected between frames " + i + " and " + j);
+                        debugLog("Overlap detected between frames " + i + " and " + j);
                     } catch (rectErr) {
-                        // debugLog("Error creating overlap visualization: " + rectErr);
+                        debugLog("Error creating overlap visualization: " + rectErr);
                     }
                 }
             }
         }
-        // debugLog("Found " + overlaps.length + " overlapping frames");
+        debugLog("Found " + overlaps.length + " overlapping frames");
         return overlaps;
 }
 
@@ -149,9 +149,9 @@ function createLayer(doc, layerName) {
         newLayer.name = layerName;
         return newLayer;
     } catch (e) {
-        // debugLog("Error creating new layer: " + e.message, 1);
+        debugLog("Error creating new layer: " + e.message, 1);
         // As a last resort, try using the active layer
-        // debugLog("Using active layer as fallback", 1);
+        debugLog("Using active layer as fallback", 1);
         return doc.activeLayer;
     }
 }
@@ -177,7 +177,6 @@ function detectAndVisualizeFrameIssues(doc, drawBounds, checkOverlaps) {
             }
         }
         if (checkOverlaps) {
-            debugLog("Checking for overlaps among " + textFrames.length + " text frames");
             // Check for overlaps
             checkForOverlaps(textFrames);
         }
