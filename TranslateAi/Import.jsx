@@ -22,6 +22,10 @@ var config = {
         enabled: true,
         level: 3, // 1=error, 2=normal, 3=verbose
         logToFile: true
+    },
+    bounds: {
+        drawBounds: false, // Whether to draw bounds for text frames
+        checkOverlaps: true // Whether to check for overlaps between text frames
     }
 };
 
@@ -165,8 +169,10 @@ function textFrameImport(el) {
             // currentFrame.position = frameData.anchor;
         }
     }
-    // Draw bounds for debugging
-    detectAndVisualizeFrameIssues(el);
+    // Draw bounds for debugging (if enabled)
+    detectAndVisualizeFrameIssues(el,
+                                config.bounds.drawBounds, 
+                                config.bounds.checkOverlaps);
 }
 
 /** LineBuilder function: ///

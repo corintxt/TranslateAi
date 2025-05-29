@@ -157,7 +157,7 @@ function createLayer(doc, layerName) {
 }
 
 // Main function to visualize frame bounds -- called in Import.jsx
-function detectAndVisualizeFrameIssues(doc) {
+function detectAndVisualizeFrameIssues(doc, drawBounds, checkOverlaps) {
     try {
         // Get only text frames
         var allTextFrames = doc.textFrames;
@@ -166,17 +166,21 @@ function detectAndVisualizeFrameIssues(doc) {
         for (var i = 0; i < allTextFrames.length; i++) {
                 textFrames.push(allTextFrames[i]);
         }
-        
-        // Create a layer for bounds visualization if it doesn't exist
-        var boundsLayer = createLayer(doc, "FrameBounds");
-        
-        // Loop through text frames only
-        for (var i = 0; i < textFrames.length; i++) {
-            visualizeFrameBounds(textFrames[i], boundsLayer, i);
+        if (drawBounds) {
+            debugLog("Visualizing bounds for " + textFrames.length + " text frames");
+            // Create a layer for bounds visualization if it doesn't exist
+            var boundsLayer = createLayer(doc, "FrameBounds");
+            
+            // Loop through text frames only
+            for (var i = 0; i < textFrames.length; i++) {
+                visualizeFrameBounds(textFrames[i], boundsLayer, i);
+            }
         }
-        
-        // Check for overlaps
-        checkForOverlaps(textFrames);
+        if (checkOverlaps) {
+            debugLog("Checking for overlaps among " + textFrames.length + " text frames");
+            // Check for overlaps
+            checkForOverlaps(textFrames);
+        }
         
     } catch (e) {
         alert("Error in detectAndVisualizeFrameIssues: " + e.message, "TranslateAi Error");
