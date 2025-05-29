@@ -17,7 +17,7 @@ function findTitleFrame(doc) {
         
     // Get all text frames from the document
     var textFrames = doc.textFrames;
-    // debugLog("Scanning " + textFrames.length + " text frames");
+    debugLog("Scanning " + textFrames.length + " text frames");
     
     // Find the frame with the largest font size
     for (var i = 0; i < textFrames.length; i++) {
@@ -40,20 +40,19 @@ function findTitleFrame(doc) {
                 // debugLog("New largest font size: " + largestFontSize + " in frame " + i);
             }
         } catch (frameError) {
-            // debugLog("Error processing frame " + i + ": " + frameError.message, 1);
+            debugLog("Error processing frame " + i + ": " + frameError.message, 1);
         }
     }
     
     if (titleIndex >= 0) {
         // debugLog("Title frame found: index " + titleIndex + ", font size " + largestFontSize);
-        // debugLog("Title contents: '" + titleContents + "'");
         return {
             index: titleIndex,
             contents: titleContents,
             fontSize: largestFontSize
         };
     } else {
-        // debugLog("No valid title frame found");
+        debugLog("No valid title frame found");
         return null;
     }
 }

@@ -9,11 +9,25 @@
 // Load dependencies from script directory
 var scriptPath = File($.fileName).parent.fsName;
 var helpers = scriptPath + "/Process";
+$.evalFile(helpers + "/debug.jsx"); // Debugging utilities
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 $.evalFile(helpers + "/boundsdetect.jsx"); // Bounds detection
+$.evalFile(helpers + "/styledetect.jsx"); // Bounds detection
 
 var jsonData; // Declare global
 var numReplaced	= 0;
+
+var config = {
+    debug: {
+        enabled: true,
+        level: 3, // 1=error, 2=normal, 3=verbose
+        logToFile: true
+    }
+};
+
+// Update debug settings from config
+setDebugConfig(config);
+
 
 /** Translate.Import Init function
  * --------------------------------*/
@@ -71,11 +85,18 @@ function initTranslateImport() {
     }
     // Give notice of changes
     alert("Changed the contents of " + numReplaced + " files in total", "TranslateAi");
+    // Always close debug log
+    closeDebugLog();
+
 }
 
 /** fetchTranslations (v2: reads from JSON)
 * --------------------------------------- */
 function fetchTranslations(filePath) {
+    // Initialize debug logging first
+    initDebugLog(filePath);
+    debugLog("Starting to fetch translations from: " + filePath);
+
     // Create fileref
     var fileIn = new File(filePath);
     
@@ -105,15 +126,16 @@ function fetchTranslations(filePath) {
 * Import translated strings into the text frames from JSON
 * --------------------------------------------------------*/
 function textFrameImport(el) {
+    debugLog("Starting textFrameImport for document: " + el.name, 1);
     // Get all text frames in document
     var frames = el.textFrames;
 
     // Find the title frame directly from the document
     var titleInfo = findTitleFrame(el);
     if (titleInfo) {
-        // debugLog("Found title frame at index " + titleInfo.index + 
-        //          " with font size " + titleInfo.fontSize);
-        // debugLog("Title contents: '" + titleInfo.contents + "'");
+        debugLog("Found title frame at index " + titleInfo.index + 
+                 " with font size " + titleInfo.fontSize);
+        debugLog("Title contents: '" + titleInfo.contents + "'");
         alert("Title frame found: " + titleInfo.contents, "TranslateAi.Import", true);
     } else {
         debugLog("No title frame detected in document");
