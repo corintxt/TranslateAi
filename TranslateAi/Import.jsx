@@ -140,7 +140,6 @@ function textFrameImport(el) {
         debugLog("Found title frame at index " + titleInfo.index + 
                  " with font size " + titleInfo.fontSize);
         debugLog("Title contents: '" + titleInfo.contents + "'");
-        alert("Title frame found: " + titleInfo.contents, "TranslateAi.Import", true);
     } else {
         debugLog("No title frame detected in document");
     }

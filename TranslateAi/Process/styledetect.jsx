@@ -85,11 +85,11 @@ function extractStyleInfo(textRange) {
                 start: i,
                 end: null,
                 style: charStyle,
-                text: chars.contents
+                text: sanitizeString(chars.contents)
             };
         } else {
             // Continue the current style range
-            currentStyle.text += chars.contents;
+            currentStyle.text += sanitizeString(chars.contents);
         }
     }
     
@@ -131,59 +131,6 @@ function getcharacterStyle(chars) {
 }
 
 /**
- * Convert Illustrator color to hex string
- * @param {Color} color - Illustrator color object
- * @returns {String} Hex color string
- */
-function colorToHex(color) {
-    try {
-        // Different color models need different handling
-        if (color.typename === "RGBColor") {
-            return rgbToHex(color.red, color.green, color.blue);
-        } else if (color.typename === "CMYKColor") {
-            // For simplicity convert CMYK to approximate RGB
-            var rgb = cmykToRgb(color.cyan, color.magenta, color.yellow, color.black);
-            return rgbToHex(rgb.r, rgb.g, rgb.b);
-        } else {
-            return "unknown";
-        }
-    } catch (e) {
-        return "error";
-    }
-}
-
-/**
- * Convert RGB values to hex string
- */
-function rgbToHex(r, g, b) {
-    function componentToHex(c) {
-        var hex = Math.round(c).toString(16);
-        return hex.length === 1 ? "0" + hex : hex;
-    }
-    return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
-}
-
-/**
- * Convert CMYK to RGB (approximate)
- */
-function cmykToRgb(c, m, y, k) {
-    c = c / 100;
-    m = m / 100;
-    y = y / 100;
-    k = k / 100;
-    
-    var r = 1 - Math.min(1, c * (1 - k) + k);
-    var g = 1 - Math.min(1, m * (1 - k) + k);
-    var b = 1 - Math.min(1, y * (1 - k) + k);
-    
-    return {
-        r: Math.round(r * 255),
-        g: Math.round(g * 255),
-        b: Math.round(b * 255)
-    };
-}
-
-/**
  * Compare two style objects for equality
  */
 function areStylesEqual(style1, style2) {
@@ -198,4 +145,87 @@ function areStylesEqual(style1, style2) {
     }
     
     return true;
+}
+
+/**
+ * Convert Illustrator color to hex string
+ * @param {Color} color - Illustrator color object
+ * @returns {String} Hex color string
+ */
+function colorToHex(color) {
+    try {
+        // Handle specific color types
+        switch(color.typename) {
+            case "CMYKColor":
+                return cmykToHex(color.cyan, color.magenta, color.yellow, color.black);
+                
+            case "RGBColor":
+                return rgbToHex(color.red, color.green, color.blue);
+                
+            case "SpotColor":
+                // Get base color and apply tint
+                var baseColor = color.spot.color;
+                var tint = color.tint / 100; // Convert to 0-1 range
+                
+                if (baseColor.typename === "CMYKColor") {
+                    // Simply scale the CMYK values by the tint
+                    return cmykToHex(
+                        baseColor.cyan * tint, 
+                        baseColor.magenta * tint, 
+                        baseColor.yellow * tint, 
+                        baseColor.black * tint
+                    );
+                } 
+                return colorToHex(baseColor); // Handle other base color types
+                
+            case "GrayColor":
+                // Convert gray to RGB (all components equal)
+                var val = Math.round(255 * (1 - color.gray/100));
+                return rgbToHex(val, val, val);
+                
+            default:
+                return "#000000"; // Default to black for unrecognized types
+        }
+    } catch (e) {
+        $.writeln("Color error: " + e.message);
+        return "#000000"; 
+    }
+}
+
+/**
+ * Convert CMYK values directly to hex color string
+ * @param {Number} c - Cyan value (0-100)
+ * @param {Number} m - Magenta value (0-100)
+ * @param {Number} y - Yellow value (0-100)
+ * @param {Number} k - Black value (0-100)
+ * @returns {String} Hex color string
+ */
+function cmykToHex(c, m, y, k) {
+    // Normalize values and convert directly to RGB
+    c = Math.min(100, Math.max(0, c)) / 100;
+    m = Math.min(100, Math.max(0, m)) / 100;
+    y = Math.min(100, Math.max(0, y)) / 100;
+    k = Math.min(100, Math.max(0, k)) / 100;
+    
+    // Calculate RGB values
+    var r = Math.round(255 * (1 - c) * (1 - k));
+    var g = Math.round(255 * (1 - m) * (1 - k));
+    var b = Math.round(255 * (1 - y) * (1 - k));
+    
+    return rgbToHex(r, g, b);
+}
+
+/**
+ * Convert RGB values to hex string
+ */
+function rgbToHex(r, g, b) {
+    // Ensure values are in valid range and convert to hex
+    r = Math.min(255, Math.max(0, Math.round(r)));
+    g = Math.min(255, Math.max(0, Math.round(g)));
+    b = Math.min(255, Math.max(0, Math.round(b)));
+    
+    return "#" + 
+           (r < 16 ? "0" : "") + r.toString(16) + 
+           (g < 16 ? "0" : "") + g.toString(16) + 
+           (b < 16 ? "0" : "") + b.toString(16);
 }
