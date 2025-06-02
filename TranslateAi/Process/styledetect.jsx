@@ -192,6 +192,71 @@ function colorToHex(color) {
     }
 }
 
+
+// Define special Unicode markers as string constants
+var STYLE_START_MARKER = "\u25B6"; // Unicode right-pointing triangle (▶)
+var STYLE_END_MARKER = "\u25C0";   // Unicode left-pointing triangle (◀)
+
+/**
+ * Adds style markers to text content based on style information
+ * @param {String} content - The original text content
+ * @param {Array} styleInfo - Array of style objects with start/end positions
+ * @return {String} - Text with style markers inserted
+ */
+function addStyleMarkers(content, styleInfo) {
+    // First sort the style ranges by start position to ensure proper ordering
+    styleInfo.sort(function(a, b) {
+        return a.start - b.start;
+    });
+    
+    // Create a new string with markers inserted
+    var result = "";
+    var lastEnd = 0;
+    
+    for (var i = 0; i < styleInfo.length; i++) {
+        var style = styleInfo[i];
+        
+        // Validate style range
+        if (style.start < 0 || style.end >= content.length || style.start > style.end) {
+            $.writeln("Warning: Invalid style range " + style.start + "-" + style.end + 
+                      " for content length " + content.length);
+            continue;
+        }
+        
+        // Check for gaps between style ranges
+        if (style.start > lastEnd) {
+            // Handle any text not covered by style info - use default style (index -1)
+            result += "-1" + STYLE_START_MARKER + 
+                     content.substring(lastEnd, style.start) + 
+                     STYLE_END_MARKER + "-1 ";
+        }
+        
+        // Add the style marker, the text content, and the closing marker
+        // Add a space after the closing marker but not before it
+        result += i + STYLE_START_MARKER + 
+                 content.substring(style.start, style.end + 1) + 
+                 STYLE_END_MARKER + i;
+        
+        // Add a space after this segment if it's not the last one
+        if (i < styleInfo.length - 1) {
+            result += " ";
+        }
+        
+        // Update the last position processed
+        lastEnd = style.end + 1;
+    }
+    
+    // If there's remaining text after the last style, add it with default style
+    if (lastEnd < content.length) {
+        result += " -1" + STYLE_START_MARKER + 
+                 content.substring(lastEnd) + 
+                 STYLE_END_MARKER + "-1";
+    }
+    
+    return result;
+}
+
+
 /**
  * Convert CMYK values directly to hex color string
  * @param {Number} c - Cyan value (0-100)

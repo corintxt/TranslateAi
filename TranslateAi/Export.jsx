@@ -14,7 +14,7 @@ $.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
 $.evalFile(helpers + "/styledetect.jsx"); // Style detection module
 
 var runMultiple = false;
-var callAPI = true; // Set false to export JSON without calling API
+var callAPI = false; // Set false to export JSON without calling API
 var targetLanguage; // Declare global - will be set by dialog
 
 /** Translate Export function
@@ -133,9 +133,19 @@ function textFrameExport(el, fileOut) {
             if (!frame.textRange) {
                 throw new Error("No textRange available for this frame");
             }
+
+            // Get style information
+            var styleInfo = extractStyleInfo(frame.textRange);
+
+            // Get the raw content
+            var rawContent = frame.textRange.contents;
+            
+            // Create marked up content for translation
+            var markedContent = addStyleMarkers(rawContent, styleInfo);
+            
+            // Sanitize the marked content for JSON
+            var contentString = sanitizeString(markedContent);
 		
-			// Remove any line breaks from contents before writing to JSON
-			var contentString = sanitizeString(frame.textRange.contents);
 			// Get all lines in range
 			var lines = frame.textRange.lines;
 			var lineCount = lines.length;
@@ -154,20 +164,19 @@ function textFrameExport(el, fileOut) {
 			} catch(e) {
 				$.writeln("Warning: Could not get bounds for frame " + frameIndex + ": " + e);
 			}
-            // Get style information
-            var styleInfo = extractStyleInfo(frame.textRange);
 
-			// Add frame data to JSON object
-			jsonData.frames[frameIndex] = {
-				// anchor: frame.anchor, -- not needed, sometimes creates error
-				contents: contentString,
-				lineCount: lineCount,
-				lineChars:characters,
-				wordCount: frame.textRange.words.length,
-				charCount: frame.textRange.characters.length,
-				bounds: bounds,
-                styleInfo: styleInfo
-			};
+            // Add frame data to JSON object
+            jsonData.frames[frameIndex] = {
+                contents: contentString,  // Now contains marked up text
+                originalContents: sanitizeString(rawContent),  // Store original for reference
+                lineCount: lineCount,
+                lineChars: characters,
+                wordCount: frame.textRange.words.length,
+                charCount: frame.textRange.characters.length,
+                bounds: bounds,
+                styleInfo: styleInfo  // Still include full style info
+            };
+
 		// Error handling / debug
 		} catch (e) {
             $.writeln("ERROR in frame " + frameIndex + ":");
