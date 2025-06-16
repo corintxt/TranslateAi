@@ -26,6 +26,9 @@ var config = {
     bounds: {
         drawBounds: false, // Whether to draw bounds for text frames
         checkOverlaps: true // Whether to check for overlaps between text frames
+    },
+    keyWords: {
+        source: ['Source','Fuente', 'Fonte', 'Quelle']
     }
 };
 
@@ -139,9 +142,27 @@ function textFrameImport(el) {
     if (titleInfo) {
         debugLog("Found title frame at index " + titleInfo.index + 
                  " with font size " + titleInfo.fontSize);
-        debugLog("Title contents: '" + titleInfo.contents + "'");
     } else {
         debugLog("No title frame detected in document");
+    }
+
+    // Find source attribution and attribution marker frames
+    var frameInfo = findSourceFrame(el, config.keyWords.source);
+    
+    // Log source frame info if found
+    if (frameInfo.source) {
+        debugLog("Found source frame at index " + frameInfo.source.index);
+        debugLog("Source contents: '" + frameInfo.source.contents + "'");
+    } else {
+        debugLog("No source frame detected in document");
+    }
+    
+    // Log attribution frame info if found
+    if (frameInfo.attribution) {
+        debugLog("Found attribution frame at index " + frameInfo.attribution.index);
+        debugLog("Attribution contents: '" + frameInfo.attribution.contents + "'");
+    } else {
+        debugLog("No attribution frame detected in document");
     }
     
     // Loop through frames in reverse order (since frame indices are zero-based)
@@ -154,9 +175,11 @@ function textFrameImport(el) {
         
         // If we have data for this frame:
         if (frameData) {
-            // Check if current frame is the title frame
-            if (frameIndex === titleInfo.index) {
-                // If so, use titleBuilder for title frame
+            // Check if current frame is the title, source, or attribution frame
+            if (frameIndex === titleInfo.index || 
+                (frameInfo.source && frameIndex === frameInfo.source.index) || 
+                (frameInfo.attribution && frameIndex === frameInfo.attribution.index)) {
+                // Use titleBuilder for special frames
                 currentFrame.contents = titleBuilder(frameData.contents, frameData.lineChars);
             } else {
                 // Use lineBuilder for regular frames

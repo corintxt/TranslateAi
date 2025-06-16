@@ -57,6 +57,65 @@ function findTitleFrame(doc) {
     }
 }
 
+// Could we look for explainer tag in same function?
+function findSourceFrame(doc, keywords) {
+    // debugLog("Identifying source frame by keywords: " + keywords.join(", "));
+    var sourceIndex = -1;
+    var sourceContents = "";
+    var attributionIndex = -1;
+    var attributionContents = "";
+    
+    // Get all text frames from the document
+    var textFrames = doc.textFrames;
+    debugLog("Scanning frames for source attribution and attribution marker");
+    
+    // Loop through each text frame
+    for (var i = 0; i < textFrames.length; i++) {
+        var frame = textFrames[i];
+        
+        // Skip if frame has no text content
+        if (!frame.contents || frame.contents.length === 0) continue;
+        
+        // Check if this is an attribution frame (starts with *)
+        if (frame.contents.charAt(0) === "*") {
+            attributionIndex = i;
+            attributionContents = frame.contents;
+            debugLog("Attribution frame found at index " + i + ": '" + 
+                    (attributionContents.length > 30 ? attributionContents.substring(0, 30) + "..." : attributionContents) + "'");
+        }
+        
+        // Check if any keyword is present in the frame contents
+        if (sourceIndex === -1) { // Only if we haven't found a source frame yet
+            for (var j = 0; j < keywords.length; j++) {
+                if (frame.contents.indexOf(keywords[j]) >= 0) {
+                    sourceIndex = i;
+                    sourceContents = frame.contents;
+                    debugLog("Source frame found at index " + i + ": '" + 
+                            (sourceContents.length > 30 ? sourceContents.substring(0, 30) + "..." : sourceContents) + "'");
+                    break; // Exit the keywords loop once we find a match
+                }
+            }
+        }
+        
+        // If we've found both frames, we can exit early
+        if (sourceIndex >= 0 && attributionIndex >= 0) {
+            break;
+        }
+    }
+    
+    return {
+        source: sourceIndex >= 0 ? {
+            index: sourceIndex,
+            contents: sourceContents
+        } : null,
+        attribution: attributionIndex >= 0 ? {
+            index: attributionIndex,
+            contents: attributionContents
+        } : null
+    };
+}
+
+
 /**
  * Extract style information from a text range
  * @param {TextRange} textRange - The text range to analyze
