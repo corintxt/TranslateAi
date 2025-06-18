@@ -252,9 +252,6 @@ function colorToHex(color) {
 }
 
 
-// Define special Unicode markers as string constants
-var STYLE_START_MARKER = "\u25B6"; // Unicode right-pointing triangle (▶)
-var STYLE_END_MARKER = "\u25C0";   // Unicode left-pointing triangle (◀)
 
 /**
  * Adds style markers to text content based on style information
@@ -285,16 +282,15 @@ function addStyleMarkers(content, styleInfo) {
         // Check for gaps between style ranges
         if (style.start > lastEnd) {
             // Handle any text not covered by style info - use default style (index -1)
-            result += "-1" + STYLE_START_MARKER + 
+            result += "<-1>" + 
                      content.substring(lastEnd, style.start) + 
-                     STYLE_END_MARKER + "-1 ";
+                     "</-1> ";
         }
         
-        // Add the style marker, the text content, and the closing marker
-        // Add a space after the closing marker but not before it
-        result += i + STYLE_START_MARKER + 
+        // Add the opening tag, the text content, and the closing tag
+        result += "<" + i + ">" + 
                  content.substring(style.start, style.end + 1) + 
-                 STYLE_END_MARKER + i;
+                 "</" + i + ">";
         
         // Add a space after this segment if it's not the last one
         if (i < styleInfo.length - 1) {
@@ -307,9 +303,9 @@ function addStyleMarkers(content, styleInfo) {
     
     // If there's remaining text after the last style, add it with default style
     if (lastEnd < content.length) {
-        result += " -1" + STYLE_START_MARKER + 
+        result += " <-1>" + 
                  content.substring(lastEnd) + 
-                 STYLE_END_MARKER + "-1";
+                 "</-1>";
     }
     
     return result;

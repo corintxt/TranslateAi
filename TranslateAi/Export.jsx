@@ -14,7 +14,7 @@ $.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
 $.evalFile(helpers + "/styledetect.jsx"); // Style detection module
 
 var runMultiple = false;
-var callAPI = false; // Set false to export JSON without calling API
+var callAPI = true; // Set false to export JSON without calling API
 var targetLanguage; // Declare global - will be set by dialog
 
 /** Translate Export function
