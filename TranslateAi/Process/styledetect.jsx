@@ -116,6 +116,10 @@ function findSourceFrame(doc, keywords) {
 }
 
 
+/*************************
+ *  STYLE DETECTION 
+ * **********************/
+
 /**
  * Extract style information from a text range
  * @param {TextRange} textRange - The text range to analyze
@@ -311,6 +315,156 @@ function addStyleMarkers(content, styleInfo) {
     return result;
 }
 
+
+/*************************
+ *  STYLE RE-APPLICATION 
+ * **********************/
+
+/**
+ * Applies styles from JSON to a text frame
+ * @param {TextFrame} textFrame - The text frame to apply styles to
+ * @param {Object} frameData - The frame data from JSON with style information
+ */
+function applyStylesToFrame(textFrame, frameData) {
+    // If no style info exists, just set the content with lineBuilder
+    if (!frameData.styleInfo) {
+        var lines = lineBuilder(
+            frameData.contents.replace(/<\/?-?\d+>/g, ''), 
+            frameData.lineChars
+        );
+        textFrame.contents = lines.join('\r');
+        return;
+    }
+    
+    // First, get plain text without style tags
+    var plainText = frameData.contents.replace(/<\/?-?\d+>/g, '');
+    
+    // Format the text with line breaks using lineBuilder
+    var lines = lineBuilder(plainText, frameData.lineChars);
+    textFrame.contents = lines.join('\r');
+    
+    // Parse the style sections from the marked text
+    var styleSections = parseStyleTags(frameData.contents);
+    
+    // We need to track the position in the original text and in the formatted text
+    var currentPosition = 0;
+    var linePositionOffset = 0;
+    
+    // Apply styles to each section
+    for (var i = 0; i < styleSections.length; i++) {
+        var section = styleSections[i];
+        var styleIndex = section.styleIndex;
+        var text = section.text;
+        
+        // Skip empty sections
+        if (text.length === 0) continue;
+        
+        // Get style info for this section
+        var styleInfo = styleIndex >= 0 && styleIndex < frameData.styleInfo.length ? 
+                       frameData.styleInfo[styleIndex] : null;
+        
+        // If we have style info, apply it
+        if (styleInfo && styleInfo.style) {
+            try {
+                // Apply style to each character individually, accounting for inserted line breaks
+                for (var j = 0; j < text.length; j++) {
+                    // Calculate the actual position considering added line breaks
+                    var adjustedPosition = currentPosition + j + linePositionOffset;
+                    
+                    if (adjustedPosition < textFrame.textRange.characters.length) {
+                        var charObj = textFrame.textRange.characters[adjustedPosition];
+                        applyStyleToRange(charObj, styleInfo.style);
+                    }
+                }
+            } catch (e) {
+                debugLog("Error applying style to text: " + e.message, 1);
+            }
+        }
+        
+        // Move position forward
+        currentPosition += text.length;
+        
+        // Calculate how many line breaks were added before this position
+        // This is a bit tricky as we need to count line breaks in the formatted text
+        // Reset linePositionOffset for the next style section
+        var formattedTextUpToCurrentPos = lines.join('\r').substring(0, currentPosition + linePositionOffset);
+        var plainTextUpToCurrentPos = plainText.substring(0, currentPosition);
+        
+        // The difference in length gives us the number of extra characters (line breaks) added
+        linePositionOffset = formattedTextUpToCurrentPos.length - plainTextUpToCurrentPos.length;
+    }
+}
+
+/**
+ * Parse style tags from marked text
+ * @param {String} markedText - Text with style tags
+ * @returns {Array} Array of styled sections with style indices and text
+ */
+function parseStyleTags(markedText) {
+    var sections = [];
+    var regex = /<(-?\d+)>(.*?)<\/\1>/g;
+    var match;
+    
+    // Find all style sections
+    while ((match = regex.exec(markedText)) !== null) {
+        sections.push({
+            styleIndex: parseInt(match[1], 10),
+            text: match[2]
+        });
+    }
+    
+    return sections;
+}
+
+/**
+ * Apply style properties to a text range
+ * @param {TextRange} range - The text range to style
+ * @param {Object} style - Style properties to apply
+ */
+function applyStyleToRange(range, style) {
+    // Apply font
+    if (style.fontName) {
+        try {
+            var font = app.textFonts.getByName(style.fontName);
+            range.textFont = font;
+        } catch (e) {
+            debugLog("Font not found: " + style.fontName, 1);
+        }
+    }
+    
+    // Apply color
+    if (style.fillColor) {
+        var color = hexToColor(style.fillColor);
+        range.fillColor = color;
+    }
+    
+    // Apply other properties if needed
+    // Bold and Italic are typically handled by the font itself
+}
+
+/**
+ * Convert hex color to Illustrator color object
+ * @param {String} hex - Hex color string (#RRGGBB)
+ * @returns {Color} Illustrator color object
+ */
+function hexToColor(hex) {
+    var r = parseInt(hex.substring(1, 3), 16);
+    var g = parseInt(hex.substring(3, 5), 16);
+    var b = parseInt(hex.substring(5, 7), 16);
+    
+    var color = new RGBColor();
+    color.red = r;
+    color.green = g;
+    color.blue = b;
+    
+    return color;
+}
+
+
+
+
+
+/** COLOR CONVERSION FUNCTIONS **/
 
 /**
  * Convert CMYK values directly to hex color string

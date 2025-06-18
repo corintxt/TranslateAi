@@ -175,28 +175,36 @@ function textFrameImport(el) {
         
         // If we have data for this frame:
         if (frameData) {
-            // Check if current frame is the title, source, or attribution frame
+            // Process the text based on frame type
             if (frameIndex === titleInfo.index || 
                 (frameInfo.source && frameIndex === frameInfo.source.index) || 
                 (frameInfo.attribution && frameIndex === frameInfo.attribution.index)) {
-                // Use titleBuilder for special frames
-                currentFrame.contents = titleBuilder(frameData.contents, frameData.lineChars);
+                // For special frames like title, remove style tags and use titleBuilder
+                currentFrame.contents = titleBuilder(
+                    frameData.contents.replace(/<\/?-?\d+>/g, ''), 
+                    frameData.lineChars
+                );
             } else {
-                // Use lineBuilder for regular frames
-                var lines = lineBuilder(frameData.contents, frameData.lineChars);
-                // Join the lines with line breaks and update frame contents
-                currentFrame.contents = lines.join('\r'); // return character needs to change for Mac/Windows?
+                // For regular frames, check if we have style info
+                if (frameData.styleInfo && frameData.styleInfo.length > 0) {
+                    // Apply styles to the text frame
+                    applyStylesToFrame(currentFrame, frameData);
+                } else {
+                    // No style info, just update content with lineBuilder
+                    var lines = lineBuilder(
+                        frameData.contents.replace(/<\/?-?\d+>/g, ''), 
+                        frameData.lineChars
+                    );
+                    currentFrame.contents = lines.join('\r');
+                }
             }
-            // Optional: Update frame position if needed?
-            // currentFrame.position = frameData.anchor;
         }
-    }
     // Draw bounds for debugging (if enabled)
     detectAndVisualizeFrameIssues(el,
                                 config.bounds.drawBounds, 
                                 config.bounds.checkOverlaps);
+    }
 }
-
 /** LineBuilder function: ///
 * We use this to split translated text into lines that fit the text frame.
 * The character limit array is a property of each text frame that we will 
