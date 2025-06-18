@@ -256,8 +256,13 @@ function waitForTranslationAndImport() {
     var completionFlag = new File(Folder.myDocuments + separator + "TranslateAi" + separator + "translation_complete.flag");
     var importScript = File(File($.fileName).parent.fsName + separator + "Import.jsx");
     
+    // First, ensure any old completion flag is removed before starting
+    if (completionFlag.exists) {
+        completionFlag.remove();
+    }
+    
     // Set up timer to check for completion flag
-    var maxWaitTime = 60; // 1 minute estimated maximum wait time
+    var maxWaitTime = 120; // Increased to 2 minutes for larger translations
     var waitInterval = 2; // Check every 2 seconds
     var elapsedTime = 0;
     
@@ -282,6 +287,9 @@ function waitForTranslationAndImport() {
     // The main monitoring loop
     var waitForTranslation = true;
     
+    // Add a small delay before starting to check for the flag
+    $.sleep(3000); // Wait 3 seconds before starting to check
+    
     // Start showing the dialog (non-modal)
     waitDialog.show();
     
@@ -298,18 +306,26 @@ function waitForTranslationAndImport() {
             var translatedDoc = completionFlag.read();
             completionFlag.close();
             
-            // Delete the flag file
-            completionFlag.remove();
+            // Verify the flag content matches our document
+            var docName = runMultiple ? "multiple_docs" : app.activeDocument.name.replace(/\.ai$/i, "");
             
-            // Close the dialog
-            waitDialog.close();
-            
-            // Give UI time to update before running Import
-            $.sleep(300);
-            
-            // Run the Import script
-            $.evalFile(importScript);
-            return;
+            if (translatedDoc.indexOf(docName) !== -1) {
+                // Delete the flag file
+                completionFlag.remove();
+                
+                // Give the system time to finish writing the translation file
+                $.sleep(1000);
+                
+                // Close the dialog
+                waitDialog.close();
+                
+                // Give UI time to update before running Import
+                $.sleep(300);
+                
+                // Run the Import script
+                $.evalFile(importScript);
+                return;
+            }
         }
         
         // Process events to keep UI responsive
