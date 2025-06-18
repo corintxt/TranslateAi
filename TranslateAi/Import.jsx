@@ -184,19 +184,17 @@ function textFrameImport(el) {
                     frameData.contents.replace(/<\/?-?\d+>/g, ''), 
                     frameData.lineChars
                 );
+            } else if (frameData.hasMultipleStyles === true) {
+                // Apply styles to the text frame if it has multiple styles
+                applyStylesToFrame(currentFrame, frameData);
             } else {
-                // For regular frames, check if we have style info
-                if (frameData.styleInfo && frameData.styleInfo.length > 0) {
-                    // Apply styles to the text frame
-                    applyStylesToFrame(currentFrame, frameData);
-                } else {
-                    // No style info, just update content with lineBuilder
-                    var lines = lineBuilder(
-                        frameData.contents.replace(/<\/?-?\d+>/g, ''), 
-                        frameData.lineChars
-                    );
-                    currentFrame.contents = lines.join('\r');
-                }
+                // No style info or single style, just update content with lineBuilder
+                var lines = lineBuilder(
+                    frameData.contents.replace(/<\/?-?\d+>/g, ''), 
+                    frameData.lineChars,
+                    2 // Tolerance of 2 characters
+                );
+                currentFrame.contents = lines.join('\r');
             }
         }
     // Draw bounds for debugging (if enabled)
@@ -205,12 +203,19 @@ function textFrameImport(el) {
                                 config.bounds.checkOverlaps);
     }
 }
+
 /** LineBuilder function: ///
 * We use this to split translated text into lines that fit the text frame.
 * The character limit array is a property of each text frame that we will 
 * read in from the JSON file
+* @param text - The text to split into lines
+* @param charArray - Array of character limits for each line
+* @param tolerance - Additional characters to allow before splitting (default: 0)
 ----------------------------------------------*/
-function lineBuilder(text, charArray) {
+function lineBuilder(text, charArray, tolerance) {
+    // Set default tolerance if not provided
+    tolerance = (tolerance !== undefined) ? tolerance : 0;
+    
     function trimString(str) {
         return str.replace(/^\s+|\s+$/g, '');
     }
@@ -226,7 +231,7 @@ function lineBuilder(text, charArray) {
     while (wordIndex < words.length && limitIndex < charArray.length) {
         var currentWord = words[wordIndex] + ' ';
         
-        if (line.length + currentWord.length <= charArray[limitIndex]+1) {
+        if (line.length + currentWord.length <= charArray[limitIndex] + tolerance + 1) {
             line += currentWord;
             wordIndex++;
         } else {
@@ -248,7 +253,7 @@ function lineBuilder(text, charArray) {
         while (wordIndex < words.length) {
             var currentWord = words[wordIndex] + ' ';
             
-            if (line.length + currentWord.length <= maxLineLength) {
+            if (line.length + currentWord.length <= maxLineLength + tolerance) {
                 line += currentWord;
                 wordIndex++;
             } else {
@@ -258,7 +263,7 @@ function lineBuilder(text, charArray) {
                 }
                 // If a single word is longer than maxLineLength, 
                 // we need to add it anyway to avoid infinite loop
-                if (currentWord.length > maxLineLength) {
+                if (currentWord.length > maxLineLength + tolerance) {
                     lines.push(trimString(currentWord));
                     wordIndex++;
                 }
@@ -276,6 +281,7 @@ function lineBuilder(text, charArray) {
     return lines;
 }
 
+
 /** titleBuilder function: ///
 * Handling title frames: check if title has just one line,
 * if so we don't do any line splitting.
@@ -286,8 +292,8 @@ function titleBuilder(text, charArray) {
         return text;
     }
     
-    // Otherwise, use lineBuilder to split into lines
-    return lineBuilder(text, charArray).join('\r');
+    // Otherwise, use lineBuilder to split into lines (tolderance of 2)
+    return lineBuilder(text, charArray, 2).join('\r');
 }
 
 

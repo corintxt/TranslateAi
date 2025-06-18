@@ -136,6 +136,11 @@ function textFrameExport(el, fileOut) {
 
             // Get style information
             var styleInfo = extractStyleInfo(frame.textRange);
+            var hasMultipleStyles = false; // Flag for multiple styles in frame
+            // If we have more than one style in the frame, set the flag to true
+            if (styleInfo.length > 1) {
+                hasMultipleStyles = true;
+            }
 
             // Get the raw content
             var rawContent = frame.textRange.contents;
@@ -174,6 +179,7 @@ function textFrameExport(el, fileOut) {
                 wordCount: frame.textRange.words.length,
                 charCount: frame.textRange.characters.length,
                 bounds: bounds,
+                hasMultipleStyles: hasMultipleStyles,
                 styleInfo: styleInfo  // Still include full style info
             };
 
