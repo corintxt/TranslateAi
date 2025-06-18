@@ -158,7 +158,7 @@ def send_translation_request(prod_url, data, cert_path):
     
     print(f"Making request to {prod_url}")
     # Debugging: print data
-    print(data)
+    # print(data)
     
     try:
         response = requests.post(prod_url, data=data, 

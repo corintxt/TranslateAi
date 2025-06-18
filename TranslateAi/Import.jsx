@@ -25,7 +25,7 @@ var config = {
     },
     bounds: {
         drawBounds: false, // Whether to draw bounds for text frames
-        checkOverlaps: true // Whether to check for overlaps between text frames
+        checkOverlaps: false // Whether to check for overlaps between text frames
     },
     keyWords: {
         source: ['Source','Fuente', 'Fonte', 'Quelle']
@@ -292,7 +292,7 @@ function titleBuilder(text, charArray) {
         return text;
     }
     
-    // Otherwise, use lineBuilder to split into lines (tolderance of 2)
+    // Otherwise, use lineBuilder to split into lines (tolerance of 2)
     return lineBuilder(text, charArray, 2).join('\r');
 }
 
