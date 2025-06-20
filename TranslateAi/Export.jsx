@@ -17,65 +17,45 @@ var runMultiple = false;
 var callAPI = true; // Set false to export JSON without calling API
 var targetLanguage; // Declare global - will be set by dialog
 
-/** Translate Export function
+/** Translate export/re-import function
  * -----------------------------*/
 function initTranslateTranslate() {
     // Show language selection dialog first
     targetLanguage = showLanguageDialog();
     if (!targetLanguage) return; // User cancelled
 
-	// Linefeed stuff
-	if ($.os.search(/windows/i) != -1)
-		fileLineFeed = "windows";
-	else
-		fileLineFeed = "macintosh";
+    // Linefeed stuff
+    if ($.os.search(/windows/i) != -1)
+        fileLineFeed = "windows";
+    else
+        fileLineFeed = "macintosh";
 
-	// Do we have a document open?
-	if (app.documents.length === 0) {
-		alert("Please open a file", "TranslateAi.Export Error", true);
-		return;
-	}
-	// More than one document open?
-	if (app.documents.length > 1) {
-		runMultiple = confirm("TranslateAi has detected multiple files.\nDo you want to export text from all open files?", true, "TranslateAi");
-		if (runMultiple === true) {
-			docs	= app.documents;
-		} else {
-			docs	= [app.activeDocument];
-		}
-	// Only one document open
-	} else {
-		runMultiple 	= false;
-		docs 			= [app.activeDocument];
-	}
-
-	// Loop all documents
-    for (var i = 0; i < docs.length; i++){
-        // Remove .ai extension before writing
-        var docName = docs[i].name.replace(/\.ai$/i, "");
-        
-        // Use platform-specific separator for file paths
-        var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
-        
-        // Set file location (cross-platform)
-        filePath = Folder.myDocuments + separator + "TranslateAi" + separator + docName + ".json";
-        
-        // Optional dev path for testing
-        devPath = File($.fileName).parent.fsName + separator + "test" + separator + docName + ".json";
-        
-        writeTextToFile(filePath, docs[i]);
+    // Do we have a document open?
+    if (app.documents.length === 0) {
+        alert("Please open a file", "TranslateAi.Export Error", true);
+        return;
     }
 
-	// Post processing: give notice (multiple) or open file (single)
-	if (runMultiple === true) {
-		alert("Exported text from " + documents.length + " files.\nFiles were saved in your documents folder. Click OK to start translation.", "TranslateAi");
-	} else {
-		alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TranslateAi");
-	}
-	// Execute command script (unless we're in export-only mode)
-	if (callAPI){
-		executeCommandScript();
-	}
+    // Remove .ai extension before writing
+    var docName = app.activeDocument.name.replace(/\.ai$/i, "");
+    
+    // Use platform-specific separator for file paths
+    var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+    
+    // Set file location (cross-platform)
+    filePath = Folder.myDocuments + separator + "TranslateAi" + separator + docName + ".json";
+    
+    // Optional dev path for testing
+    devPath = File($.fileName).parent.fsName + separator + "test" + separator + docName + ".json";
+    
+    writeTextToFile(filePath, app.activeDocument);
+
+    alert("Exported text from " + app.activeDocument.name + "\nClick OK to start translation.", "TranslateAi");
+    
+    // Execute command script (unless we're in export-only mode)
+    if (callAPI){
+        executeCommandScript();
+    }
 }
 
 /** Write text frames to temp file
@@ -225,16 +205,8 @@ function executeCommandScript() {
         tempFile.lineFeed = "Unix"; // Force Unix line endings
         tempFile.open("w");
         
-        // Rest of the code remains the same
-        if (runMultiple === true) {
-            for (var i = 0; i < docs.length; i++) {
-                var docName = docs[i].name.replace(/\.ai$/i, "");
-                tempFile.writeln(docName);
-            }
-        } else {
-            var docName = app.activeDocument.name.replace(/\.ai$/i, "");
-            tempFile.writeln(docName);
-        }
+        var docName = app.activeDocument.name.replace(/\.ai$/i, "");
+        tempFile.writeln(docName);
         tempFile.close();
         
         commandFile.execute();
@@ -307,7 +279,7 @@ function waitForTranslationAndImport() {
             completionFlag.close();
             
             // Verify the flag content matches our document
-            var docName = runMultiple ? "multiple_docs" : app.activeDocument.name.replace(/\.ai$/i, "");
+            var docName = app.activeDocument.name.replace(/\.ai$/i, "");
             
             if (translatedDoc.indexOf(docName) !== -1) {
                 // Delete the flag file

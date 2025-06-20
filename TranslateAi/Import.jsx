@@ -50,51 +50,35 @@ function initTranslateImport() {
         alert("Please open a file", "TranslateAi.Import Error", true);
         return;
     }
-    // More than one document open
-    if (app.documents.length > 1) {
-        var runMultiple = confirm("TranslateAi.Import has detected multiple files.\nDo you want to import text to all opened files?", true, "TranslateAi");
-        if (runMultiple === true) {
-            docs	= app.documents;
-        } else {
-            docs	= [app.activeDocument];
-        }
-    // Only one document open
-    } else {
-        runMultiple 	= false;
-        docs 			= [app.activeDocument];
-    }
-    // Loop all documents
-    for (var i = 0; i < docs.length; i++){
-        // Get document name without .ai extension
-        var docName = docs[i].name.replace(/\.ai$/i, "");
-        // Use platform-specific separator
-        var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
-        // Set cross-platform translation file path
-        var translationFile = Folder.myDocuments + separator + "TranslateAi" + separator + "T-" + docName + ".json";
-        // Optional dev path for testing
-        var devTranslationFile = File($.fileName).parent.fsName + separator + "test" + separator + "T-" + docName + ".json";
-        
-        // Use production path by default
-        fetchTranslations(translationFile);
 
-        // If we have translations
-        if (jsonData && jsonData.frames) {
-            // Set active document
-            alert("Processed " + docs[i].name, "TranslateAi", true);
-            app.activeDocument = docs[i];
-            // Apply the translations
-            textFrameImport(app.activeDocument);
-            // update numReplaced
-            numReplaced++;
-        } else {
-            alert("No translations found for " + docs[i].name, "TranslateAi", true);
-        }
+    // Get document name without .ai extension
+    var docName = app.activeDocument.name.replace(/\.ai$/i, "");
+    
+    // Use platform-specific separator
+    var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
+    
+    // Set cross-platform translation file path
+    var translationFile = Folder.myDocuments + separator + "TranslateAi" + separator + "T-" + docName + ".json";
+    
+    // Optional dev path for testing
+    var devTranslationFile = File($.fileName).parent.fsName + separator + "test" + separator + "T-" + docName + ".json";
+    
+    // Use production path by default
+    fetchTranslations(translationFile);
+
+    // If we have translations
+    if (jsonData && jsonData.frames) {
+        // Apply the translations
+        textFrameImport(app.activeDocument);
+        numReplaced++;
+        // Give notice of changes
+        alert("Successfully applied translations to " + app.activeDocument.name, "TranslateAi");
+    } else {
+        alert("No translations found for " + app.activeDocument.name, "TranslateAi", true);
     }
-    // Give notice of changes
-    alert("Changed the contents of " + numReplaced + " files in total", "TranslateAi");
+
     // Always close debug log
     closeDebugLog();
-
 }
 
 /** fetchTranslations (v2: reads from JSON)
