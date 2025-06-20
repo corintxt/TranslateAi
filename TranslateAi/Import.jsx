@@ -14,9 +14,6 @@ $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 $.evalFile(helpers + "/boundsdetect.jsx"); // Bounds detection
 $.evalFile(helpers + "/styledetect.jsx"); // Bounds detection
 
-var jsonData; // Declare global
-var numReplaced	= 0;
-
 var config = {
     debug: {
         enabled: true,
@@ -35,6 +32,7 @@ var config = {
 // Update debug settings from config
 setDebugConfig(config);
 
+var jsonData; // Declare global var
 
 /** Translate.Import Init function
  * --------------------------------*/
@@ -68,9 +66,19 @@ function initTranslateImport() {
 
     // If we have translations
     if (jsonData && jsonData.frames) {
+
+        // Disable screen redraw before processing
+        debugLog("Disabling screen redraw for performance");
+        app.redraw = false;
+
         // Apply the translations
         textFrameImport(app.activeDocument);
-        numReplaced++;
+
+        // Re-enable screen redraw after processing
+        app.redraw = true;
+        app.redraw(); // Force a redraw to show changes
+        debugLog("Re-enabled screen redraw");
+
         // Give notice of changes
         alert("Successfully applied translations to " + app.activeDocument.name, "TranslateAi");
     } else {
@@ -153,7 +161,7 @@ function textFrameImport(el) {
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount - 1;
         var currentFrame = frames[frameIndex];
-        debugLog("Processing frame at index " + frameIndex, 2);
+        debugLog("===Processing frame at index " + frameIndex + "===", 2);
         
         // Get the corresponding frame data from JSON
         var frameData = jsonData.frames[frameIndex];
