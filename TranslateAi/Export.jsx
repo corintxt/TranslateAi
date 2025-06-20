@@ -250,7 +250,7 @@ function waitForTranslationAndImport() {
     var progressBar = waitDialog.add("progressbar", undefined, 0, maxWaitTime);
     progressBar.preferredSize.width = 300;
     
-    var cancelBtn = waitDialog.add("button", undefined, "Cancel");
+    var cancelBtn = waitDialog.add("button", undefined, "Please wait");
     cancelBtn.onClick = function() {
         waitDialog.close();
     };
@@ -319,7 +319,7 @@ function waitForTranslationAndImport() {
         if (waitDialog.visible) {
             waitDialog.close();
         }
-        alert("Translation server timed out after " + maxWaitTime + " seconds. Please run script again.", "TranslateAi");
+        alert("Translation API timed out after " + maxWaitTime + " seconds. Please run script again.", "TranslateAi");
         return;
     }
 

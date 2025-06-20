@@ -11,8 +11,8 @@ var scriptPath = File($.fileName).parent.fsName;
 var helpers = scriptPath + "/Process";
 $.evalFile(helpers + "/debug.jsx"); // Debugging utilities
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
-$.evalFile(helpers + "/boundsdetect.jsx"); // Bounds detection
-$.evalFile(helpers + "/styledetect.jsx"); // Bounds detection
+$.evalFile(helpers + "/boundsdetect.jsx"); // Text frame bounds detection
+$.evalFile(helpers + "/styledetect.jsx"); // Multi-style detection
 
 var config = {
     debug: {
@@ -20,11 +20,11 @@ var config = {
         level: 3, // 1=error, 2=normal, 3=verbose
         logToFile: true
     },
-    bounds: {
-        drawBounds: false, // Whether to draw bounds for text frames
-        checkOverlaps: false // Whether to check for overlaps between text frames
+    bounds: { // Settings for boundsdetect.jsx
+        drawBounds: false, // Draws bounds around text frames
+        checkOverlaps: false // Adds layer showing overlaps between text frames
     },
-    keyWords: {
+    keyWords: { // Used to detect frame with source attribution
         source: ['Source','Fuente', 'Fonte', 'Quelle']
     }
 };
@@ -37,30 +37,21 @@ var jsonData; // Declare global var
 /** Translate.Import Init function
  * --------------------------------*/
 function initTranslateImport() {
-    // Linefeed stuff (-currently unused?-)
-    if ($.os.search(/windows/i) != -1)
-        operatingSystem = "windows";
-    else
-        operatingSystem = "mac";
-
-    // Do we have a document open?
+    // Check we have an active document
     if (app.documents.length === 0) {
         alert("Please open a file", "TranslateAi.Import Error", true);
         return;
     }
 
-    // Get document name without .ai extension
+    // Get document name (without .ai extension)
     var docName = app.activeDocument.name.replace(/\.ai$/i, "");
     
-    // Use platform-specific separator
+    // Use platform-specific separator (Win/Mac)
     var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
     
     // Set cross-platform translation file path
     var translationFile = Folder.myDocuments + separator + "TranslateAi" + separator + "T-" + docName + ".json";
-    
-    // Optional dev path for testing
-    var devTranslationFile = File($.fileName).parent.fsName + separator + "test" + separator + "T-" + docName + ".json";
-    
+        
     // Use production path by default
     fetchTranslations(translationFile);
 
@@ -89,7 +80,7 @@ function initTranslateImport() {
     closeDebugLog();
 }
 
-/** fetchTranslations (v2: reads from JSON)
+/** fetchTranslations (reads from JSON)
 * --------------------------------------- */
 function fetchTranslations(filePath) {
     // Initialize debug logging first
