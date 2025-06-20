@@ -125,7 +125,7 @@ function textFrameImport(el) {
     var titleInfo = findTitleFrame(el);
     if (titleInfo) {
         debugLog("Found title frame at index " + titleInfo.index + 
-                 " with font size " + titleInfo.fontSize);
+                 " with font size " + titleInfo.fontSize, 2);
     } else {
         debugLog("No title frame detected in document");
     }
@@ -135,24 +135,25 @@ function textFrameImport(el) {
     
     // Log source frame info if found
     if (frameInfo.source) {
-        debugLog("Found source frame at index " + frameInfo.source.index);
-        debugLog("Source contents: '" + frameInfo.source.contents + "'");
+        debugLog("Found source frame at index " + frameInfo.source.index, 2);
+        debugLog("Source contents: '" + frameInfo.source.contents + "'", 3);
     } else {
-        debugLog("No source frame detected in document");
+        debugLog("No source frame detected in document", 2);
     }
     
     // Log attribution frame info if found
     if (frameInfo.attribution) {
-        debugLog("Found attribution frame at index " + frameInfo.attribution.index);
-        debugLog("Attribution contents: '" + frameInfo.attribution.contents + "'");
+        debugLog("Found attribution frame at index " + frameInfo.attribution.index, 2);
+        debugLog("Attribution contents: '" + frameInfo.attribution.contents + "'", 3);
     } else {
-        debugLog("No attribution frame detected in document");
+        debugLog("No attribution frame detected in document", 2);
     }
     
     // Loop through frames in reverse order (since frame indices are zero-based)
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount - 1;
         var currentFrame = frames[frameIndex];
+        debugLog("Processing frame at index " + frameIndex, 2);
         
         // Get the corresponding frame data from JSON
         var frameData = jsonData.frames[frameIndex];
@@ -200,25 +201,39 @@ function lineBuilder(text, charArray, tolerance) {
     // Set default tolerance if not provided
     tolerance = (tolerance !== undefined) ? tolerance : 0;
     
+    debugLog("lineBuilder called with text: '" + text.substring(0, 30) + "...'", 3);
+    
     function trimString(str) {
         return str.replace(/^\s+|\s+$/g, '');
     }
     
     var words = text.split(' ');
+    debugLog("Split text into " + words.length + " words", 3);
+
+    // First case: if there's only one word, return it immediately
+    if (words.length === 1) {
+        debugLog("Single word detected, returning one line.", 3);
+        return [words[0]];
+    }
+    
     var lines = [];
     var line = '';
     var wordIndex = 0;
     var limitIndex = 0;
     var maxLineLength = Math.max.apply(null, charArray);
+    debugLog("Maximum line length from charArray: " + maxLineLength, 3);
 
     // Process words according to line limits in charArray
+    debugLog("Starting first phase - processing words with specific line limits", 3);
     while (wordIndex < words.length && limitIndex < charArray.length) {
         var currentWord = words[wordIndex] + ' ';
+        var currentLimit = charArray[limitIndex] + tolerance + 1;
         
-        if (line.length + currentWord.length <= charArray[limitIndex] + tolerance + 1) {
+        if (line.length + currentWord.length <= currentLimit) {
             line += currentWord;
             wordIndex++;
         } else {
+            debugLog("Line limit reached, creating new line from: '" + line + "'", 3);
             lines.push(trimString(line));
             line = '';
             limitIndex++;
@@ -227,27 +242,38 @@ function lineBuilder(text, charArray, tolerance) {
 
     // Handle remaining words with respect to max line length
     if (wordIndex < words.length) {
+        debugLog("Starting second phase - handling " + (words.length - wordIndex) + 
+                " remaining words", 3);
+        
         // First add any partial line if it exists
         if (line.length > 0) {
+            debugLog("Adding partial line before continuing: '" + line + "'", 3);
             lines.push(trimString(line));
             line = '';
         }
         
         // Process remaining words respecting max line length
+        debugLog("Using max line length: " + maxLineLength + " (+ tolerance: " + 
+                tolerance + ")", 3);
+        
         while (wordIndex < words.length) {
             var currentWord = words[wordIndex] + ' ';
-            
+
             if (line.length + currentWord.length <= maxLineLength + tolerance) {
                 line += currentWord;
                 wordIndex++;
+                debugLog("Added word to current line, new line: '" + line + "'", 3);
             } else {
                 if (line.length > 0) {
+                    debugLog("Max line length reached, creating new line from: '" + line + "'", 3);
                     lines.push(trimString(line));
                     line = '';
                 }
                 // If a single word is longer than maxLineLength, 
                 // we need to add it anyway to avoid infinite loop
                 if (currentWord.length > maxLineLength + tolerance) {
+                    debugLog("Word is longer than max line length, adding as separate line: '" + 
+                            currentWord + "'", 3);
                     lines.push(trimString(currentWord));
                     wordIndex++;
                 }
@@ -256,12 +282,15 @@ function lineBuilder(text, charArray, tolerance) {
         
         // Add final line if anything remains
         if (line.length > 0) {
+            debugLog("Adding final remaining line: '" + line + "'", 3);
             lines.push(trimString(line));
         }
     } else if (line.length > 0) {
+        debugLog("All words processed, adding final line: '" + line + "'", 3);
         lines.push(trimString(line));
     }
-
+    debugLog("Generated " + lines.length + " lines", 3);
+    
     return lines;
 }
 

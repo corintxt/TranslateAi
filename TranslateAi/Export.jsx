@@ -316,9 +316,17 @@ function waitForTranslationAndImport() {
     }
     
     // Handle timeout
-    if (elapsedTime >= maxWaitTime && waitDialog.visible) {
-        waitDialog.close();
+    if (elapsedTime >= maxWaitTime) {
+        if (waitDialog.visible) {
+            waitDialog.close();
+        }
         alert("Translation server timed out after " + maxWaitTime + " seconds. Please run script again.", "TranslateAi");
+        return;
+    }
+
+    // Only proceed to import if not timed out and dialog wasn't manually closed
+    if (!waitDialog.visible) {
+        return; // User manually closed the dialog
     }
 }
 
