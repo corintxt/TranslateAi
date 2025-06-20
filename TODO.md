@@ -1,4 +1,4 @@
-# TODO / development roadmap
+# Development roadmap
 
 ## Stage 2 release
 * Fix bugs (see below and in Basecamp)
@@ -10,20 +10,8 @@
 
 ## Bugs and examples
 
-Bug: Illustrator shows SPOD after running export!
-Example: Inconsistent..
-
 Bug: Error caused by type of text box (red frame) used in graphic
 Example: 36TW4YQ - Hakuto-R lunar mission
-
-Bug: Not all text in document is translated. Unsure why!
-Example: 36XA3W4.ai
-
-Bug: centered text is rendered as left-aligned
-Example:
-
-Bug: Translation does not preserve variations in text formatting within text frame
-Example: 36Y44DJ (Biodiversity)
 
 Bug: Unexpected end of JSON input
 Example: 36YA72
@@ -33,6 +21,11 @@ Example: 36YA72
 
 Date | Change
 ----|-----
+2025-6-20 | Disable runMultiple, many small fixes for second team release
+2025-6-16 | Extract and re-apply font style information
+2025-5-29 | Standardize at version 0.3
+2025-5-15 | One click export-import
+2025-3-17 | Add AFP SSL certificate, implement API retry mechanism
 2025-3-04 | Resolved OneDrive issue in Windows!
 2025-2-28 | Create translate.bat file for Windows
 2025-2-25 | Fix bug where tab (\t) characters not handled
