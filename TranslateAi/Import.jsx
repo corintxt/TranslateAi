@@ -152,7 +152,7 @@ function textFrameImport(el) {
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         var frameIndex = frameCount - 1;
         var currentFrame = frames[frameIndex];
-        debugLog("===Processing frame at index " + frameIndex + "===", 2);
+        debugLog("========Processing frame at index [" + frameIndex + "]========", 2);
         
         // Get the corresponding frame data from JSON
         var frameData = jsonData.frames[frameIndex];
