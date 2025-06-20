@@ -80,7 +80,7 @@ function initTranslateImport() {
         // If we have translations
         if (jsonData && jsonData.frames) {
             // Set active document
-            alert("Processing " + docs[i].name, "TranslateAi", true);
+            alert("Processed " + docs[i].name, "TranslateAi", true);
             app.activeDocument = docs[i];
             // Apply the translations
             textFrameImport(app.activeDocument);

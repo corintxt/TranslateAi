@@ -101,7 +101,7 @@ function writeTextToFile(filePath, document) {
 // (called in textFrameExport)
 function sanitizeString(str) {
     return str.toString()
-             .replace(/[\r\n]+/g, '')  // Remove line breaks
+             .replace(/[\r\n]+/g, ' ')  // Replace line breaks with space
              .replace(/"/g, '\\"')     // Escape quotes
 			 .replace(/\t/g, '\\t');    // Escape tabs
 }
@@ -262,7 +262,7 @@ function waitForTranslationAndImport() {
     }
     
     // Set up timer to check for completion flag
-    var maxWaitTime = 120; // Increased to 2 minutes for larger translations
+    var maxWaitTime = 60; // Time out after 60 seconds
     var waitInterval = 2; // Check every 2 seconds
     var elapsedTime = 0;
     
@@ -288,7 +288,7 @@ function waitForTranslationAndImport() {
     var waitForTranslation = true;
     
     // Add a small delay before starting to check for the flag
-    $.sleep(3000); // Wait 3 seconds before starting to check
+    $.sleep(1000); // Wait a second before starting to check
     
     // Start showing the dialog (non-modal)
     waitDialog.show();
@@ -297,7 +297,7 @@ function waitForTranslationAndImport() {
     while (waitForTranslation && elapsedTime < maxWaitTime) {
         // Update progress bar
         progressBar.value = elapsedTime;
-        waitDialog.statusText.text = "Translating text... " + elapsedTime + "s elapsed";
+        waitDialog.statusText.text = "Sending text to translation server... " + elapsedTime + "s elapsed";
         
         // Check for completion flag
         if (completionFlag.exists) {
@@ -346,7 +346,7 @@ function waitForTranslationAndImport() {
     // Handle timeout
     if (elapsedTime >= maxWaitTime && waitDialog.visible) {
         waitDialog.close();
-        alert("Translation timed out after " + maxWaitTime + " seconds. Please run Import script manually.", "TranslateAi");
+        alert("Translation server timed out after " + maxWaitTime + " seconds. Please run script again.", "TranslateAi");
     }
 }
 
