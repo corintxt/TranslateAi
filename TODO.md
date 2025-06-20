@@ -1,19 +1,19 @@
 # Development roadmap
 
 ## Stage 2 release
-* Fix bugs (see below and in Basecamp)
-* Start writing tests (!) in order to make changes and know nothing will break.
+* Completed 2025-6-20
 
 ## Stage 3 release
 * Research Arabic R-L text possibilities
 * Rewrite using [Adobe CEP](https://github.com/Adobe-CEP)
+* Start writing tests (?)
 
 ## Bugs and examples
 
-Bug: Error caused by type of text box (red frame) used in graphic
+Bug: Error caused by type of text box (red frame) used in graphic | 
 Example: 36TW4YQ - Hakuto-R lunar mission
 
-Bug: Unexpected end of JSON input
+Bug: Unexpected end of JSON input | 
 Example: 36YA72
 
 ---
