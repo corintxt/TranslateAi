@@ -1,18 +1,17 @@
 /*****************************************************************
  * TranslateAi.Import v 0.3 (2025) - Corin Faife - https://corinfaife.co/
  * 
- * Adapted from: 
+ * Originally forked from: 
  * ==============
  * TextConvert.Import 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
 // Load dependencies from script directory
 var scriptPath = File($.fileName).parent.fsName;
-var helpers = scriptPath + "/Process";
-$.evalFile(helpers + "/debug.jsx"); // Debugging utilities
-$.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
-$.evalFile(helpers + "/boundsdetect.jsx"); // Text frame bounds detection
-$.evalFile(helpers + "/styledetect.jsx"); // Multi-style detection
+$.evalFile(scriptPath + "/debug.jsx"); // Debugging utilities
+$.evalFile(scriptPath + "/jsonparse.jsx"); // JSON polyfill
+$.evalFile(scriptPath + "/boundsdetect.jsx"); // Text frame bounds detection
+$.evalFile(scriptPath + "/styledetect.jsx"); // Multi-style detection
 
 var config = {
     debug: {

@@ -1,14 +1,14 @@
 /*****************************************************************
  * TranslateAi.Export v 0.3 (2025) - by Corin Faife - https://corinfaife.co/
  * 
- * Adapted from: 
+ * Originally forked from:
  * =========================
  * TextConvert.Export 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 
 // Load dependencies from TranslateAi directory
 var scriptPath = File($.fileName).parent.fsName;
-var helpers = scriptPath + "/Process";
+var helpers = scriptPath + "/src";
 $.evalFile(helpers + "/jsonparse.jsx"); // JSON polyfill
 $.evalFile(helpers + "/languageselect.jsx"); // Language selection dialog
 $.evalFile(helpers + "/styledetect.jsx"); // Style detection module
@@ -225,7 +225,7 @@ function executeCommandScript() {
 function waitForTranslationAndImport() {
     var separator = ($.os.search(/windows/i) != -1) ? '\\' : '/';
     var completionFlag = new File(Folder.myDocuments + separator + "TranslateAi" + separator + "translation_complete.flag");
-    var importScript = File(File($.fileName).parent.fsName + separator + "Import.jsx");
+    var importScript = File(File($.fileName).parent.fsName + separator + "src" + separator + "Import.jsx");
     
     // First, ensure any old completion flag is removed before starting
     if (completionFlag.exists) {
