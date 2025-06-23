@@ -10,7 +10,7 @@ Click on the blue **Code** box above, then Download source code: **zip**. (If yo
 
 Extract the folder from the zip file – you can put it anywhere on your computer for now.
 
-Open the zip file, find the TranslateAi folder, and put the `config.json` file (sent separately) into the Process folder.
+Open the zip file, find the TranslateAi folder, and put the `config.json` file (sent separately) into the `/src` folder.
 
 ![ConfigJSON](img/configJSON.PNG)
 
@@ -106,16 +106,10 @@ You should see a message telling you that text was exported.
 
 ![ClickOK](img/StartTranslation.PNG)
 
-You will see a terminal window open while the translation script communicates with the [AFP translate API](https://translate.afp.com/translate). 
+You will see a terminal window open while the translation script communicates with the [AFP translate API](https://translate.afp.com/translate). Meanwhile, an Illustrator menu will indicate the progress of the translation.
 
-Wait for the text that says "Translation successful":
+Once the translation server returns the text, it will be automatically re-imported into the Illustrator document.
 
-![Successful](img/TranslationSuccessful.PNG)
-
-NOTE: Sometimes you will see a message that says "Translate API returned no text.":
-
-![NoText](img/NoText.PNG)
+**NOTE**: Sometimes you will see a message that says "Translate timed out.":
 
 If this happens, run the TranslateAi > Export script again from Illustrator.
-
-When the translation is successful, click `File > Scripts > TranslateAi > Import` to bring the translated text into the graphic document.
