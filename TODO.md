@@ -21,6 +21,7 @@ Example: 36YA72
 
 Date | Change
 ----|-----
+2025-6-24 | Version 0.3.1: Add dev_mode flag to translate.py
 2025-6-20 | Disable runMultiple, many small fixes for second team release
 2025-6-16 | Extract and re-apply font style information
 2025-5-29 | Standardize at version 0.3
