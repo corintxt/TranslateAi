@@ -142,12 +142,12 @@ def load_input_file(input_file):
 
 
 ## THE API PART
-def send_translation_request(prod_url, data, cert_path):
+def send_translation_request(url, data, cert_path):
     """
     Send translation request to the API endpoint.
     
     Args:
-        prod_url: URL of the translation service
+        url: URL of the translation service
         data: Request data
         cert_path: Path to SSL certificate
         
@@ -156,12 +156,12 @@ def send_translation_request(prod_url, data, cert_path):
     """
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     
-    print(f"Making request to {prod_url}")
+    print(f"Making request to {url}")
     # Debugging: print data
     # print(data)
     
     try:
-        response = requests.post(prod_url, data=data, 
+        response = requests.post(url, data=data, 
                                 headers=headers, 
                                 verify=cert_path)
         status_code = response.status_code
@@ -202,6 +202,8 @@ def main():
     Take config file and input file from system arguments.
     Read input file, send contents to translation API, and write to output file.
     """
+    dev_mode = True  # Set to True for development mode
+
     # Argument handling
     if len(sys.argv) < 4:
         print("Usage: translate.py <config_file> <input_file> <cert_file>")
@@ -237,10 +239,17 @@ def main():
     }
     
     prod_url = config.get('prodUrl')
-    
+    dev_url = config.get('devUrl')
+
+    if dev_mode:
+        api_url = dev_url
+        print("** Development mode enabled **")
+    else:
+        api_url = prod_url
+
     # Send request and handle retries
     status_code, response_json, got_translation, translation, error_message = send_translation_request(
-        prod_url, data, cert_path
+        api_url, data, cert_path
     )
     
     # Automatic retry mechanism
@@ -255,7 +264,7 @@ def main():
         time.sleep(wait_time)  # Wait before retrying
         
         status_code, response_json, got_translation, translation, error_message = send_translation_request(
-            prod_url, data, cert_path
+            api_url, data, cert_path
         )
 
     # Log translation event
