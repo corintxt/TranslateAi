@@ -1,5 +1,4 @@
 .DS_Store
-config*.json
 *.txt
 *.zip
 /test
