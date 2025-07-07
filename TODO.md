@@ -1,4 +1,5 @@
 # Development roadmap
+* Work on Area Text fix: text boxes need to expand reactively to accommodate translated text longer than original
 
 ## Stage 2 release
 * Completed 2025-6-20
