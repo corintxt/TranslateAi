@@ -233,7 +233,7 @@ function waitForTranslationAndImport() {
     }
     
     // Set up timer to check for completion flag
-    var maxWaitTime = 60; // Time out after 60 seconds
+    var maxWaitTime = 90; // Time out after 90 seconds
     var waitInterval = 2; // Check every 2 seconds
     var elapsedTime = 0;
     

@@ -1,23 +1,9 @@
 # Development roadmap
 * Work on Area Text fix: text boxes need to expand reactively to accommodate translated text longer than original
-
-## Stage 2 release
-* Completed 2025-6-20
-
-## Stage 3 release
-* Research Arabic R-L text possibilities
-* Rewrite using [Adobe CEP](https://github.com/Adobe-CEP)
-* Start writing tests (?)
-
-## Bugs and examples
-
-Bug: Error caused by type of text box (red frame) used in graphic | 
-Example: 36TW4YQ - Hakuto-R lunar mission
-
-Bug: Unexpected end of JSON input | 
-Example: 36YA72
+* Add numeric check to translate.py: we don't need to translate a text box that only contains numbers
 
 ---
+
 ### Changelog
 
 Date | Change
@@ -36,6 +22,26 @@ Date | Change
 2025-2-21 | Translate multiple works!
 2025-2-21 | Scripts now write to filename based on .ai file (not input.json); API URL now read from config.json.
 2025-2-20 |  Line reconstruction
+
+---
+
+## Stage 2 release
+* Completed 2025-6-20
+
+## Stage 3 release
+* Research Arabic R-L text possibilities
+* Rewrite using [Adobe CEP](https://github.com/Adobe-CEP)
+* Start writing tests (?)
+
+## Bugs and examples
+
+Bug: Error caused by type of text box (red frame) used in graphic | 
+Example: 36TW4YQ - Hakuto-R lunar mission
+
+Bug: Unexpected end of JSON input | 
+Example: 36YA72
+
+---
 
 ### References
 * https://ai-scripting.docsforadobe.dev/jsobjref/TextFrameItem.html
