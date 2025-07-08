@@ -1,4 +1,4 @@
-# TranslateAi: v0.3.1
+# TranslateAi: v0.3.2
 **Export text from Adobe Illustrator files, send to translation API and re-import.**
 
 ## Installation (Windows)
