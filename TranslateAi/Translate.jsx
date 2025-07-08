@@ -259,13 +259,16 @@ function waitForTranslationAndImport() {
     var waitForTranslation = true;
     
     // Add a small delay before starting to check for the flag
-    $.sleep(1000); // Wait a second before starting to check
+    $.sleep(500); // Wait half second before starting to check
     
     // Start showing the dialog (non-modal)
     waitDialog.show();
     
+    // Add proper flag to track completion
+    var translationCompleted = false;
+
     // Main monitoring loop
-    while (waitForTranslation && elapsedTime < maxWaitTime) {
+    while (waitForTranslation && elapsedTime < maxWaitTime && !translationCompleted) {
         // Update progress bar
         progressBar.value = elapsedTime;
         waitDialog.statusText.text = "Sending text to translation server... " + elapsedTime + "s elapsed";
@@ -281,21 +284,8 @@ function waitForTranslationAndImport() {
             var docName = app.activeDocument.name.replace(/\.ai$/i, "");
             
             if (translatedDoc.indexOf(docName) !== -1) {
-                // Delete the flag file
-                completionFlag.remove();
-                
-                // Give the system time to finish writing the translation file
-                $.sleep(1000);
-                
-                // Close the dialog
-                waitDialog.close();
-                
-                // Give UI time to update before running Import
-                $.sleep(300);
-                
-                // Run the Import script
-                $.evalFile(importScript);
-                return;
+                translationCompleted = true;
+                // Don't return here, let loop exit properly
             }
         }
         
@@ -314,18 +304,38 @@ function waitForTranslationAndImport() {
         }
     }
     
-    // Handle timeout
-    if (elapsedTime >= maxWaitTime) {
+    // Handle completion after loop
+    if (translationCompleted) {
+        // Delete the completion flag
+        if (completionFlag.exists) {
+            completionFlag.remove();
+        }
+        
+        // Close the dialog
+        if (waitDialog.visible) {
+            waitDialog.close();
+        }
+        
+        // Give the system time to finish writing the translation file
+        $.sleep(500);
+        
+        // Give UI time to update before running Import
+        $.sleep(250);
+        
+        // Proceed with import
+        try {
+            $.evalFile(importScript);
+        } catch (e) {
+            alert("Error importing translation: " + e.message, "TranslateAi Import Error");
+        }
+    } else if (!waitDialog.visible) {
+        return; // User cancelled
+    } else {
+        // Timeout - close dialog
         if (waitDialog.visible) {
             waitDialog.close();
         }
         alert("Translation API timed out after " + maxWaitTime + " seconds. Please run script again.", "TranslateAi");
-        return;
-    }
-
-    // Only proceed to import if not timed out and dialog wasn't manually closed
-    if (!waitDialog.visible) {
-        return; // User manually closed the dialog
     }
 }
 
