@@ -142,7 +142,7 @@ def load_input_file(input_file):
 
 
 ## THE API PART
-def send_translation_request(url, data, cert_path):
+def send_translation_request(url, data, cert_path, dev_mode=False):
     """
     Send translation request to the API endpoint.
     
@@ -157,8 +157,11 @@ def send_translation_request(url, data, cert_path):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     
     print(f"Making request to {url}")
+    
     # Debugging: print data
-    # print(data)
+    if dev_mode:
+        print("** Dev mode enabled. Request data: **")
+        print(json.dumps(data, indent=4))
     
     try:
         response = requests.post(url, data=data, 
@@ -169,11 +172,10 @@ def send_translation_request(url, data, cert_path):
         print()
 
         # Handle response
-        response_json = json.dumps(response.json())
-        r = json.loads(response_json)
+        r = response.json()
 
         # Debugging: print response
-        print(f"Response: {r}")
+        print(f"Response: {json.dumps(r, indent=4)}")
         print()
 
         got_translation = False
@@ -183,9 +185,9 @@ def send_translation_request(url, data, cert_path):
         # Check if translationText is empty string
         if r['translationText'] != '':
             got_translation = True
-            # Escape some characters that break JSON
-            string_check = r['translationText'].replace("\\'", "'")
-            translation = json.loads(string_check)
+            # Since we're sending plain text, the response should be plain text too
+            # No need to parse as JSON
+            translation = r['translationText']
         else:
             print("!! Translate API returned no text !!")
             error_message = str(r)
@@ -197,10 +199,94 @@ def send_translation_request(url, data, cert_path):
         print(f"Error during API request: {e}")
         return 500, {"error": str(e)}, False, None, str(e)
 
+
+def translate_single_frame(frame_id, frame_content, target_language, url, cert_path, dev_mode=False, max_retries=5):
+    """
+    Translate a single frame's content.
+    
+    Args:
+        frame_id: ID of the frame being translated
+        frame_content: Text content to translate
+        target_language: Target language code
+        url: API endpoint URL
+        cert_path: Path to SSL certificate
+        dev_mode: Development mode flag
+        max_retries: Maximum number of retry attempts
+        
+    Returns:
+        Tuple of (success, translated_text, error_message)
+    """
+    print(f"Translating frame {frame_id}...")
+    
+    # Prepare data for single frame translation - send only the content as string
+    data = {
+        'inputText': frame_content, 
+        'provider': 'OpenAiChatGpt',
+        'destination_lang': target_language
+    }
+    
+    # Send request and handle retries
+    status_code, response_json, got_translation, translation, error_message = send_translation_request(
+        url, data, cert_path, dev_mode=dev_mode
+    )
+    
+    # Automatic retry mechanism
+    retry_count = 0
+    
+    while not got_translation and retry_count < max_retries:
+        retry_count += 1
+        wait_time = retry_count * 2  # Exponential backoff
+        
+        print(f"Translation failed for frame {frame_id}. Retrying ({retry_count}/{max_retries}) in {wait_time} seconds...")
+        time.sleep(wait_time)  # Wait before retrying
+        
+        status_code, response_json, got_translation, translation, error_message = send_translation_request(
+            url, data, cert_path, dev_mode=dev_mode
+        )
+    
+    if got_translation and translation:
+        # Since we sent plain text and got plain text back, use it directly
+        return True, translation, None
+    else:
+        return False, None, error_message
+
+
+def translate_all_frames(contents, target_language, url, cert_path, dev_mode=False):
+    """
+    Translate all frames individually.
+    
+    Args:
+        contents: Dictionary of frame contents
+        target_language: Target language code
+        url: API endpoint URL
+        cert_path: Path to SSL certificate
+        dev_mode: Development mode flag
+        
+    Returns:
+        Tuple of (success, translations_dict, failed_frames)
+    """
+    translations = {}
+    failed_frames = []
+    
+    for frame_id, frame_content in contents.items():
+        success, translated_text, error_message = translate_single_frame(
+            frame_id, frame_content, target_language, url, cert_path, dev_mode
+        )
+        
+        if success:
+            translations[frame_id] = translated_text
+            print(f"✓ Frame {frame_id} translated successfully")
+        else:
+            failed_frames.append(frame_id)
+            print(f"✗ Frame {frame_id} translation failed: {error_message}")
+    
+    overall_success = len(failed_frames) == 0
+    return overall_success, translations, failed_frames
+
 def main():
     """
     Take config file and input file from system arguments.
-    Read input file, send contents to translation API, and write to output file.
+    Read input file, send contents to translation API frame by frame, and write to output file.
     """
     dev_mode = True  # Set to True for development mode
 
@@ -229,15 +315,9 @@ def main():
 
     print(f"Reading file: {input_file}")
     print(f"Using certificate: {cert_path}")
+    print(f"Found {len(contents)} frames to translate")
     print()
 
-    # Prepare data for translation API
-    data = {
-        'inputText': json.dumps(contents), 
-        'provider': 'OpenAiChatGpt',
-        'destination_lang': target_language
-    }
-    
     prod_url = config.get('prodUrl')
     dev_url = config.get('devUrl')
 
@@ -247,52 +327,46 @@ def main():
     else:
         api_url = prod_url
 
-    # Send request and handle retries
-    status_code, response_json, got_translation, translation, error_message = send_translation_request(
-        api_url, data, cert_path
+    # Translate all frames individually
+    print("Starting individual frame translations...")
+    overall_success, translations, failed_frames = translate_all_frames(
+        contents, target_language, api_url, cert_path, dev_mode
     )
     
-    # Automatic retry mechanism
-    max_retries = 5
-    retry_count = 0
-    
-    while not got_translation and retry_count < max_retries:
-        retry_count += 1
-        wait_time = retry_count * 2  # Exponential backoff
-        
-        print(f"Translation failed. Automatically retrying ({retry_count}/{max_retries}) in {wait_time} seconds...")
-        time.sleep(wait_time)  # Wait before retrying
-        
-        status_code, response_json, got_translation, translation, error_message = send_translation_request(
-            api_url, data, cert_path
-        )
-
-    # Log translation event
+    # Log translation event for overall operation
     log_translation_event(
         config, 
         input_file, 
         target_language, 
-        status_code, 
-        got_translation,
-        error_message
+        200 if overall_success else 500, 
+        overall_success,
+        f"Failed frames: {failed_frames}" if failed_frames else None
     )
     
-    # Write to file if translation is successful
-    if got_translation:
-        merged = merge_translations(input_data, translation)
+    # Write to file if we have any successful translations
+    if translations:
+        merged = merge_translations(input_data, translations)
         # Get base filename without path
         base_name = os.path.basename(input_file)
         # Write to file - same directory as input
         output_path = os.path.join(os.path.dirname(input_file), f'T-{base_name}')
         write_json(output_path, merged)
-        print(f"** Translation successful **")
+        
+        if overall_success:
+            print(f"** All translations successful **")
+            print(f"Translated {len(translations)} frames successfully")
+        else:
+            print(f"** Partial translation completed **")
+            print(f"Translated {len(translations)} frames successfully")
+            print(f"Failed to translate {len(failed_frames)} frames: {failed_frames}")
 
         # Write completion flag (triggers import script)
         completion_flag_path = os.path.join(os.path.dirname(input_file), "translation_complete.flag")
         with open(completion_flag_path, 'w') as flag_file:
             flag_file.write(base_name)
     else:
-        print(f"Translation failed after {retry_count} retries. No output file was created.")
+        print(f"Translation failed completely. No frames were translated successfully.")
+        print(f"Failed frames: {failed_frames}")
 
 if __name__ == "__main__":
    main()
