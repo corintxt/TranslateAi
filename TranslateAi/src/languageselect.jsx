@@ -29,16 +29,24 @@ function showLanguageDialog() {
     var okButton = buttons.add("button", undefined, "OK");
     var cancelButton = buttons.add("button", undefined, "Cancel");
     
+    var userCancelled = false;
+    
     okButton.onClick = function() {
         targetLanguage = dropdown.selection.code;
         dialog.close();
     }
     
     cancelButton.onClick = function() {
+        userCancelled = true;
         dialog.close();
     }
     
     dialog.show();
+    
+    if (userCancelled) {
+        return null; // Return null to indicate cancellation
+    }
+    
     // alert("TargetLang:" + targetLanguage);
     return targetLanguage;
 }
