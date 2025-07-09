@@ -1,10 +1,12 @@
 /*****************************************************************
- * TranslateAi.Export v 0.3 (2025) - by Corin Faife - https://corinfaife.co/
+ * TranslateAi.Export v 0.3.2 (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Originally forked from:
  * =========================
  * TextConvert.Export 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
+// Declare version
+var scriptVersion = "0.3.2";
 
 // Load dependencies from TranslateAi directory
 var scriptPath = File($.fileName).parent.fsName;
@@ -233,12 +235,12 @@ function waitForTranslationAndImport() {
     }
     
     // Set up timer to check for completion flag
-    var maxWaitTime = 90; // Time out after 90 seconds
+    var maxWaitTime = 60; // Time out after 60 seconds
     var waitInterval = 2; // Check every 2 seconds
     var elapsedTime = 0;
     
     // Create waiting dialog
-    var waitDialog = new Window("palette", "TranslateAi", undefined, {closeButton: true});
+    var waitDialog = new Window("palette", "TranslateAi v" + scriptVersion, undefined, {closeButton: true});
     waitDialog.orientation = "column";
     waitDialog.alignChildren = ["center", "top"];
     waitDialog.spacing = 10;
