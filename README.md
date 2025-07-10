@@ -10,8 +10,6 @@ Click on the blue **Code** box above, then Download source code: **zip**. (If yo
 
 Extract the folder from the zip file – you can put it anywhere on your computer for now.
 
-Open the zip file, find the TranslateAi folder, and put the `config.json` file (sent separately) into the `/src` folder.
-
 ![ConfigJSON](img/configJSON.PNG)
 
 Copy the TranslateAI folder into your Adobe Illustrator Scripts folder. The location will be something like:

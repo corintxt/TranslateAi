@@ -1,5 +1,5 @@
 /*****************************************************************
- * TranslateAi Bounds Detection Module v1.1 (2025) - Corin Faife
+ * TranslateAi Bounds Detection Module v0.1 (2025) - Corin Faife
  * 
  * Checks for overlap between text frames in an Adobe Illustrator document.
  *****************************************************************/
