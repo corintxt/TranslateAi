@@ -1,4 +1,5 @@
-@echo off
+:: Uncomment echo off to run silently
+:: @echo off
 setlocal EnableDelayedExpansion
 
 echo ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
