@@ -10,6 +10,38 @@ import socket
 import platform
 import time
 
+## IP ADDRESS UTILITIES
+def get_local_ip():
+    """Get the local IP address of the machine."""
+    try:
+        # Connect to a remote address to determine local IP
+        # This doesn't actually send data, just establishes which interface would be used
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        local_ip = s.getsockname()[0]
+        s.close()
+        return local_ip
+    except Exception:
+        return "unknown"
+
+
+def get_network_info():
+    """Get comprehensive network information."""
+    try:
+        hostname = socket.gethostname()
+        local_ip = get_local_ip()
+        
+        return {
+            "hostname": hostname,
+            "local_ip": local_ip,
+        }
+    except Exception as e:
+        return {
+            "hostname": "unknown",
+            "local_ip": "unknown", 
+            "error": str(e)
+        }
+
 ## LOGGING STUFF
 def log_via_http(message, logging_endpoint, api_key=None, client_id=None):
     """
@@ -55,21 +87,77 @@ def log_translation_event(config,
                           target_language, 
                           status_code, 
                           got_translation,
-                          error_message=None):
+                          error_message=None,
+                          duration_seconds=None,
+                          total_frames=0,
+                          successful_frames=0,
+                          failed_frames=None,
+                          total_characters=0,
+                          total_retries=0,
+                          avg_time_per_frame=None):
     """
-    Specific function to log data from Translate.Ai translation event.
+    Enhanced function to log comprehensive translation metrics.
     """
+    now = datetime.datetime.now(datetime.timezone.utc)
+    
+    # Get network information
+    network_info = get_network_info()
+    
+    # Calculate derived metrics
+    failed_frame_count = len(failed_frames) if failed_frames else 0
+    success_rate = (successful_frames / total_frames) if total_frames > 0 else 0
+    frames_per_second = (successful_frames / duration_seconds) if duration_seconds and duration_seconds > 0 else 0
+    characters_per_second = (total_characters / duration_seconds) if duration_seconds and duration_seconds > 0 else 0
+    avg_characters_per_frame = (total_characters / total_frames) if total_frames > 0 else 0
+    
     job = {
-        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        "client_id": str(uuid.uuid4())[:8],
-        "hostname": socket.gethostname(),
+        # Temporal data
+        "timestamp": now.isoformat(),
+        "date": now.date().isoformat(),
+        "hour": now.hour,
+        
+        # Session identification
+        "session_id": str(uuid.uuid4())[:12],
+        
+        # Network & System information
+        "hostname": network_info["hostname"],
+        "local_ip": network_info["local_ip"],
         "platform": platform.platform(),
         "python_version": platform.python_version(),
+        
+        # Job details
         "input_file": os.path.basename(input_file),
         "target_language": target_language,
         "status_code": status_code,
         "translation_returned": got_translation,
-        "error_message": error_message
+        "error_message": error_message,
+        
+        # Performance metrics
+        "duration_seconds": round(duration_seconds, 2) if duration_seconds else None,
+        "total_frames": total_frames,
+        "successful_frames": successful_frames,
+        "failed_frames": failed_frame_count,
+        "success_rate": round(success_rate, 3),
+        "avg_time_per_frame": round(avg_time_per_frame, 2) if avg_time_per_frame else None,
+        "frames_per_second": round(frames_per_second, 2),
+        
+        # Content metrics
+        "total_characters": total_characters,
+        "characters_per_second": round(characters_per_second, 1),
+        "avg_characters_per_frame": round(avg_characters_per_frame, 1),
+        
+        # Reliability metrics
+        "total_retries": total_retries,
+        "retry_rate": round(total_retries / total_frames, 2) if total_frames > 0 else 0,
+        
+        # Status flags for easy filtering
+        "is_complete_success": got_translation and failed_frame_count == 0,
+        "is_partial_success": successful_frames > 0 and failed_frame_count > 0,
+        "is_complete_failure": successful_frames == 0,
+        "has_retries": total_retries > 0,
+        
+        # Failed frame details (limited to prevent log bloat)
+        "failed_frame_ids": failed_frames[:10] if failed_frames else []
     }
     
     logging_endpoint = config.get('loggingEndpoint')
@@ -202,7 +290,7 @@ def send_translation_request(url, data, cert_path, dev_mode=False):
 
 def translate_single_frame(frame_id, frame_content, target_language, url, cert_path, dev_mode=False, max_retries=5):
     """
-    Translate a single frame's content.
+    Translate a single frame's content with detailed timing metrics.
     
     Args:
         frame_id: ID of the frame being translated
@@ -214,8 +302,9 @@ def translate_single_frame(frame_id, frame_content, target_language, url, cert_p
         max_retries: Maximum number of retry attempts
         
     Returns:
-        Tuple of (success, translated_text, error_message)
+        Tuple of (success, translated_text, error_message, frame_duration, retry_count)
     """
+    start_time = time.time()
     print(f"Translating frame {frame_id}...")
     
     # Prepare data for single frame translation - send only the content as string
@@ -244,16 +333,20 @@ def translate_single_frame(frame_id, frame_content, target_language, url, cert_p
             url, data, cert_path, dev_mode=dev_mode
         )
     
+    frame_duration = time.time() - start_time
+    
     if got_translation and translation:
         # Since we sent plain text and got plain text back, use it directly
-        return True, translation, None
+        print(f"✓ Frame {frame_id} translated in {frame_duration:.2f}s (retries: {retry_count})")
+        return True, translation, None, frame_duration, retry_count
     else:
-        return False, None, error_message
+        print(f"✗ Frame {frame_id} failed after {frame_duration:.2f}s (retries: {retry_count})")
+        return False, None, error_message, frame_duration, retry_count
 
 
 def translate_all_frames(contents, target_language, url, cert_path, dev_mode=False):
     """
-    Translate all frames individually.
+    Translate all frames individually with comprehensive metrics collection.
     
     Args:
         contents: Dictionary of frame contents
@@ -263,32 +356,46 @@ def translate_all_frames(contents, target_language, url, cert_path, dev_mode=Fal
         dev_mode: Development mode flag
         
     Returns:
-        Tuple of (success, translations_dict, failed_frames)
+        Tuple of (success, translations_dict, failed_frames, metrics_dict)
     """
     translations = {}
     failed_frames = []
+    frame_timings = []
+    total_retries = 0
     
     for frame_id, frame_content in contents.items():
-        success, translated_text, error_message = translate_single_frame(
+        success, translated_text, error_message, frame_duration, retry_count = translate_single_frame(
             frame_id, frame_content, target_language, url, cert_path, dev_mode
         )
         
+        frame_timings.append(frame_duration)
+        total_retries += retry_count
+        
         if success:
             translations[frame_id] = translated_text
-            print(f"✓ Frame {frame_id} translated successfully")
         else:
             failed_frames.append(frame_id)
-            print(f"✗ Frame {frame_id} translation failed: {error_message}")
+    
+    # Calculate metrics
+    metrics = {
+        'total_retries': total_retries,
+        'frame_timings': frame_timings,
+        'avg_time_per_frame': sum(frame_timings) / len(frame_timings) if frame_timings else 0,
+        'min_time_per_frame': min(frame_timings) if frame_timings else 0,
+        'max_time_per_frame': max(frame_timings) if frame_timings else 0
+    }
     
     overall_success = len(failed_frames) == 0
-    return overall_success, translations, failed_frames
+    return overall_success, translations, failed_frames, metrics
 
 def main():
     """
     Take config file and input file from system arguments.
     Read input file, send contents to translation API frame by frame, and write to output file.
+    Enhanced with comprehensive metrics collection.
     """
     dev_mode = True  # Set to True for development mode
+    start_time = time.time()
 
     # Argument handling
     if len(sys.argv) < 4:
@@ -313,9 +420,14 @@ def main():
     config = load_config(config_file)
     input_data, target_language, contents = load_input_file(input_file)
 
+    # Calculate metrics for the input
+    total_characters = sum(len(str(content)) for content in contents.values())
+    total_frames = len(contents)
+
     print(f"Reading file: {input_file}")
     print(f"Using certificate: {cert_path}")
-    print(f"Found {len(contents)} frames to translate")
+    print(f"Found {total_frames} frames to translate")
+    print(f"Total characters: {total_characters}")
     print()
 
     prod_url = config.get('prodUrl')
@@ -329,18 +441,44 @@ def main():
 
     # Translate all frames individually
     print("Starting individual frame translations...")
-    overall_success, translations, failed_frames = translate_all_frames(
+    translation_start = time.time()
+    
+    overall_success, translations, failed_frames, metrics = translate_all_frames(
         contents, target_language, api_url, cert_path, dev_mode
     )
     
-    # Log translation event for overall operation
+    translation_end = time.time()
+    total_duration = translation_end - start_time
+    translation_duration = translation_end - translation_start
+    
+    # Calculate final metrics
+    successful_frames = len(translations)
+    
+    print(f"\n=== Translation Summary ===")
+    print(f"Total duration: {total_duration:.2f}s")
+    print(f"Translation time: {translation_duration:.2f}s")
+    print(f"Successful frames: {successful_frames}/{total_frames}")
+    print(f"Average time per frame: {metrics['avg_time_per_frame']:.2f}s")
+    print(f"Total retries: {metrics['total_retries']}")
+    if successful_frames > 0:
+        print(f"Characters per second: {total_characters / translation_duration:.1f}")
+        print(f"Frames per second: {successful_frames / translation_duration:.2f}")
+    
+    # Log translation event with comprehensive metrics
     log_translation_event(
-        config, 
-        input_file, 
-        target_language, 
-        200 if overall_success else 500, 
-        overall_success,
-        f"Failed frames: {failed_frames}" if failed_frames else None
+        config=config,
+        input_file=input_file,
+        target_language=target_language,
+        status_code=200 if overall_success else 500,
+        got_translation=overall_success,
+        error_message=f"Failed frames: {failed_frames}" if failed_frames else None,
+        duration_seconds=total_duration,
+        total_frames=total_frames,
+        successful_frames=successful_frames,
+        failed_frames=failed_frames,
+        total_characters=total_characters,
+        total_retries=metrics['total_retries'],
+        avg_time_per_frame=metrics['avg_time_per_frame']
     )
     
     # Write to file if we have any successful translations
