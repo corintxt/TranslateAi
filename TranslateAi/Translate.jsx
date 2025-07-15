@@ -1,12 +1,12 @@
 /*****************************************************************
- * TranslateAi v 0.3.2 (2025) - by Corin Faife - https://corinfaife.co/
+ * TranslateAi (2025) - by Corin Faife - https://corinfaife.co/
  * 
  * Originally forked from:
  * =========================
  * TextConvert.Export 1.1 (2016) - by Bramus! - https://www.bram.us/
  *****************************************************************/
 // Declare version
-var scriptVersion = "0.3.2";
+var scriptVersion = "0.3.3";
 
 // Load dependencies from TranslateAi directory
 var scriptPath = File($.fileName).parent.fsName;
