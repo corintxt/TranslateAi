@@ -1,8 +1,8 @@
 {
     "devUrl": "https://vspar-ia-t-transcript-01.afp.com:8046/translate",
     "prodUrl": "https://translate.afp.com/translateapi/translate",
-    "loggingEndpoint": "https://demo-log-handler-255021103198.us-central1.run.app",
-    "logging-key": "olsmXRTcTzctbZDyAFHkfRdXO",
+    "loggingEndpoint": "https://translation-logger-255021103198.europe-west1.run.app",
+    "logging-key": "dXq7Vzsc55pAp7y5BcBhCkHsN93Fb9",
     "devEndpoint": "http://localhost:8080",
     "dev-key": "test-api-key"
 }

@@ -11,7 +11,10 @@ BUCKET_NAME = os.environ.get("STORAGE_BUCKET", "your-log-bucket")
 API_KEY = os.environ.get("API_KEY")  # Set this to secure your endpoint
 
 def store_log_in_storage(log_data, run_dev=False):
-    """Store the log data in a Cloud Storage bucket."""
+    """
+    Store the log data in a Cloud Storage bucket following GCS best practices.
+    Uses JSONL format with proper partitioning for analytics.
+    """
     storage_client = storage.Client()
     bucket = storage_client.bucket(BUCKET_NAME)
     
@@ -19,25 +22,73 @@ def store_log_in_storage(log_data, run_dev=False):
     if not bucket.exists():
         bucket.create()
     
-    # Extract client ID from the log data
-    client_id = log_data.get("client_id", "unknown")
+    # Parse timestamp for partitioning
+    timestamp_str = log_data.get("timestamp", datetime.datetime.now(datetime.timezone.utc).isoformat())
+    try:
+        # Handle both with and without timezone info
+        if timestamp_str.endswith('Z'):
+            timestamp_str = timestamp_str[:-1] + '+00:00'
+        now = datetime.datetime.fromisoformat(timestamp_str)
+        if now.tzinfo is None:
+            now = now.replace(tzinfo=datetime.timezone.utc)
+    except ValueError:
+        # Fallback to current time if timestamp parsing fails
+        now = datetime.datetime.now(datetime.timezone.utc)
     
-    # Create a timestamp-based filename
-    now = datetime.datetime.fromisoformat(log_data.get("timestamp", datetime.datetime.now(datetime.timezone.utc).isoformat()))
-    date_path = now.strftime("%Y/%m/%d")
-    file_id = client_id
+    # Create hierarchical path following GCS best practices
+    # Format: logs/year=YYYY/month=MM/day=DD/hour=HH/translation_logs_YYYYMMDD_HH_UUID.jsonl
+    year = now.year
+    month = f"{now.month:02d}"
+    day = f"{now.day:02d}"
+    hour = f"{now.hour:02d}"
     
-    # Create the blob path
-    blob_name = f"{date_path}/{file_id}.json"
+    # Generate unique filename to prevent conflicts
+    unique_id = str(uuid.uuid4())[:8]
+    timestamp_prefix = now.strftime("%Y%m%d_%H%M%S")
+    
+    # Use JSONL extension for better analytics integration
+    blob_name = f"logs/year={year}/month={month}/day={day}/hour={hour}/translation_logs_{timestamp_prefix}_{unique_id}.jsonl"
+    
+    # Check if file already exists (basic deduplication)
     blob = bucket.blob(blob_name)
     
-    # Upload the log data
+    # Convert to JSONL format (single line JSON)
+    jsonl_content = json.dumps(log_data, separators=(',', ':')) + '\n'
+    
+    # For existing files, append; for new files, create
+    try:
+        # Try to get existing content
+        existing_content = blob.download_as_text()
+        # Check for duplicate (simple content-based deduplication)
+        if jsonl_content.strip() not in existing_content:
+            content = existing_content + jsonl_content
+        else:
+            content = existing_content  # Skip duplicate
+            if run_dev:
+                print("Duplicate log entry detected, skipping")
+    except Exception:
+        # File doesn't exist, create new
+        content = jsonl_content
+    
+    # Upload with optimized settings
     blob.upload_from_string(
-        json.dumps(log_data, indent=2),
-        content_type="application/json"
+        content,
+        content_type="application/x-ndjson",  # Proper MIME type for JSONL
+        timeout=30
     )
+    
+    # Set metadata for better organization
+    blob.metadata = {
+        "log_type": "translation_event",
+        "client_id": log_data.get("client_id", "unknown"),
+        "target_language": log_data.get("target_language", "unknown"),
+        "created_by": "translate-ai-logger"
+    }
+    blob.patch()
+    
     if run_dev:
-        print(log_data) # dev mode only
+        print(f"Log stored: {blob_name}")
+        print(f"Content: {jsonl_content.strip()}")
     
     return f"gs://{BUCKET_NAME}/{blob_name}"
 
