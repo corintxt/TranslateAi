@@ -8,7 +8,7 @@
 
 Date | Change
 ----|-----
-2025-7-14 | Version 0.3.3: Remove "@echo off"
+2025-7-15 | Version 0.3.3: Remove "@echo off" for Windows prompt; more extensive Gcloud logging from translate.py
 2025-7-8 | Version 0.3.2: Rewrite translate.py to make requests in chunks
 2025-6-24 | Version 0.3.1: Add dev_mode flag to translate.py
 2025-6-20 | Disable runMultiple, many small fixes for second team release
