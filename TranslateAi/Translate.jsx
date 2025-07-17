@@ -92,82 +92,177 @@ function sanitizeString(str) {
 function textFrameExport(el, fileOut) {
     var frames = el.textFrames;
     var jsonData = {
-		targetLanguage: targetLanguage,
-        frames: {}
+        targetLanguage: targetLanguage,
+        frames: {},
+        debugInfo: {
+            totalFrames: frames.length,
+            processedFrames: 0,
+            lastProcessedFrame: -1,
+            lastOperation: "initialization",
+            timestamp: new Date().toString()
+        }
     };
     
-	$.writeln("=== Starting TextFrame Export ===");
+    // Write initial JSON structure immediately
+    fileOut.writeln(JSON.stringify(jsonData, null, 2));
+    fileOut.close();
+    
+    // Reopen file for appending updates
+    fileOut.open("w", "TEXT", "????");
+    
+    $.writeln("=== Starting TextFrame Export ===");
     $.writeln("Total frames found: " + frames.length);
     
+    // NOTE: This has been rewriten with lots of calls to updateJSONFile
+    // to ensure we capture the state of the export process at each step.
+    // (Since it sometimes freezes on certain frames, we want to know where it got stuck.)
     for (var frameCount = frames.length; frameCount > 0; frameCount--) {
         try {
             var frameIndex = frameCount-1;
             var frame = frames[frameIndex];
             
+            // Update debug info and write to file
+            jsonData.debugInfo.lastProcessedFrame = frameIndex;
+            jsonData.debugInfo.lastOperation = "starting frame " + frameIndex;
+            updateJSONFile(fileOut, jsonData);
+            
             // Debugging info
             $.writeln("\n--- Frame " + frameIndex + " ---");
             $.writeln("Kind: " + frame.kind);
             $.writeln("Type: " + frame.typename);
-			// end debug
+            
+            // Update debug info
+            jsonData.debugInfo.lastOperation = "checked frame properties";
+            updateJSONFile(fileOut, jsonData);
             
             // Check if textRange is available
             if (!frame.textRange) {
                 throw new Error("No textRange available for this frame");
             }
+            
+            // Update debug info
+            jsonData.debugInfo.lastOperation = "verified textRange exists";
+            updateJSONFile(fileOut, jsonData);
 
-            // Get style information
+            // Get style information (potential freeze point)
+            jsonData.debugInfo.lastOperation = "calling extractStyleInfo";
+            updateJSONFile(fileOut, jsonData);
+            
             var styleInfo = extractStyleInfo(frame.textRange);
-            var hasMultipleStyles = false; // Flag for multiple styles in frame
-            // If we have more than one style in the frame, set the flag to true
+            
+            jsonData.debugInfo.lastOperation = "extractStyleInfo completed";
+            updateJSONFile(fileOut, jsonData);
+            
+            var hasMultipleStyles = false;
             if (styleInfo.length > 1) {
                 hasMultipleStyles = true;
             }
 
-            // Get the raw content
+            // Get the raw content (potential freeze point)
+            jsonData.debugInfo.lastOperation = "getting raw content";
+            updateJSONFile(fileOut, jsonData);
+            
             var rawContent = frame.textRange.contents;
             
-            // Create marked up content for translation
+            jsonData.debugInfo.lastOperation = "raw content retrieved";
+            updateJSONFile(fileOut, jsonData);
+            
+            // Create marked up content for translation (potential freeze point)
+            jsonData.debugInfo.lastOperation = "calling addStyleMarkers";
+            updateJSONFile(fileOut, jsonData);
+            
             var markedContent = addStyleMarkers(rawContent, styleInfo);
+            
+            jsonData.debugInfo.lastOperation = "addStyleMarkers completed";
+            updateJSONFile(fileOut, jsonData);
             
             // Sanitize the marked content for JSON
             var contentString = sanitizeString(markedContent);
-		
-			// Get all lines in range
-			var lines = frame.textRange.lines;
-			var lineCount = lines.length;
-			// Get character count for each line
-			var characters = [];
-			for (var i = 0; i < lineCount; i++) {
-				var line = lines[i];
-				var lineCharCount = line.characters.length;
-				characters.push(lineCharCount);
-			}
+            
+            // Get all lines in range (potential freeze point)
+            jsonData.debugInfo.lastOperation = "getting lines";
+            updateJSONFile(fileOut, jsonData);
+            
+            var lines = frame.textRange.lines;
+            var lineCount = lines.length;
+            
+            jsonData.debugInfo.lastOperation = "lines retrieved, counting characters";
+            updateJSONFile(fileOut, jsonData);
+            
+            // Get character count for each line (potential freeze point)
+            var characters = [];
+            for (var i = 0; i < lineCount; i++) {
+                // Update progress for large line counts
+                if (i % 10 === 0 && lineCount > 50) {
+                    jsonData.debugInfo.lastOperation = "processing line " + i + " of " + lineCount;
+                    updateJSONFile(fileOut, jsonData);
+                }
+                
+                var line = lines[i];
+                var lineCharCount = line.characters.length;
+                characters.push(lineCharCount);
+            }
+            
+            jsonData.debugInfo.lastOperation = "character counting completed";
+            updateJSONFile(fileOut, jsonData);
 
-			// Get bounds: geometricBounds returns [top, left, bottom, right]
-			var bounds = null;
-			try {
-				bounds = frame.geometricBounds;
-			} catch(e) {
-				$.writeln("Warning: Could not get bounds for frame " + frameIndex + ": " + e);
-			}
+            // Get bounds
+            var bounds = null;
+            try {
+                jsonData.debugInfo.lastOperation = "getting geometric bounds";
+                updateJSONFile(fileOut, jsonData);
+                
+                bounds = frame.geometricBounds;
+                
+                jsonData.debugInfo.lastOperation = "bounds retrieved";
+                updateJSONFile(fileOut, jsonData);
+            } catch(e) {
+                $.writeln("Warning: Could not get bounds for frame " + frameIndex + ": " + e);
+                jsonData.debugInfo.lastOperation = "bounds failed: " + e.message;
+                updateJSONFile(fileOut, jsonData);
+            }
+            
+            // Get word and character counts (potential freeze points)
+            jsonData.debugInfo.lastOperation = "getting word count";
+            updateJSONFile(fileOut, jsonData);
+            
+            var wordCount = frame.textRange.words.length;
+            
+            jsonData.debugInfo.lastOperation = "getting character count";
+            updateJSONFile(fileOut, jsonData);
+            
+            var charCount = frame.textRange.characters.length;
+            
+            jsonData.debugInfo.lastOperation = "counts completed, building frame data";
+            updateJSONFile(fileOut, jsonData);
 
             // Add frame data to JSON object
             jsonData.frames[frameIndex] = {
-                contents: contentString,  // Now contains marked up text
-                originalContents: sanitizeString(rawContent),  // Store original for reference
+                contents: contentString,
+                originalContents: sanitizeString(rawContent),
                 lineCount: lineCount,
                 lineChars: characters,
-                wordCount: frame.textRange.words.length,
-                charCount: frame.textRange.characters.length,
+                wordCount: wordCount,
+                charCount: charCount,
                 bounds: bounds,
                 hasMultipleStyles: hasMultipleStyles,
-                styleInfo: styleInfo  // Still include full style info
+                styleInfo: styleInfo
             };
+            
+            // Update completion status
+            jsonData.debugInfo.processedFrames++;
+            jsonData.debugInfo.lastOperation = "frame " + frameIndex + " completed successfully";
+            updateJSONFile(fileOut, jsonData);
 
-		// Error handling / debug
-		} catch (e) {
+        } catch (e) {
             $.writeln("ERROR in frame " + frameIndex + ":");
             $.writeln("Error message: " + e.message);
+            
+            // Log error to JSON
+            jsonData.debugInfo.lastOperation = "ERROR in frame " + frameIndex + ": " + e.message;
+            jsonData.debugInfo.errorFrame = frameIndex;
+            updateJSONFile(fileOut, jsonData);
+            
             $.writeln("Frame properties:");
             for (var prop in frame) {
                 try {
@@ -179,7 +274,21 @@ function textFrameExport(el, fileOut) {
         }
     }
     
-    fileOut.writeln(JSON.stringify(jsonData, null, 2));
+    // Final completion update
+    jsonData.debugInfo.lastOperation = "export completed successfully";
+    jsonData.debugInfo.completedAt = new Date().toString();
+    updateJSONFile(fileOut, jsonData);
+}
+
+// Helper function to update JSON file with current state
+function updateJSONFile(fileOut, jsonData) {
+    try {
+        fileOut.seek(0); // Go to beginning of file
+        fileOut.writeln(JSON.stringify(jsonData, null, 2));
+        // Don't close the file here, keep it open for next update
+    } catch (e) {
+        $.writeln("Warning: Could not update JSON file: " + e.message);
+    }
 }
 
 /** Invoke command script
