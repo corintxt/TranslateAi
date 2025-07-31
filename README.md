@@ -1,12 +1,12 @@
 # TranslateAi: v0.3.3
 **Export text from Adobe Illustrator files, send to translation API and re-import.**
 
+Originally developed for [AFP News](https://www.afp.com/) graphics department.
+
 ## Installation (Windows)
 ### Download the code
 
-Click on the blue **Code** box above, then Download source code: **zip**. (If you're familiar with Git you can also clone the repo instead.)
-
-![Zip file](img/DownloadZip.PNG)
+Clone the Git repo, or click on the green **Code** box above and download the zip file.
 
 Extract the folder from the zip file – you can put it anywhere on your computer for now.
 
@@ -16,17 +16,11 @@ Copy the TranslateAI folder into your Adobe Illustrator Scripts folder. The loca
 
 `C:\Program Files\Adobe\Adobe Illustrator 202X\Presets\[language]\Scripts`
 
-NOTE: You will need an administrator password to do this.
-
 ![ConfigJSON](img/ScriptsFolder.PNG)
 
 When the TranslateAI folder is inside the Scripts folder the translation script is installed. You will need to restart Illustrator to use it.
 
-*Usage instructions follow Mac installation guide.*
-
 ## Installation (Mac)
-
-*You will need to have administrator permissions on your machine to install the scripts.*
 
 First, download the zip file as indicated in Windows installation instructions. Then:
 
@@ -40,7 +34,7 @@ For the translate function to work, the `translate.command` script must be made 
 
 ![chmod](img/chmod.png)
 
-3) Click on the `translate.command` file inside the `TranslateAi > Process` folder and drag it into the terminal. You should see the file location in the terminal after the `chmod` command.
+3) Click on the `translate.command` file inside the `TranslateAi/src` folder and drag it into the terminal. You should see the file location in the terminal after the `chmod` command.
 
 ![chmod file](img/chmodfilepath.png)
 
@@ -79,7 +73,7 @@ Now the tool should be ready to run.
 
 ### Install Python
 
-If you don't already have Python installed, you will need to download it from the AFP app management portal.
+If you don't already have Python installed, you will need to download it.
 
 You will also need to install the `requests` module.
 
@@ -93,9 +87,9 @@ Then hit Enter to install.
 
 Open the graphic you want to translate. 
 
-If you haven't already done so, save your work! Sometimes the script makes Illustrator freeze. I'm trying to fix this.
+If you haven't already done so, save your work! Sometimes the script makes Illustrator freeze. (I'm trying to fix this.)
 
-Click: `File > Scripts > TranslateAi > Export`
+Click: `File > Scripts > TranslateAi > Translate`
 
 ![TranslateExport](img/TranslateExport.PNG)
 
@@ -104,10 +98,10 @@ You should see a message telling you that text was exported.
 
 ![ClickOK](img/StartTranslation.PNG)
 
-You will see a terminal window open while the translation script communicates with the [AFP translate API](https://translate.afp.com/translate). Meanwhile, an Illustrator menu will indicate the progress of the translation.
+You will see a terminal window open while the translation script communicates with the [AFP translate API](https://translate.afp.com/translate). Meanwhile, a progress bar will indicate the status of the translation.
 
 Once the translation server returns the text, it will be automatically re-imported into the Illustrator document.
 
-**NOTE**: Sometimes you will see a message that says "Translate timed out.":
+**NOTE**: Sometimes you will see a message that says "Translation server timed out.":
 
-If this happens, run the TranslateAi > Export script again from Illustrator.
+If this happens, run the TranslateAi > Translate script again from Illustrator.
